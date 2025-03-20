@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -26,7 +26,7 @@ const Banner = () => {
   return (
     <div className="relative bg-black text-white min-h-[500px] md:min-h-[700px] overflow-hidden">
       {/* Text Content */}
-      <div className="absolute left-4 md:left-[84px] top-[140px] md:top-[280px] z-10 px-4 md:px-0">
+      <div className="absolute left-4 md:left-[200px] top-[140px] md:top-[280px] z-10 px-4 md:px-0">
         <h2 className="font-['Space_Grotesk'] font-bold text-[24px] md:text-[32px] text-center md:text-left leading-[100%] capitalize mb-4 text-white">
           When And Where?
         </h2>
@@ -36,12 +36,19 @@ const Banner = () => {
       </div>
 
       {/* Banner Image */}
-      <div className="absolute right-0 top-0 w-full md:w-auto">
-        <img 
-          src={bannerImages[currentSlide]} 
-          alt="Drag performers" 
-          className="object-cover md:object-contain w-full md:w-[697px] h-[400px] md:h-[650px]"
-        />
+      <div className="absolute right-0 md:right-16 top-0 w-full md:w-auto">
+        <AnimatePresence mode="wait">
+          <motion.img 
+            key={currentSlide}
+            src={bannerImages[currentSlide]} 
+            alt="Drag performers" 
+            className="object-cover md:object-contain w-full md:w-[697px] h-[400px] md:h-[650px]"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.5 }}
+          />
+        </AnimatePresence>
       </div>
 
       {/* Arrow Navigation */}
