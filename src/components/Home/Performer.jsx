@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Performer = () => {
   const scrollContainerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
 
   const performers = [
     {
