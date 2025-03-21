@@ -145,40 +145,40 @@ const UpComingEvents = () => {
                   {/* Crown Icon */}
 
                   {/* Card Content - semi-transparent overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
+                  <div className="absolute  inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
                     {/* Content container positioned in the middle-right */}
-                    <div className="absolute bg-black/60 top-10 right-2 md:right-5 rounded-lg bottom-0 left-2 md:left-1/5 p-3 md:p-6 backdrop-blur">
-                      <h3 className="font-['Space_Grotesk'] font-bold text-xl md:text-3xl mb-2 text-white">
+                    <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-6 backdrop-blur">
+                      <h3 className="font-['Space_Grotesk'] font-bold text-3xl mb-2 text-white">
                         {event.title}
                       </h3>
-                      <p className="font-['Space_Grotesk'] text-base md:text-lg mb-4 md:mb-6 text-white">
+                      <p className="font-['Space_Grotesk'] text-lg mb-6 text-white">
                         {event.host}
                       </p>
 
-                      <div className="flex items-center mb-2 md:mb-3">
-                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">⏰</span>
-                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
+                      <div className="flex items-center mb-3">
+                        <span className="text-[#FF00A2] mr-3 text-xl">⏰</span>
+                        <span className="font-['Space_Grotesk'] text-base text-white">
                           {event.time}
                         </span>
                       </div>
 
-                      <div className="flex items-center mb-6 md:mb-10">
-                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">📍</span>
-                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
+                      <div className="flex items-center mb-10">
+                        <span className="text-[#FF00A2] mr-3 text-xl">📍</span>
+                        <span className="font-['Space_Grotesk'] text-base text-white">
                           {event.location}
                         </span>
                       </div>
 
                       {/* Card Actions */}
-                      <div className="flex flex-col md:flex-row gap-2 md:gap-4">
-                        <Link to={`/events/${event.id}`} className="w-full md:w-auto">
-                          <button className="w-full md:w-[168px] h-[40px] md:h-[45px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-full md:rounded-l-full text-white font-['Space_Grotesk'] text-base md:text-lg uppercase hover:bg-pink-600 transition">
+                      <div className="flex mt-auto space-x-4">
+                        <Link to={`/events/${event.id}`}>
+                          <button className="w-[168px] h-[45px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-lg uppercase hover:bg-pink-600 transition">
                             VIEW DETAILS
                           </button>
                         </Link>
 
-                        <Link to="/events" className="w-full md:w-auto">
-                          <button className="w-full md:w-[168px] h-[40px] md:h-[45px] border-2 border-[#FF00A2] rounded-full md:rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-base md:text-lg uppercase hover:bg-pink-600 hover:text-white transition">
+                        <Link to="/events">
+                          <button className="w-[168px] h-[45px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-lg uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>
                         </Link>
