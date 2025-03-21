@@ -18,7 +18,7 @@ const Home = () => {
       <Singers />
       <WhoWeAre />
     </div>
-  )
+  );
 }
 
 export default Home
