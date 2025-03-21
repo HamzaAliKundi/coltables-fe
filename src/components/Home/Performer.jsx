@@ -16,7 +16,7 @@ const Performer = () => {
     },
     {
       id: 2,
-      mainImage: "/performers/performer2.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo2.png",
       name: "Athena Sapphire",
       description:
@@ -24,7 +24,7 @@ const Performer = () => {
     },
     {
       id: 3,
-      mainImage: "/performers/performer3.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo3.png",
       name: "Violet Chachki",
       description:
@@ -32,7 +32,7 @@ const Performer = () => {
     },
     {
       id: 4,
-      mainImage: "/performers/performer4.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo4.png",
       name: "Eureka O'Hara",
       description:
@@ -40,7 +40,7 @@ const Performer = () => {
     },
     {
       id: 1,
-      mainImage: "/performers/performer1.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo1.png",
       name: "Mistress Isabelle Brooks",
       description:
@@ -48,7 +48,7 @@ const Performer = () => {
     },
     {
       id: 2,
-      mainImage: "/performers/performer2.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo2.png",
       name: "Athena Sapphire",
       description:
@@ -56,7 +56,7 @@ const Performer = () => {
     },
     {
       id: 3,
-      mainImage: "/performers/performer3.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo3.png",
       name: "Violet Chachki",
       description:
@@ -64,7 +64,7 @@ const Performer = () => {
     },
     {
       id: 4,
-      mainImage: "/performers/performer4.jpg",
+      mainImage: "/performer/permormer-image.png",
       logoImage: "/performers/logo4.png",
       name: "Eureka O'Hara",
       description:
@@ -87,7 +87,7 @@ const Performer = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-[#33001b] to-black text-white py-12 px-4 md:px-8">
+    <div className="bg-gradient-to-b text-white py-12 px-4 md:px-8">
       {/* Header with pink line and VIEW ALL */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">

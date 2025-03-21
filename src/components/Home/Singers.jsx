@@ -2,7 +2,7 @@ import React from "react";
 
 const Singers = () => {
   return (
-    <div className="bg-black">
+    <div>
       <img
         src="/singers/singers.png"
         alt="Singers"

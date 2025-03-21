@@ -65,7 +65,7 @@ const UpComingEvents = () => {
   };
 
   return (
-    <div className="relative bg-black py-12 px-4 md:px-8 text-white">
+    <div className="relative py-12 px-4 md:px-8 text-white">
       {/* Background Pattern - Using CSS pattern for now */}
       <div
         className="absolute inset-0 z-0"
@@ -105,8 +105,6 @@ const UpComingEvents = () => {
 
         {/* Cards Container */}
         <div className="relative overflow-hidden">
-          
-
           {/* Cards Scrollable Area */}
           <div
             ref={containerRef}
@@ -148,7 +146,11 @@ const UpComingEvents = () => {
                   <div className="absolute  inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
                     {/* Content container positioned in the middle-right */}
                     <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-6 backdrop-blur">
-                    <img src="/upcomping/crown.png" alt="crown" className="relative left-[100%] -top-12 w-[40px] h-[40px]" />
+                      <img
+                        src="/upcomping/crown.png"
+                        alt="crown"
+                        className="relative left-[100%] -top-12 w-[40px] h-[40px]"
+                      />
                       <h3 className="font-['Space_Grotesk'] font-bold text-3xl mb-2 text-white">
                         {event.title}
                       </h3>

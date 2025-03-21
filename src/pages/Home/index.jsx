@@ -9,7 +9,12 @@ import UpComingEvents from '../../components/Home/UpComingEvents';
 
 const Home = () => {
   return (
-    <div>
+    <div style={{
+      backgroundImage: 'url(/bg.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
       <Banner />
       <UpComingEvents />
       <Performer />

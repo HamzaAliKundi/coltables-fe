@@ -24,7 +24,7 @@ const Banner = () => {
   };
 
   return (
-    <div className="relative bg-black text-white min-h-[500px] md:min-h-[700px] overflow-hidden">
+    <div className="relative text-white min-h-[500px] md:min-h-[700px] overflow-hidden">
       {/* Text Content */}
       <div className="absolute left-4 md:left-[200px] top-[140px] md:top-[280px] z-10 px-4 md:px-0">
         <h2 className="font-['Space_Grotesk'] font-bold text-[24px] md:text-[32px] text-center md:text-left leading-[100%] capitalize mb-4 text-white">

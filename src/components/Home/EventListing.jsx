@@ -91,7 +91,7 @@ const EventListing = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-[#33001b] to-black text-white py- px-4 md:px-8 pt-12">
+    <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <div className="w-[105px] h-[6px] bg-pink-500 rounded-[10px]"></div>

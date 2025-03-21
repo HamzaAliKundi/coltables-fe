@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const WhoWeAre = () => {
   return (
-    <div className="bg-black text-white py-8 md:py-16 px-4">
+    <div className="text-white py-8 md:py-16 px-4">
       {/* Section Title */}
       <h2 className="font-['Space_Grotesk'] font-bold text-[20px] md:text-[24px] leading-[100%] text-center uppercase text-pink-500 mb-6 md:mb-10">
         Who we are...
