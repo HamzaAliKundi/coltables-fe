@@ -10,7 +10,7 @@ import UpComingEvents from '../../components/Home/UpComingEvents';
 const Home = () => {
   return (
     <div style={{
-      backgroundImage: 'url(/bg.png)',
+      backgroundImage: 'url(/home/bg.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'

@@ -4,7 +4,7 @@ const Singers = () => {
   return (
     <div>
       <img
-        src="/singers/singers.png"
+        src="/home/singers/singers.png"
         alt="Singers"
         width={1440}
         height={296}

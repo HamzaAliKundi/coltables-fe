@@ -9,7 +9,7 @@ const UpComingEvents = () => {
   const events = [
     {
       id: 1,
-      image: "/upcomping/upcoming.png",
+      image: "/home/upcomping/upcoming.png",
       date: "26",
       month: "FEB",
       title: "Rachel's Rpdr Watch Party",
@@ -20,7 +20,7 @@ const UpComingEvents = () => {
     },
     {
       id: 2,
-      image: "/upcomping/upcoming.png",
+      image: "/home/upcomping/upcoming.png",
       date: "26",
       month: "FEB",
       title: "Rachel's Rpdr Watch Party",
@@ -31,7 +31,7 @@ const UpComingEvents = () => {
     },
     {
       id: 3,
-      image: "/upcomping/upcoming.png",
+      image: "/home/upcomping/upcoming.png",
       date: "28",
       month: "FEB",
       title: "Rachel's Rpdr Watch Party",
@@ -42,7 +42,7 @@ const UpComingEvents = () => {
     },
     {
       id: 4,
-      image: "/upcomping/upcoming.png",
+      image: "/home/upcomping/upcoming.png",
       date: "2",
       month: "MAR",
       title: "Rachel's Rpdr Watch Party",
@@ -93,7 +93,7 @@ const UpComingEvents = () => {
               VIEW ALL
             </Link>
             <div className="w-[51px] h-[51px]  rounded-full flex items-center justify-center">
-              <img src="/eventlisting/calendar.png" alt="" />
+              <img src="/home/eventlisting/calendar.png" alt="" />
             </div>
           </div>
         </div>
@@ -147,7 +147,7 @@ const UpComingEvents = () => {
                     {/* Content container positioned in the middle-right */}
                     <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-6 backdrop-blur">
                       <img
-                        src="/upcomping/crown.png"
+                        src="/home/upcomping/crown.png"
                         alt="crown"
                         className="relative left-[100%] -top-12 w-[40px] h-[40px]"
                       />

@@ -5,7 +5,7 @@ const Advertisment = () => {
     <div className="flex justify-center items-center w-full">
       <div className='my-4 md:my-12 lg:my-16'>
       <img 
-        src="/ad/ad.png"
+        src="/home/ad/ad.png"
         alt="Advertisement"
         className="w-[1200px] h-[300px] object-contain"
       />

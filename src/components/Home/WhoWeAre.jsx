@@ -33,7 +33,7 @@ const WhoWeAre = () => {
         {/* Venues Column */}
         <div className="flex flex-col items-center">
           <img
-            src="/whoWeAre/venues.png"
+            src="/home/whoWeAre/venues.png"
             alt="Venues"
             className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] mb-3 md:mb-4"
           />
@@ -58,7 +58,7 @@ const WhoWeAre = () => {
         {/* Performers Column */}
         <div className="flex flex-col items-center">
           <img
-            src="/whoWeAre/performers.png"
+            src="/home/whoWeAre/performers.png"
             alt="Performers"
             className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] mb-3 md:mb-4"
           />
@@ -79,7 +79,7 @@ const WhoWeAre = () => {
         {/* Support Column */}
         <div className="flex flex-col items-center">
           <img
-            src="/whoWeAre/settings.png"
+            src="/home/whoWeAre/settings.png"
             alt="Support"
             className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] mb-3 md:mb-4"
           />

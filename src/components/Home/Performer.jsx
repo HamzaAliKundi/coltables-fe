@@ -8,64 +8,64 @@ const Performer = () => {
   const performers = [
     {
       id: 1,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performer/image-tag.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Mistress Isabelle Brooks",
       description:
         "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
     },
     {
       id: 2,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo2.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Athena Sapphire",
       description:
         "This beautiful and talented queen will twirl and leave you begging for an encore...",
     },
     {
       id: 3,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo3.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Violet Chachki",
       description:
         "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
     },
     {
       id: 4,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo4.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Eureka O'Hara",
       description:
         "She captivates & stuns audiences with her passionate performances...",
     },
     {
       id: 1,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo1.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Mistress Isabelle Brooks",
       description:
         "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
     },
     {
       id: 2,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo2.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Athena Sapphire",
       description:
         "This beautiful and talented queen will twirl and leave you begging for an encore...",
     },
     {
       id: 3,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo3.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Violet Chachki",
       description:
         "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
     },
     {
       id: 4,
-      mainImage: "/performer/permormer-image.png",
-      logoImage: "/performers/logo4.png",
+      mainImage: "/home/performer/permormer-image.png",
+      logoImage: "/home/performer/image-tag.png",
       name: "Eureka O'Hara",
       description:
         "She captivates & stuns audiences with her passionate performances...",
@@ -115,7 +115,7 @@ const Performer = () => {
           className="bg-[#181818] rounded-full w-[40px] h-[40px] flex items-center justify-center"
           aria-label="Scroll left"
         >
-          <img src="/banner/left-arrow.png" alt="Left" className="w-4 h-4" />
+          <img src="/home/banner/left-arrow.png" alt="Left" className="w-4 h-4" />
         </button>
 
         <button
@@ -123,7 +123,7 @@ const Performer = () => {
           className="bg-[#181818] rounded-full w-[40px] h-[40px] flex items-center justify-center"
           aria-label="Scroll right"
         >
-          <img src="/banner/right-arrow.png" alt="Right" className="w-4 h-4" />
+          <img src="/home/banner/right-arrow.png" alt="Right" className="w-4 h-4" />
         </button>
       </div>
 
@@ -134,7 +134,7 @@ const Performer = () => {
           className="absolute left-[-60px] top-[200px] z-10 bg-[#181818] rounded-full w-[55px] h-[55px] flex items-center justify-center"
           aria-label="Scroll left"
         >
-          <img src="/banner/left-arrow.png" alt="Left" className="w-6 h-6" />
+          <img src="/home/banner/left-arrow.png" alt="Left" className="w-6 h-6" />
         </button>
 
         <button
@@ -142,7 +142,7 @@ const Performer = () => {
           className="absolute right-[-60px] top-[200px] z-10 bg-[#181818] rounded-full w-[55px] h-[55px] flex items-center justify-center"
           aria-label="Scroll right"
         >
-          <img src="/banner/right-arrow.png" alt="Right" className="w-6 h-6" />
+          <img src="/home/banner/right-arrow.png" alt="Right" className="w-6 h-6" />
         </button>
       </div>
 

@@ -16,7 +16,7 @@ const EventListing = () => {
   const events = [
     {
       id: 1,
-      image: "/eventlisting/event.png",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Sunday Service Drag Brunch",
@@ -26,7 +26,7 @@ const EventListing = () => {
     },
     {
       id: 2,
-      image: "/events/showgirls.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Showgirls",
@@ -35,7 +35,7 @@ const EventListing = () => {
     },
     {
       id: 3,
-      image: "/events/so-you-think.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "So You Think You Can Drag?",
@@ -44,7 +44,7 @@ const EventListing = () => {
     },
     {
       id: 4,
-      image: "/events/brunch-rooftop.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Brunch On The Rooftop",
@@ -53,7 +53,7 @@ const EventListing = () => {
     },
     {
       id: 5,
-      image: "/events/millennial-dolls.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Millennial Dolls",
@@ -62,7 +62,7 @@ const EventListing = () => {
     },
     {
       id: 6,
-      image: "/events/angels.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Angels",
@@ -71,7 +71,7 @@ const EventListing = () => {
     },
     {
       id: 7,
-      image: "/events/sunday-service.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Sunday Service Drag Brunch",
@@ -81,7 +81,7 @@ const EventListing = () => {
     },
     {
       id: 8,
-      image: "/events/millennial-dolls.jpg",
+      image: "/home/eventlisting/event.png",
       date: "26",
       month: "FEB",
       title: "Millennial Dolls",
@@ -114,7 +114,7 @@ const EventListing = () => {
         {/* Calendar Icon */}
         <Link to="/events">
           <img
-            src="/eventlisting/calendar.png"
+            src="/home/eventlisting/calendar.png"
             alt="calendar"
             className="w-[51px] h-[51px]"
           />
@@ -133,35 +133,35 @@ const EventListing = () => {
               <div className="flex items-center mb-2">
                 {tab === "Drag Show" && (
                   <img
-                    src="/eventlisting/drag-show.png"
+                    src="/home/eventlisting/drag-show.png"
                     alt="Drag Show"
                     className="w-6 h-6 mr-2"
                   />
                 )}
                 {tab === "Drag Brunch" && (
                   <img
-                    src="/eventlisting/drag-brunch.png"
+                    src="/home/eventlisting/drag-brunch.png"
                     alt="Drag Brunch"
                     className="w-6 h-6 mr-2"
                   />
                 )}
                 {tab === "Drag Bingo" && (
                   <img
-                    src="/eventlisting/drag-bingo.png"
+                    src="/home/eventlisting/drag-bingo.png"
                     alt="Drag Bingo"
                     className="w-6 h-6 mr-2"
                   />
                 )}
                 {tab === "Drag Trivia" && (
                   <img
-                    src="/eventlisting/drag-trive.png"
+                    src="/home/eventlisting/drag-trive.png"
                     alt="Drag Trivia"
                     className="w-6 h-6 mr-2"
                   />
                 )}
                 {tab === "Other Event" && (
                   <img
-                    src="/eventlisting/other-event.png"
+                    src="/home/eventlisting/other-event.png"
                     alt="Other Event"
                     className="w-6 h-6 mr-2"
                   />
@@ -215,7 +215,7 @@ const EventListing = () => {
               </h3>
               <div className="flex items-center mb-4 text-gray-300">
                 <img
-                  src="/eventlisting/time.png"
+                  src="/home/eventlisting/time.png"
                   alt="Time"
                   className="mr-2 w-4 h-4"
                 />
@@ -226,7 +226,7 @@ const EventListing = () => {
 
               <div className="flex items-center mb-8 text-gray-300">
                 <img
-                  src="/eventlisting/location.png"
+                  src="/home/eventlisting/location.png"
                   alt="Location"
                   className="mr-2 w-4 h-4"
                 />

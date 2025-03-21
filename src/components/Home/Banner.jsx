@@ -5,8 +5,8 @@ const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const bannerImages = [
-    "/banner/banner-image-1.png",
-    "/banner/banner-image-2.png",
+    "/home/banner/banner-image-1.png",
+    "/home/banner/banner-image-2.png",
   ];
 
   const totalSlides = bannerImages.length;
@@ -57,7 +57,7 @@ const Banner = () => {
         className="absolute left-2 md:left-[20px] top-[200px] md:top-[320px] bg-[#181818] rounded-full w-[40px] h-[40px] md:w-[50px] md:h-[50px] flex items-center justify-center z-20"
       >
         <img 
-          src="/banner/left-arrow.png" 
+          src="/home/banner/left-arrow.png" 
           alt="Previous" 
           className="w-[20px] h-[20px] md:w-[25px] md:h-[25px]"
         />
@@ -68,7 +68,7 @@ const Banner = () => {
         className="absolute right-2 md:right-[20px] top-[200px] md:top-[320px] bg-[#181818] rounded-full w-[40px] h-[40px] md:w-[50px] md:h-[50px] flex items-center justify-center z-20"
       >
         <img 
-          src="/banner/right-arrow.png" 
+          src="/home/banner/right-arrow.png" 
           alt="Next" 
           className="w-[20px] h-[20px] md:w-[25px] md:h-[25px]"
         />
