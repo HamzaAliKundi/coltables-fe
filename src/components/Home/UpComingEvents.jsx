@@ -142,45 +142,45 @@ const UpComingEvents = () => {
                   {/* Crown Icon */}
 
                   {/* Card Content - semi-transparent overlay */}
-                  <div className="absolute  inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
                     {/* Content container positioned in the middle-right */}
-                    <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-6 backdrop-blur">
+                    <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-4 md:p-6 backdrop-blur">
                       <img
                         src="/home/upcomping/crown.png"
                         alt="crown"
-                        className="relative left-[100%] -top-12 w-[40px] h-[40px]"
+                        className="relative left-[100%] -top-12 w-[30px] h-[30px] md:w-[40px] md:h-[40px]"
                       />
-                      <h3 className="font-['Space_Grotesk'] font-bold text-3xl mb-2 text-white">
+                      <h3 className="font-['Space_Grotesk'] font-bold text-xl md:text-3xl mb-1 md:mb-2 text-white">
                         {event.title}
                       </h3>
-                      <p className="font-['Space_Grotesk'] text-lg mb-6 text-white">
+                      <p className="font-['Space_Grotesk'] text-base md:text-lg mb-3 md:mb-6 text-white">
                         {event.host}
                       </p>
 
-                      <div className="flex items-center mb-3">
-                        <span className="text-[#FF00A2] mr-3 text-xl">⏰</span>
-                        <span className="font-['Space_Grotesk'] text-base text-white">
+                      <div className="flex items-center mb-2 md:mb-3">
+                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">⏰</span>
+                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
                           {event.time}
                         </span>
                       </div>
 
-                      <div className="flex items-center mb-10">
-                        <span className="text-[#FF00A2] mr-3 text-xl">📍</span>
-                        <span className="font-['Space_Grotesk'] text-base text-white">
+                      <div className="flex items-center mb-5 md:mb-10">
+                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">📍</span>
+                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
                           {event.location}
                         </span>
                       </div>
 
                       {/* Card Actions */}
-                      <div className="flex mt-auto space-x-4">
+                      <div className="flex mt-auto space-x-2 md:space-x-4">
                         <Link to={`/events/${event.id}`}>
-                          <button className="w-[168px] h-[45px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-lg uppercase hover:bg-pink-600 transition">
+                          <button className="w-[120px] md:w-[168px] h-[35px] md:h-[45px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-sm md:text-lg uppercase hover:bg-pink-600 transition">
                             VIEW DETAILS
                           </button>
                         </Link>
 
                         <Link to="/events">
-                          <button className="w-[168px] h-[45px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-lg uppercase hover:bg-pink-600 hover:text-white transition">
+                          <button className="w-[120px] md:w-[168px] h-[35px] md:h-[45px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-sm md:text-lg uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>
                         </Link>
