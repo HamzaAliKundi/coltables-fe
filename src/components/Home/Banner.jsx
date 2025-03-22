@@ -10,9 +10,8 @@ const Banner = () => {
   ];
 
   const totalSlides = bannerImages.length;
-  const indicatorWidth = 200; // Total width of the progress bar
-  const segmentWidth = indicatorWidth / totalSlides; // Dynamic width for each segment
-
+  const indicatorWidth = 200; 
+  const segmentWidth = indicatorWidth / totalSlides; 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
   };

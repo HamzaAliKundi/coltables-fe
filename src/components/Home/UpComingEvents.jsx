@@ -5,7 +5,6 @@ const UpComingEvents = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const containerRef = useRef(null);
 
-  // Using placeholder images
   const events = [
     {
       id: 1,
