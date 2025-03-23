@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import Pagination from "../../common/EventListening/Pagination";
 
 const Performer = () => {
   const scrollContainerRef = useRef(null);

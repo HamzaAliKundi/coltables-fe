@@ -4,13 +4,13 @@ import Performer from '../../components/Performer/Performer';
 const Performers = () => {
   return (
     <div style={{
-      backgroundImage: 'url(/home/bg.png)',
+      backgroundImage: 'url(/performer/bg.svg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
     }}>
       <Banner />
-      <Performer />
+      <Performer isPerformer={true} />
       <Advertisment />
     </div>
   );

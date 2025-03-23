@@ -2,7 +2,7 @@ import React from 'react'
 import WhoWeAre from '../../components/Home/WhoWeAre';
 import Singers from '../../components/Home/Singers';
 import Advertisment from '../../common/Ad/Advertisment';
-import EventListing from '../../components/Home/EventListing';
+import EventListing from '../../common/EventListening/EventListing';
 import Performer from '../../components/Home/Performer';
 import UpComingEvents from '../../components/Home/UpComingEvents';
 import Banner from '../../common/Banner/Banner';
@@ -10,7 +10,7 @@ import Banner from '../../common/Banner/Banner';
 const Home = () => {
   return (
     <div style={{
-      backgroundImage: 'url(/home/bg.png)',
+      backgroundImage: 'url(/home/bg.svg)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
@@ -18,7 +18,7 @@ const Home = () => {
       <Banner />
       <UpComingEvents />
       <Performer />
-      <EventListing />
+      <EventListing  />
       <Advertisment />
       <Singers />
       <WhoWeAre />

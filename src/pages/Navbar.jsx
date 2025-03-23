@@ -20,7 +20,11 @@ export default function Navbar() {
       </div>
 
       {/* Middle Navigation - Desktop */}
-      <div className="hidden md:flex items-center bg-gray-900 p-2 rounded-full w-[616px] h-[66px]">
+      <div className="hidden md:flex items-center w-[616px] h-[66px] p-2 rounded-full shadow-lg backdrop-blur-sm" 
+     style={{
+       background: "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(24, 24, 24, 0.9) 50%, rgba(255, 255, 255, 0.1) 100%)",
+       boxShadow: "0 4px 10px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.2)"
+     }}>
         <div className="flex items-center space-x-5 px-4 text-sm">
           <div className="flex flex-col items-center">
             <Link to="/" className="flex items-center gap-2">
