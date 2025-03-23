@@ -109,7 +109,7 @@ const CreateEvent = () => {
 
           {/* Sound Equipment */}
           <div>
-            <label className="block font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
+            <label className="font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
               Does the venue have sound equipment for music/microphone,DJ, etc?
             </label>
             <input
@@ -124,7 +124,7 @@ const CreateEvent = () => {
 
           {/* Outdoor Venue */}
           <div>
-            <label className="block font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
+            <label className="font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
               If an Outdoor venue, are there awnings/coverings to account for
               inclement weather conditions?
             </label>
@@ -171,7 +171,7 @@ const CreateEvent = () => {
           {/* Performer Equipment */}
           {/* Audience Type */}
           <div>
-            <label className="block font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
+            <label className="font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
               Audience Type<span className="text-[#FF00A2]">*</span>
             </label>
             <div className="relative">
@@ -202,7 +202,7 @@ const CreateEvent = () => {
           </div>
 
           <div>
-            <label className="block font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
+            <label className="font-['Space_Grotesk'] text-[14px] text-white/90 mb-2 h-[60px] flex items-end">
               Is the Performer responsible for supplying any equipment (i.e.
               Audio/Visual, microphones, games, bingo cards/setup, etc.)?
             </label>
@@ -394,7 +394,7 @@ const CreateEvent = () => {
                   onChange={handleInputChange}
                   className="w-full h-[40px] bg-white rounded-[8px] px-4 
             font-space-grotesk text-[#1A1A1A] text-[14px]
-            appearance-none cursor-pointer"
+            appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 >
                   <option value="">Performer name</option>
                   {/* Add performer options here */}
@@ -428,7 +428,7 @@ const CreateEvent = () => {
                   name="hostBudget"
                   placeholder="Amount"
                   className="w-full h-[40px] bg-white rounded-[8px] px-4 
-            font-space-grotesk text-[#1A1A1A] text-[14px]"
+            font-space-grotesk text-[#1A1A1A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 />
               </div>
 
@@ -442,7 +442,7 @@ const CreateEvent = () => {
                   name="performerBudget"
                   placeholder="Amount"
                   className="w-full h-[40px] bg-white rounded-[8px] px-4 
-            font-space-grotesk text-[#1A1A1A] text-[14px]"
+            font-space-grotesk text-[#1A1A1A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 />
               </div>
             </div>
@@ -458,7 +458,7 @@ const CreateEvent = () => {
                   name="otherBudget"
                   placeholder="Amount"
                   className="w-full h-[40px] bg-white rounded-[8px] px-4 
-            font-space-grotesk text-[#1A1A1A] text-[14px]"
+            font-space-grotesk text-[#1A1A1A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 />
               </div>
 
@@ -471,7 +471,7 @@ const CreateEvent = () => {
                   name="totalBudget"
                   placeholder="Amount"
                   className="w-full h-[40px] bg-white rounded-[8px] px-4 
-            font-space-grotesk text-[#1A1A1A] text-[14px]"
+            font-space-grotesk text-[#1A1A1A] text-[14px] focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 />
               </div>
             </div>
