@@ -4,6 +4,7 @@ import Navbar from './pages/Navbar'
 import Footer from './pages/Footer'
 import Performers from './pages/Performer'
 import EventListingPage from './pages/EventListning'
+import CreateEventPage from './pages/CreateEvent/index'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/performers" element={<Performers />} />
         <Route path="/events" element={<EventListingPage />} />
+        <Route path="/create-event" element={<CreateEventPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
