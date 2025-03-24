@@ -316,27 +316,28 @@ const PerformerProfile = () => {
             </div>
           </div>
 
-          {/* Events Section */}
-          <div className="mt-6  rounded-xl p-4 lg:p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-[#FF00A2] text-[16px] lg:text-[20px] font-space-grotesk">
-                FRIDAY
-              </h3>
-              <span className="text-white/60 text-[14px] lg:text-[16px]">
-                03/05/2024{" "}
-              </span>
-            </div>
-            <div className="space-y-2">
-              {[1, 2, 3].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-[#FF00A2] p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base"
-                >
-                  7PM - Performance Place
-                </div>
-              ))}
-            </div>
-          </div>
+         {/* Events Section */}
+<div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
+      FRIDAY
+    </h3>
+    <span className="text-white/60 text-[14px] lg:text-[16px]">
+      03/05/2024
+    </span>
+  </div>
+  <div className="space-y-2">
+    {[1, 2, 3, 4].map((_, i) => (
+      <div
+        key={i}
+        className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${i === 0 ? 'bg-[#FF00A2]' : 'bg-[#721345]'}`}
+      >
+        7PM - Performance Place-
+      </div>
+    ))}
+  </div>
+</div>
+
 
           {/* Ad Image */}
           <div className="mt-5">
