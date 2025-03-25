@@ -204,7 +204,7 @@ const VenuesList = ({ isVenue }) => {
                 </h3>
               </div>
 
-              <Link to={`/performers/${performer.id}`}>
+              <Link to={`/venue-profile/${performer.id}`}>
                 <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                   View Details
                 </button>

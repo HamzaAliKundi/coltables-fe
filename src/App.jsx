@@ -4,6 +4,7 @@ import Navbar from './pages/Navbar'
 import Venues from './pages/venues'
 import Footer from './pages/Footer'
 import Performers from './pages/Performer'
+import VenueProfilePage from './pages/VenuesProfile'
 import EventListingPage from './pages/EventListning'
 import CreateEventPage from './pages/CreateEvent/index'
 import PerformerProfilePage from './pages/PerformerProfile/index'
@@ -18,6 +19,7 @@ function App() {
         <Route path="/performers" element={<Performers />} />
         <Route path="/events" element={<EventListingPage />} />
         <Route path="/create-event" element={<CreateEventPage />} />
+        <Route path="/venue-profile/:id" element={<VenueProfilePage />} />
         <Route path="/performer-profile/:id" element={<PerformerProfilePage />} />
       </Routes>
       <Footer />
