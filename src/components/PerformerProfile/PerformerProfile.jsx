@@ -20,7 +20,7 @@ const PerformerProfile = () => {
             <img
               src="/performer-profile/performer-profile.svg"
               alt="Catalina Seymour-Alexander"
-              className="w-full max-w-[550px] h-auto mx-auto"
+              className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px]"
             />
 
             {/* Social Media Links */}
@@ -69,7 +69,7 @@ const PerformerProfile = () => {
           </div>
 
           {/* Crown and Anniversary Section */}
-          <div className="relative mt-16 lg:mt-20">
+          <div className="relative mt-0 lg:mt-0">
             {/* Crown Box and Line Container */}
             <div className="flex items-center gap-4">
               {/* Crown Box */}
@@ -90,7 +90,7 @@ const PerformerProfile = () => {
             {/* Anniversary Text */}
             <div className="absolute left-0 right-0 text-center">
               <h2 className="text-[#FF00A2] text-[32px] font-space-grotesk">
-                Drag Anniversary:{" "}
+                Drag Anniversary:
                 <span className="font-medium">October '22</span>
               </h2>
             </div>
@@ -171,6 +171,48 @@ const PerformerProfile = () => {
                   <li>Campy</li>
                   <li>Drag Karaoke</li>
                   <li>Comedy</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Illusions/Impersonations Section */}
+            <div>
+              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                Illusions/Impersonations
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                <ul className="list-disc list-inside">
+                  <li>Selena</li>
+                </ul>
+                <ul className="list-disc list-inside">
+                  <li>Jennifer Lopez</li>
+                </ul>
+                <ul className="list-disc list-inside">
+                  <li>Nicole Scherzinger</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Music Genre's Performed Section */}
+            <div>
+              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                Music Genre's Performed
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                <ul className="list-disc list-inside">
+                  <li>The 80's</li>
+                  <li>Tejano</li>
+                  <li>R&B</li>
+                </ul>
+                <ul className="list-disc list-inside">
+                  <li>Rock</li>
+                  <li>Pop</li>
+                  <li>Jazz/Blues</li>
+                </ul>
+                <ul className="list-disc list-inside">
+                  <li>Country</li>
+                  <li>Comedy</li>
+                  <li>Disney</li>
                 </ul>
               </div>
             </div>

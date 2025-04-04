@@ -117,7 +117,7 @@ const Performer = ({ isPerformer }) => {
       <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
         <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-[105px] h-[6px] bg-pink-500 rounded-[10px]"></div>
+            <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
           </div>
         </div>
 
@@ -178,14 +178,14 @@ const Performer = ({ isPerformer }) => {
                       )}
                       <span
                         className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
-                          activeTab === tab ? "text-pink-500" : "text-white"
+                          activeTab === tab ? "text-[#FF00A2]" : "text-white"
                         }`}
                       >
                         {tab}
                       </span>
                     </div>
                     {activeTab === tab && (
-                      <div className="w-[117px] h-[3px] bg-pink-500 rounded-[5px]"></div>
+                      <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
                     )}
                   </div>
                 ))}
@@ -217,23 +217,23 @@ const Performer = ({ isPerformer }) => {
         </div>
 
         {/* Performer cards grid */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {performers.map((performer) => (
             <div
               key={performer.id}
-              className="w-full h-[475px] md:h-[475px] relative"
+              className="w-full h-[400px] md:h-[475px] relative"
             >
               {/* Main Image */}
               <div className="relative">
                 <img
                   src={performer.mainImage}
                   alt={performer.name}
-                  className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                  className="w-full h-[180px] md:h-[250px] rounded-[8px] object-cover"
                 />
 
                 {/* Logo/Icon Image */}
-                <div className="absolute bottom-[-40px] left-[35px]">
-                  <div className="w-[80px] h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2">
+                <div className="absolute bottom-[-30px] md:bottom-[-40px] left-[20px] md:left-[35px]">
+                  <div className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2">
                     <img
                       src={performer.logoImage}
                       alt={`${performer.name} logo`}
@@ -243,15 +243,15 @@ const Performer = ({ isPerformer }) => {
                 </div>
               </div>
 
-              <div className="text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col">
-                <div className="h-[60px]">
-                  <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
+              <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
+                <div className="h-[50px] md:h-[60px]">
+                  <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4">
                     {performer.name}
                   </h3>
                 </div>
 
                 <Link to={`/performer-profile/${performer.id}`}>
-                  <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
+                  <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                     View Profile
                   </button>
                 </Link>

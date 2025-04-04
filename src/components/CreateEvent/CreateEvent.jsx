@@ -372,7 +372,7 @@ const CreateEvent = () => {
 
         <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-[105px] h-[6px] bg-pink-500 rounded-[10px]"></div>
+            <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
           </div>
         </div>
 

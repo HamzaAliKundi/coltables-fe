@@ -11,7 +11,7 @@ const Performer = () => {
       id: 1,
       mainImage: "/home/performer/permormer-image.png",
       logoImage: "/home/performer/image-tag.png",
-      name: "Mistress Isabelle Brooks",
+      name: "Adriana LaRue",
       description:
         "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
     },
@@ -19,7 +19,7 @@ const Performer = () => {
       id: 2,
       mainImage: "/home/performer/permormer-image.png",
       logoImage: "/home/performer/image-tag.png",
-      name: "Athena Sapphire",
+      name: "Catalina Seymour-Alexander",
       description:
         "This beautiful and talented queen will twirl and leave you begging for an encore...",
     },
@@ -27,7 +27,7 @@ const Performer = () => {
       id: 3,
       mainImage: "/home/performer/permormer-image.png",
       logoImage: "/home/performer/image-tag.png",
-      name: "Violet Chachki",
+      name: "Iris Seymour",
       description:
         "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
     },
@@ -35,7 +35,7 @@ const Performer = () => {
       id: 4,
       mainImage: "/home/performer/permormer-image.png",
       logoImage: "/home/performer/image-tag.png",
-      name: "Eureka O'Hara",
+      name: "Kofi",
       description:
         "She captivates & stuns audiences with her passionate performances...",
     },
@@ -88,11 +88,11 @@ const Performer = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b text-white py-12 px-4 md:px-8">
+    <div className="bg-gradient-to-b text-white pt-12 px-4 md:px-8">
       {/* Header with pink line and VIEW ALL */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-[105px] h-[6px] bg-pink-500 rounded-[10px]"></div>
+          <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
         </div>
         <Link
           to="/performers"
@@ -170,24 +170,29 @@ const Performer = () => {
 
                   {/* Logo/Icon Image */}
                   <div className="absolute bottom-[-40px] left-[35px]">
-                    <div className="w-[80px] h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2">
                       <img
                         src={performer.logoImage}
                         alt={`${performer.name} logo`}
-                        className="max-w-full max-h-full"
+                        className="w-[80px] h-[80px]"
                       />
-                    </div>
                   </div>
                 </div>
 
                 <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col">
                   <div className="flex-grow">
-                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
-                      {performer.name}
+                    <h3 
+                      className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer"
+                      title={performer.name}
+                    >
+                      {performer.name.length > 20 
+                        ? <>{performer.name.slice(0, 20)}<span className="text-[#FF00A2]">...</span></>
+                        : performer.name}
                     </h3>
 
                     <p className="font-['Space_Grotesk'] text-[#8E96A4] font-normal text-[16px] leading-[24px]">
-                      {performer.description}
+                      {performer.description.length > 50 
+                        ? <>{performer.description.slice(0, 50)}<span className="text-[#FF00A2]">...</span></>
+                        : performer.description}
                     </p>
                   </div>
 

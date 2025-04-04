@@ -29,7 +29,7 @@ const Banner = () => {
         <h2 className="font-['Space_Grotesk'] font-bold text-[18px] md:text-[32px] leading-[100%] capitalize mb-2 md:mb-4 text-white">
           When And Where?
         </h2>
-        <h1 className="font-['Space_Grotesk'] font-bold text-[32px] md:text-[68px] leading-[36px] md:leading-[70px] text-pink-500">
+        <h1 className="font-['Space_Grotesk'] font-bold text-[32px] md:text-[68px] leading-[36px] md:leading-[70px] text-[#FF00A2]">
           Find Your Favorite<br />Performers
         </h1>
       </div>
@@ -84,7 +84,7 @@ const Banner = () => {
         style={{ width: `${indicatorWidth}px`, height: "4px" }}
       >
         <motion.div
-          className="absolute h-[8px] bg-pink-500 rounded-full -top-0.5"
+          className="absolute h-[8px] bg-[#FF00A2] rounded-full -top-0.5"
           style={{ width: `${segmentWidth}px` }}
           animate={{ left: currentSlide * segmentWidth }}
           transition={{ duration: 0.5, ease: "easeInOut" }}

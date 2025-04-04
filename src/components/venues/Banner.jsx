@@ -67,7 +67,7 @@ const Banner = () => {
       <div className="absolute left-0 right-0 top-[140px] md:top-[280px] z-10 px-4 text-center">
         
         <h1 className="font-['Space_Grotesk'] font-bold text-[32px] md:text-[68px] leading-[36px] md:leading-[70px] text-white">
-        Where can <span className="text-pink-500">you find</span><br />the Drag?
+        Where can <span className="text-[#FF00A2]">you find</span><br />the Drag?
         </h1>
       </div>
 
@@ -145,7 +145,7 @@ const Banner = () => {
         style={{ width: `${indicatorWidth}px`, height: "4px" }}
       >
         <motion.div
-          className="absolute h-[8px] bg-pink-500 rounded-full -top-0.5"
+          className="absolute h-[8px] bg-[#FF00A2] rounded-full -top-0.5"
           style={{ width: `${segmentWidth}px` }}
           animate={{ left: currentSlide * segmentWidth }}
           transition={{ duration: 0.5, ease: "easeInOut" }}

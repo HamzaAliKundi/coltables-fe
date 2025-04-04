@@ -95,7 +95,7 @@ const EventListing = ({ isEvent }) => {
     <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-[105px] h-[6px] bg-pink-500 rounded-[10px]"></div>
+          <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
         </div>
         <Link
           to="/events"
@@ -169,14 +169,14 @@ const EventListing = ({ isEvent }) => {
                 )}
                 <span
                   className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
-                    activeTab === tab ? "text-pink-500" : "text-white"
+                    activeTab === tab ? "text-[#FF00A2]" : "text-white"
                   }`}
                 >
                   {tab}
                 </span>
               </div>
               {activeTab === tab && (
-                <div className="w-[117px] h-[3px] bg-pink-500 rounded-[5px]"></div>
+                <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
               )}
             </div>
           ))}
@@ -198,15 +198,7 @@ const EventListing = ({ isEvent }) => {
                 className="w-full h-[282px] md:w-[282px] object-cover rounded-lg"
               />
 
-              {/* Date Badge */}
-              <div className="absolute top-4 left-4 w-[66px] h-[66px] bg-pink-500 rounded-full flex flex-col items-center justify-center text-white">
-                <span className="font-['Space_Grotesk'] font-bold text-[24px] leading-tight">
-                  {event.date}
-                </span>
-                <span className="font-['Space_Grotesk'] text-[14px] uppercase">
-                  {event.month}
-                </span>
-              </div>
+             
             </div>
 
             {/* Event Details */}
