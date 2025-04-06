@@ -11,7 +11,7 @@ const PerformerProfile = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
         {/* Left Section - Profile Info */}
         <div className="col-span-1 lg:col-span-8">
-          <h1 className="font-['Petit_Formal_Script'] text-2xl lg:text-4xl mb-4 lg:mb-8 text-center">
+          <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
             Catalina Seymour-Alexander
           </h1>
 
@@ -27,42 +27,42 @@ const PerformerProfile = () => {
             <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-[#1877F2] rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/facebook.svg"
                   alt="Facebook"
-                  className="w-5 h-5 lg:w-6 lg:h-6"
+                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/instagram.svg"
                   alt="Instagram"
-                  className="w-5 h-5 lg:w-6 lg:h-6"
+                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/x.svg"
                   alt="Twitter"
-                  className="w-10 h-10 lg:w-12 lg:h-12"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/tiktok.svg"
                   alt="TikTok"
-                  className="w-10 h-10 lg:w-12 lg:h-12"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
                 />
               </a>
             </div>
@@ -70,44 +70,37 @@ const PerformerProfile = () => {
 
           {/* Crown and Anniversary Section */}
           <div className="relative mt-0 lg:mt-0">
-            {/* Crown Box and Line Container */}
-            <div className="flex items-center gap-4">
-              {/* Crown Box */}
-              <div className="bg-white w-[90px] h-[90px] rounded-xl flex items-center justify-center flex-shrink-0">
-                <img
-                  src="/performer-profile/crown.svg"
-                  alt="Crown"
-                  className="w-14 h-14 text-[#FF00A2]"
-                />
-              </div>
-
-              {/* Pink Line */}
-              <div className="flex-grow">
-                <div className="h-[3px] w-full bg-[#FF00A2]"></div>
+            <div className="flex items-center w-full justify-center">
+              <img
+                src="/home/performer/image-tag.png"
+                alt="Crown"
+                className="w-[70px] h-[70px] text-[#FF00A2]"
+              />
+              <div className="w-1/2">
+                <div className="h-[3px] bg-[#FF00A2] ml-0"></div>
               </div>
             </div>
-
-            {/* Anniversary Text */}
-            <div className="absolute left-0 right-0 text-center">
-              <h2 className="text-[#FF00A2] text-[32px] font-space-grotesk">
+          <div className="absolute left-20 top-10 right-0 text-center">
+              <h2 className="text-[#FF00A2] text-[12px] sm:text-[20px] font-space-grotesk">
                 Drag Anniversary:
                 <span className="font-medium">October '22</span>
               </h2>
             </div>
           </div>
 
+
           {/* Tagline */}
-          <p className="text-xl lg:text-[32px] text-center mt-20 lg:mt-28 mb-12 lg:mb-16 max-w-[1000px] mx-auto leading-tight">
+          <p className="text-xl lg:text-[20px] text-center mt-10 lg:mt-16 mb-12 lg:mb-16 max-w-[600px] mx-auto leading-tight font-normal">
             This Beautiful And Talented Queen Will Twirl And Leave You Begging
             For An Encore With Her Electrifying Energy!
           </p>
 
           {/* About Section */}
           <div className="mb-6 lg:mb-8">
-            <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
+            <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
               About Catalina's Drag
             </h2>
-            <p className="text-white/90 text-sm lg:text-base">
+            <p className="text-white/90 text-[18px] font-normal">
               I am a Latin Showgirl with all of the kicks, splits, tricks and
               dips! I have been performing for a little over 2 years now and
               cannot wait to continue to grow and showcase my talents to the
@@ -358,28 +351,29 @@ const PerformerProfile = () => {
             </div>
           </div>
 
-         {/* Events Section */}
-<div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
-  <div className="flex justify-between items-center mb-4">
-    <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-      FRIDAY
-    </h3>
-    <span className="text-white/60 text-[14px] lg:text-[16px]">
-      03/05/2024
-    </span>
-  </div>
-  <div className="space-y-2">
-    {[1, 2, 3, 4].map((_, i) => (
-      <div
-        key={i}
-        className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${i === 0 ? 'bg-[#FF00A2]' : 'bg-[#721345]'}`}
-      >
-        7PM - Performance Place-
-      </div>
-    ))}
-  </div>
-</div>
-
+          {/* Events Section */}
+          <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
+                FRIDAY
+              </h3>
+              <span className="text-white/60 text-[14px] lg:text-[16px]">
+                03/05/2024
+              </span>
+            </div>
+            <div className="space-y-2">
+              {[1, 2, 3, 4].map((_, i) => (
+                <div
+                  key={i}
+                  className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
+                    i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
+                  }`}
+                >
+                  7PM - Performance Place-
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Ad Image */}
           <div className="mt-5">
@@ -391,8 +385,8 @@ const PerformerProfile = () => {
           </div>
         </div>
       </div>
-         <Gallery />
-         <Reviews />
+      <Gallery />
+      <Reviews />
     </div>
   );
 };

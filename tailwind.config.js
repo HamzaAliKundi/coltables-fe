@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         'space-grotesk': ['"Space Grotesk"', 'sans-serif'],
+        'tangerine': ['Tangerine', 'cursive'],
       },
     },
   },

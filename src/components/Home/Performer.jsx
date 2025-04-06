@@ -158,7 +158,7 @@ const Performer = () => {
             {performers.map((performer) => (
               <div
                 key={performer.id}
-                className="w-[280px] md:w-[295.5px] h-[560px] md:h-[591px] relative"
+                className="w-[280px] md:w-[295.5px] h-[500px] md:h-[500px] relative"
               >
                 {/* Main Image */}
                 <div className="relative">
@@ -178,20 +178,20 @@ const Performer = () => {
                   </div>
                 </div>
 
-                <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col">
+                <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[250px] flex flex-col">
                   <div className="flex-grow">
                     <h3 
                       className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer"
                       title={performer.name}
                     >
-                      {performer.name.length > 20 
-                        ? <>{performer.name.slice(0, 20)}<span className="text-[#FF00A2]">...</span></>
+                      {performer.name.length > 16 
+                        ? <>{performer.name.slice(0, 16)}<span className="text-[#FF00A2]">...</span></>
                         : performer.name}
                     </h3>
 
                     <p className="font-['Space_Grotesk'] text-[#8E96A4] font-normal text-[16px] leading-[24px]">
-                      {performer.description.length > 50 
-                        ? <>{performer.description.slice(0, 50)}<span className="text-[#FF00A2]">...</span></>
+                      {performer.description.length > 75 
+                        ? <>{performer.description.slice(0, 75)}<span className="text-[#FF00A2]">...</span></>
                         : performer.description}
                     </p>
                   </div>

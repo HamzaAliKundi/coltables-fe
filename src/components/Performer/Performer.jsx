@@ -233,13 +233,13 @@ const Performer = ({ isPerformer }) => {
 
                 {/* Logo/Icon Image */}
                 <div className="absolute bottom-[-30px] md:bottom-[-40px] left-[20px] md:left-[35px]">
-                  <div className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2">
+                  {/* <div className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2"> */}
                     <img
                       src={performer.logoImage}
                       alt={`${performer.name} logo`}
-                      className="max-w-full max-h-full"
+                      className="w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
                     />
-                  </div>
+                  {/* </div> */}
                 </div>
               </div>
 

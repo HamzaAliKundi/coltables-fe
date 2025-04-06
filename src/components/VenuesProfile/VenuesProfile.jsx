@@ -27,42 +27,42 @@ const VenuesProfile = () => {
             <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-[#1877F2] rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/facebook.svg"
                   alt="Facebook"
-                  className="w-5 h-5 lg:w-6 lg:h-6"
+                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/instagram.svg"
                   alt="Instagram"
-                  className="w-5 h-5 lg:w-6 lg:h-6"
+                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/x.svg"
                   alt="Twitter"
-                  className="w-10 h-10 lg:w-12 lg:h-12"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
                 />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
               >
                 <img
                   src="/performer-profile/tiktok.svg"
                   alt="TikTok"
-                  className="w-10 h-10 lg:w-12 lg:h-12"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
                 />
               </a>
             </div>
