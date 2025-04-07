@@ -139,48 +139,50 @@ const UpComingEvents = () => {
                     </span>
                   </div>
 
-                  {/* Crown Icon */}
-
                   {/* Card Content - semi-transparent overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent">
-                    {/* Content container positioned in the middle-right */}
-                    <div className="absolute bg-black/60 top-10 right-5 rounded-lg bottom-0 left-1/5 p-4 md:p-6 backdrop-blur">
+                    {/* Content container positioned in the middle-right - MODIFIED SIZE */}
+                    <div className="absolute bg-black/60 top-24 md:top-28 right-4 md:right-12 rounded-lg bottom-4 md:bottom-8 left-20 md:left-32 p-3 md:p-5 backdrop-blur">
                       <img
                         src="/home/upcomping/crown.png"
                         alt="crown"
-                        className="relative left-[100%] -top-12 w-[30px] h-[30px] md:w-[40px] md:h-[40px]"
+                        className="absolute -right-4 -top-4 md:-top-7 w-[24px] h-[24px] md:w-[36px] md:h-[36px]"
                       />
-                      <h3 className="font-['Space_Grotesk'] font-bold text-xl md:text-3xl mb-1 md:mb-2 text-white">
+                      <h3 className="font-['Space_Grotesk'] font-bold text-base md:text-2xl mb-1 text-white">
                         {event.title}
                       </h3>
-                      <p className="font-['Space_Grotesk'] text-base md:text-lg mb-3 md:mb-6 text-white">
+                      <p className="font-['Space_Grotesk'] text-xs md:text-base mb-1 md:mb-4 text-white">
                         {event.host}
                       </p>
 
-                      <div className="flex items-center mb-2 md:mb-3">
-                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">⏰</span>
-                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
+                      <div className="flex items-center mb-1 md:mb-2">
+                        <span className="text-[#FF00A2] mr-1 md:mr-2 text-sm md:text-lg">
+                          ⏰
+                        </span>
+                        <span className="font-['Space_Grotesk'] text-xs md:text-sm text-white">
                           {event.time}
                         </span>
                       </div>
 
-                      <div className="flex items-center mb-5 md:mb-10">
-                        <span className="text-[#FF00A2] mr-2 md:mr-3 text-lg md:text-xl">📍</span>
-                        <span className="font-['Space_Grotesk'] text-sm md:text-base text-white">
+                      <div className="flex items-center mb-2 md:mb-6">
+                        <span className="text-[#FF00A2] mr-1 md:mr-2 text-sm md:text-lg">
+                          📍
+                        </span>
+                        <span className="font-['Space_Grotesk'] text-xs md:text-sm text-white">
                           {event.location}
                         </span>
                       </div>
 
                       {/* Card Actions */}
-                      <div className="flex mt-auto space-x-2 md:space-x-4">
+                      <div className="flex mt-auto space-x-1 md:space-x-2">
                         <Link to={`/events/${event.id}`}>
-                          <button className="w-[120px] md:w-[168px] h-[35px] md:h-[45px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-sm md:text-lg uppercase hover:bg-pink-600 transition">
+                          <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 transition">
                             VIEW DETAILS
                           </button>
                         </Link>
 
                         <Link to="/events">
-                          <button className="w-[120px] md:w-[168px] h-[35px] md:h-[45px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-sm md:text-lg uppercase hover:bg-pink-600 hover:text-white transition">
+                          <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>
                         </Link>

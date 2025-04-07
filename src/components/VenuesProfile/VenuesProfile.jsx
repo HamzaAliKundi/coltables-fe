@@ -11,7 +11,7 @@ const VenuesProfile = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
         {/* Left Section - Profile Info */}
         <div className="col-span-1 lg:col-span-8">
-          <h1 className="font-['Petit_Formal_Script'] text-2xl lg:text-4xl mb-4 lg:mb-8 text-center">
+          <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
             Chapman & Kirby
           </h1>
 
@@ -199,10 +199,10 @@ const VenuesProfile = () => {
           </div>
 
           {/* Calendar Component */}
-          <div className="bg-[#1A1A1A] rounded-xl p-4 lg:p-6">
+          <div className="bg-[#1A1A1A] rounded-xl p-3 lg:p-5">
             {/* Month Navigation */}
-            <div className="flex justify-between items-center mb-6 lg:mb-8">
-              <button className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
+            <div className="flex justify-between items-center mb-5 lg:mb-6">
+              <button className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
                 <svg
                   width="20"
                   height="20"
@@ -222,7 +222,7 @@ const VenuesProfile = () => {
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
                 May - 2024
               </span>
-              <button className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
+              <button className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
                 <svg
                   width="20"
                   height="20"
@@ -261,7 +261,7 @@ const VenuesProfile = () => {
               ].map((day, index) => (
                 <div
                   key={index}
-                  className={`relative h-8 lg:h-12 flex items-center justify-center
+                  className={`relative h-7 lg:h-10 flex items-center justify-center
                     ${day === 3 ? "bg-[#FF00A2]" : "bg-[#2A2A2A]"} 
                     rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
                     ${day === 3 ? "text-white" : "text-white/60"}`}
