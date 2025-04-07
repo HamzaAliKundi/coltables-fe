@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import Input from '../../common/Input';
+import React, { useState } from "react";
+import Input from "../../common/Input";
 
 const CreateEvent = () => {
   const [formData, setFormData] = useState({
-    eventName: '',
-    eventHost: '',
-    eventType: '',
-    soundEquipment: '',
-    outdoorVenue: '',
-    eventTitle: '',
-    eventTheme: '',
-    audienceType: '',
-    eventStartTime: '',
-    eventEndTime: '',
-    hostCount: '',
-    performerCount: '',
-    callTime: '',
-    dressingArea: '',
-    musicRequirements: '',
-    specialRequests: '',
-    performerName: '',
-    hostBudget: '',
-    performerBudget: '',
-    otherBudget: '',
-    totalBudget: '',
+    eventName: "",
+    eventHost: "",
+    eventType: "",
+    soundEquipment: "",
+    outdoorVenue: "",
+    eventTitle: "",
+    eventTheme: "",
+    audienceType: "",
+    eventStartTime: "",
+    eventEndTime: "",
+    hostCount: "",
+    performerCount: "",
+    callTime: "",
+    dressingArea: "",
+    musicRequirements: "",
+    specialRequests: "",
+    performerName: "",
+    hostBudget: "",
+    performerBudget: "",
+    otherBudget: "",
+    totalBudget: "",
     isPublicEvent: true,
-    performerEquipment: ''
+    performerEquipment: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -181,8 +181,13 @@ const CreateEvent = () => {
                 onChange={handleInputChange}
                 className="w-full h-[40px] bg-white rounded-[8px] px-4 font-['Space_Grotesk'] text-[#1A1A1A] text-[14px] appearance-none cursor-pointer"
               >
-                <option value="adults">Adults</option>
-                <option value="all-ages">All Ages</option>
+                <option value="mixed">Mixed Crowd</option>
+                <option value="children-and-adults">Children And Adults</option>
+                <option value="young-adults">Young Adults</option>
+                <option value="adults-18">Adults 18+</option>
+                <option value="adults-21">Adults 21+</option>
+                <option value="seniors">Seniors</option>
+                <option value="other">Others (Type Here)</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                 <svg
@@ -397,7 +402,15 @@ const CreateEvent = () => {
             appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF00A2] focus:border-transparent"
                 >
                   <option value="">Performer name</option>
-                  {/* Add performer options here */}
+                  <option value="catalina">Catalina Seymour-Alexander</option>
+                  <option value="sinema">Sinema LaRue</option>
+                  <option value="glitter">Glitter Live LaRue</option>
+                  <option value="mari">Mari Jane</option>
+                  <option value="reign">Reign LaRue</option>
+                  <option value="teresa">Teresa LaRue</option>
+                  <option value="iris">Iris Seymour</option>
+                  <option value="adriana">Adriana LaRue</option>
+                  <option value="other">Others (Type Here)</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                   <svg

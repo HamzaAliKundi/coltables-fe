@@ -225,23 +225,21 @@ const Performer = ({ isPerformer }) => {
             >
               {/* Main Image */}
               <div className="relative">
-                <img
-                  src={performer.mainImage}
-                  alt={performer.name}
-                  className="w-full h-[180px] md:h-[250px] rounded-[8px] object-cover"
-                />
-
-                {/* Logo/Icon Image */}
-                <div className="absolute bottom-[-30px] md:bottom-[-40px] left-[20px] md:left-[35px]">
-                  {/* <div className="w-[60px] h-[60px] md:w-[80px] md:h-[80px] bg-white rounded-[2px] flex items-center justify-center p-2"> */}
-                    <img
-                      src={performer.logoImage}
-                      alt={`${performer.name} logo`}
-                      className="w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
-                    />
-                  {/* </div> */}
+                  <img
+                    src={performer.mainImage}
+                    alt={performer.name}
+                    className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                  />
+                  <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
+                  {/* Logo/Icon Image */}
+                  <div className="absolute bottom-[-40px] left-[35px]">
+                      <img
+                        src={performer.logoImage}
+                        alt={`${performer.name} logo`}
+                        className="w-[80px] h-[80px]"
+                      />
+                  </div>
                 </div>
-              </div>
 
               <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
                 <div className="h-[50px] md:h-[60px]">
