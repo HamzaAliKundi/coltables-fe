@@ -1,6 +1,7 @@
 import Advertisment from '../../common/Ad/Advertisment';
 import Banner from '../../components/venues/Banner';
 import VenuesList from '../../components/venues/VenuesList';
+import Footer from '../Footer';
 const Venues = () => {
   return (
     <>
@@ -15,6 +16,7 @@ const Venues = () => {
       >
         <VenuesList isVenue={true} />
         <Advertisment />
+        <Footer />
       </div>
     </>
   );

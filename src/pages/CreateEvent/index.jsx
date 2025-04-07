@@ -1,6 +1,7 @@
 import React from 'react'
 import Advertisment from '../../common/Ad/Advertisment'
 import CreateEvent from '../../components/CreateEvent/CreateEvent'
+import Footer from '../Footer'
 
 const CreateEventPage = () => {
   return (
@@ -12,6 +13,7 @@ const CreateEventPage = () => {
     }}>
       <CreateEvent />
       <Advertisment />
+      <Footer />
     </div>
   )
 }

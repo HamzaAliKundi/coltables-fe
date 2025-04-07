@@ -6,6 +6,7 @@ import EventListing from '../../common/EventListening/EventListing';
 import Performer from '../../components/Home/Performer';
 import UpComingEvents from '../../components/Home/UpComingEvents';
 import Banner from '../../common/Banner/Banner';
+import Footer from '../Footer';
 
 const Home = () => {
   return (
@@ -22,6 +23,7 @@ const Home = () => {
       <Advertisment />
       <Singers />
       <WhoWeAre />
+      <Footer isHome={true} />
     </div>
   );
 }

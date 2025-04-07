@@ -1,6 +1,7 @@
 import React from 'react'
 import EventListing from '../../common/EventListening/EventListing';
 import Advertisment from '../../common/Ad/Advertisment';
+import Footer from '../Footer';
 
 const EventListingPage = () => {
   return (
@@ -12,6 +13,7 @@ const EventListingPage = () => {
       }}>
         <EventListing isEvent={true} />
         <Advertisment />
+        <Footer />
       </div>
   )
 }

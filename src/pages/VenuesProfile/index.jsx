@@ -1,4 +1,5 @@
 import VenuesProfile from '../../components/VenuesProfile/VenuesProfile';
+import Footer from '../Footer';
 
 const VenueProfilePage = () => {
   return (
@@ -9,6 +10,7 @@ const VenueProfilePage = () => {
       backgroundRepeat: 'no-repeat'
     }}>
       <VenuesProfile />
+      <Footer />
     </div>
   );
 }

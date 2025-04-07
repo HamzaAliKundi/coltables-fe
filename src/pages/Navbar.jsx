@@ -16,7 +16,9 @@ export default function Navbar() {
     <nav className="bg-black text-white h-[100px] w-full flex items-center z-30 px-8 md:px-20 justify-between relative">
       {/* Left Logo */}
       <div className="flex items-center space-x-2">
-        <img src="/logo.png" alt="DragSpace Logo" className="h-12" />
+        <Link to="/">
+          <img src="/logo.svg" alt="DragSpace Logo" className="h-12" />
+        </Link>
       </div>
 
       {/* Middle Navigation - Desktop */}
@@ -76,12 +78,12 @@ export default function Navbar() {
       {/* Right Links */}
       {/* Right Links */}
       <div className="hidden md:flex space-x-6">
-        <Link to="/registration" className="text-sm mt-1">
+        <Link to="#" className="text-sm mt-1">
           Registration
         </Link>
-        <Link to="/login" className="text-sm flex items-center gap-2">
+        <Link to="#" className="text-sm flex items-center gap-2">
           <img
-            src="/home/navbar/login-icon.png"
+            src="/home/navbar/login-icon.svg"
             alt="Login"
             className="w-[19px] h-[20px] mb-1"
           />

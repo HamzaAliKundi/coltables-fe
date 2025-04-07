@@ -3,14 +3,13 @@ import { Link } from "react-router-dom";
 import Pagination from "../../common/EventListening/Pagination";
 
 const Performer = ({ isPerformer }) => {
-  const [activeTab, setActiveTab] = useState("Drag Show");
+  const [activeTab, setActiveTab] = useState("Drag Queens");
 
   const tabs = [
-    "Drag Show",
-    "Drag Brunch",
-    "Drag Bingo",
-    "Drag Trivia",
-    "Other Event",
+    "Drag Queens",
+    "Drag Kings", 
+    "Other Performers",
+    "All Performers"
   ];
 
   const performers = [
@@ -141,43 +140,36 @@ const Performer = ({ isPerformer }) => {
                     onClick={() => setActiveTab(tab)}
                   >
                     <div className="flex items-center mb-2">
-                      {tab === "Drag Show" && (
+                      {tab === "Drag Queens" && (
                         <img
                           src="/home/eventlisting/drag-show.png"
-                          alt="Drag Show"
+                          alt="Drag Queens"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab === "Drag Brunch" && (
+                      {tab === "Drag Kings" && (
                         <img
                           src="/home/eventlisting/drag-brunch.png"
-                          alt="Drag Brunch"
+                          alt="Drag Kings"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab === "Drag Bingo" && (
+                      {tab === "Other Performers" && (
                         <img
                           src="/home/eventlisting/drag-bingo.png"
-                          alt="Drag Bingo"
+                          alt="Other Performers"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab === "Drag Trivia" && (
-                        <img
-                          src="/home/eventlisting/drag-trive.png"
-                          alt="Drag Trivia"
-                          className="w-6 h-6 mr-2"
-                        />
-                      )}
-                      {tab === "Other Event" && (
+                      {tab === "All Performers" && (
                         <img
                           src="/home/eventlisting/other-event.png"
-                          alt="Other Event"
+                          alt="All Performers"
                           className="w-6 h-6 mr-2"
                         />
                       )}
                       <span
-                        className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
+                        className={`text-[18px] font-normal capitalize ${
                           activeTab === tab ? "text-[#FF00A2]" : "text-white"
                         }`}
                       >

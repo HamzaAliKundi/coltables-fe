@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Navbar from './pages/Navbar'
 import Venues from './pages/venues'
-import Footer from './pages/Footer'
 import Performers from './pages/Performer'
 import VenueProfilePage from './pages/VenuesProfile'
 import EventListingPage from './pages/EventListning'
@@ -22,7 +21,6 @@ function App() {
         <Route path="/venue-profile/:id" element={<VenueProfilePage />} />
         <Route path="/performer-profile/:id" element={<PerformerProfilePage />} />
       </Routes>
-      <Footer />
     </BrowserRouter>
   )
 }

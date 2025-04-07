@@ -1,6 +1,7 @@
 import Advertisment from '../../common/Ad/Advertisment';
 import Banner from '../../common/Banner/Banner';
 import Performer from '../../components/Performer/Performer';
+import Footer from '../Footer';
 const Performers = () => {
   return (
     <div style={{
@@ -12,6 +13,7 @@ const Performers = () => {
       <Banner />
       <Performer isPerformer={true} />
       <Advertisment />
+      <Footer />
     </div>
   );
 }

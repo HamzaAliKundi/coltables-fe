@@ -1,4 +1,5 @@
 import PerformerProfile from '../../components/PerformerProfile/PerformerProfile';
+import Footer from '../Footer';
 
 const PerformerProfilePage = () => {
   return (
@@ -9,6 +10,7 @@ const PerformerProfilePage = () => {
       backgroundRepeat: 'no-repeat'
     }}>
       <PerformerProfile />
+      <Footer />
     </div>
   );
 }
