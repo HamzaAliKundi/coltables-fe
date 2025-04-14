@@ -146,9 +146,7 @@ const Footer = ({ isHome }) => {
             <span className="text-sm">|</span>
             <Link to="/privacy" className="text-sm hover:text-[#FF00A2] underline">Privacy Policy</Link>
             <span className="text-sm">|</span>
-            <a href="https://app.termly.io/policy-viewer/policy.html?policyUUID=a9b024ed-fc6c-44f1-b8ed-4193e849d17c" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-[#FF00A2] underline">
-              Terms And Conditions
-            </a>
+            <Link to="/terms" className="text-sm hover:text-[#FF00A2] underline">Terms And Conditions</Link>
           </div>
         </div>
         }
