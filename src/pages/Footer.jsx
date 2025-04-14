@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = ({ isHome }) => {
   return (
     <footer className="bg-[#1D1D1D] text-white py-10 px-8 md:px-20">
@@ -142,9 +144,7 @@ const Footer = ({ isHome }) => {
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2">
             <span className="text-sm">DragSpace, LLC</span>
             <span className="text-sm">|</span>
-            <a href="https://app.termly.io/policy-viewer/policy.html?policyUUID=4f14ef73-ce57-40f1-9eae-0899732dbaaa" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-[#FF00A2] underline">
-              Privacy Policy
-            </a>
+            <Link to="/privacy" className="text-sm hover:text-[#FF00A2] underline">Privacy Policy</Link>
             <span className="text-sm">|</span>
             <a href="https://app.termly.io/policy-viewer/policy.html?policyUUID=a9b024ed-fc6c-44f1-b8ed-4193e849d17c" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-[#FF00A2] underline">
               Terms And Conditions

@@ -7,7 +7,7 @@ import VenueProfilePage from './pages/VenuesProfile'
 import EventListingPage from './pages/EventListning'
 import CreateEventPage from './pages/CreateEvent/index'
 import PerformerProfilePage from './pages/PerformerProfile/index'
-
+import Privacy from './components/privacy'
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +20,7 @@ function App() {
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/venue-profile/:id" element={<VenueProfilePage />} />
         <Route path="/performer-profile/:id" element={<PerformerProfilePage />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Routes>
     </BrowserRouter>
   )
