@@ -91,9 +91,9 @@ const UpComingEvents = () => {
             >
               VIEW ALL
             </Link>
-            <div className="w-[51px] h-[51px]  rounded-full flex items-center justify-center">
-              <img src="/home/eventlisting/calendar.png" alt="" />
-            </div>
+            <Link to="/calendar" className="w-[51px] h-[51px] rounded-full flex items-center justify-center">
+              <img src="/home/eventlisting/calendar.png" alt="Calendar" />
+            </Link>
           </div>
         </div>
 

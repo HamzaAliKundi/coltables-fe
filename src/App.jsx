@@ -9,6 +9,7 @@ import CreateEventPage from './pages/CreateEvent/index'
 import PerformerProfilePage from './pages/PerformerProfile/index'
 import Privacy from './components/privacy'
 import Terms from './components/terms'
+import CalendarPage from './pages/calendar'
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +24,7 @@ function App() {
         <Route path="/performer-profile/:id" element={<PerformerProfilePage />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/calendar" element={<CalendarPage />} />
       </Routes>
     </BrowserRouter>
   )
