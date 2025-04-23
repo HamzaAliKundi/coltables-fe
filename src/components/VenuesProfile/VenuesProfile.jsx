@@ -1,9 +1,26 @@
 import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
+import { useParams } from "react-router-dom";
+import { useGetSingleVenueByIdQuery } from "../../apis/venues";
+import { Youtube } from "lucide-react";
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
+  const { id } = useParams();
+  const { data: venueDetail } = useGetSingleVenueByIdQuery(id);
+
+  const formatFacility = (facility) => {
+    switch (facility) {
+      case "seating":
+        return "Seating Arrangements";
+      case "backstage":
+        return "Backstage & Dressing Rooms";
+
+      default:
+        return facility.charAt(0).toUpperCase() + facility.slice(1);
+    }
+  };
 
   return (
     <div className="min-h-screen text-white p-4 lg:p-8">
@@ -12,7 +29,7 @@ const VenuesProfile = () => {
         {/* Left Section - Profile Info */}
         <div className="col-span-1 lg:col-span-8">
           <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
-            Chapman & Kirby
+            {venueDetail?.venue?.name}
           </h1>
 
           {/* Profile Image and Social Links */}
@@ -25,59 +42,86 @@ const VenuesProfile = () => {
 
             {/* Social Media Links */}
             <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/facebook.svg"
-                  alt="Facebook"
-                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
-                />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/instagram.svg"
-                  alt="Instagram"
-                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
-                />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/x.svg"
-                  alt="Twitter"
-                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
-                />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/tiktok.svg"
-                  alt="TikTok"
-                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
-                />
-              </a>
+              {venueDetail?.venue?.socialMediaLinks?.facebook && (
+                <a
+                  href={venueDetail.venue.socialMediaLinks.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
+                >
+                  <img
+                    src="/performer-profile/facebook.svg"
+                    alt="Facebook"
+                    className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
+                  />
+                </a>
+              )}
+
+              {venueDetail?.venue?.socialMediaLinks?.instagram && (
+                <a
+                  href={venueDetail.venue.socialMediaLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
+                >
+                  <img
+                    src="/performer-profile/instagram.svg"
+                    alt="Instagram"
+                    className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
+                  />
+                </a>
+              )}
+
+              {venueDetail?.venue?.socialMediaLinks?.twitter && (
+                <a
+                  href={venueDetail.venue.socialMediaLinks.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                >
+                  <img
+                    src="/performer-profile/x.svg"
+                    alt="Twitter"
+                    className="w-[46px] h-[46px] lg:w-12 lg:h-12"
+                  />
+                </a>
+              )}
+
+              {venueDetail?.venue?.socialMediaLinks?.tiktok && (
+                <a
+                  href={venueDetail.venue.socialMediaLinks.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                >
+                  <img
+                    src="/performer-profile/tiktok.svg"
+                    alt="TikTok"
+                    className="w-[46px] h-[46px] lg:w-12 lg:h-12"
+                  />
+                </a>
+              )}
+
+              {venueDetail?.venue?.socialMediaLinks?.youtube && (
+                <a
+                  href={venueDetail.venue.socialMediaLinks.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                >
+                  <Youtube size={50} />
+                </a>
+              )}
             </div>
           </div>
 
           {/* About Section */}
           <div className="mb-6 lg:mb-8 mt-12">
             <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
-              About Chapman & Kirby
+              About {venueDetail?.venue?.name}
             </h2>
             <p className="text-white/90 text-sm lg:text-base">
-              This Downtown bar transforms into a stage with an electrifying
-              monthly drag brunch show. Those 21 and up can enjoy the
-              performances, along with a brunch buffet, select craft cocktails,
-              and bubbly mimosa flights, plus optional bottle service.
+              {venueDetail?.venue?.description}
             </p>
           </div>
 
@@ -140,34 +184,27 @@ const VenuesProfile = () => {
                 Type Of Venue
               </h3>
               <ul className="list-disc list-inside text-white/90">
-                <li>Bar/ Club</li>
+                <li>{venueDetail?.venue?.venueType}</li>
               </ul>
             </div>
 
             {/* Facilities Section */}
-            <div>
-              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
-                Facilities & Features
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Stage Size & Type</li>
-                  <li>Seating Arrangements</li>
-                  <li>
-                    Sound & Lighting Equipment (Available In-House or Need to
-                    Rent)
-                  </li>
-                </ul>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Food & Beverages</li>
-                  <li>Backstage & Dressing Rooms</li>
-                </ul>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Stage Size & Type</li>
-                  <li>Parking Availability</li>
-                </ul>
+            {venueDetail?.venue?.facilities?.length > 0 && (
+              <div>
+                <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
+                  Facilities & Features
+                </h3>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                  {venueDetail.venue.facilities.map((facility, index) => (
+                    <div key={index} className="list-disc list-inside">
+                      <li className="text-white/90">
+                        {formatFacility(facility)}
+                      </li>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Visit Button */}
             <div className="mt-4">
