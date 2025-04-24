@@ -1,115 +1,119 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../common/EventListening/Pagination";
+import { useGetAllPerformersQuery } from "../../apis/performers";
 
 const Performer = ({ isPerformer }) => {
+  const [page, setPage] = useState(1);
+  const limit = 12;
   const [activeTab, setActiveTab] = useState("Drag Queens");
+  const { data: allPerformersData } = useGetAllPerformersQuery({ page, limit });
 
   const tabs = [
     "Drag Queens",
-    "Drag Kings", 
+    "Drag Kings",
     "Other Performers",
-    "All Performers"
+    "All Performers",
   ];
 
-  const performers = [
-    {
-      id: 1,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Mistress Isabelle Brooks",
-      description:
-        "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-    },
-    {
-      id: 2,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Athena Sapphire",
-      description:
-        "This beautiful and talented queen will twirl and leave you begging for an encore...",
-    },
-    {
-      id: 3,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Violet Chachki",
-      description:
-        "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-    },
-    {
-      id: 4,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Eureka O'Hara",
-      description:
-        "She captivates & stuns audiences with her passionate performances...",
-    },
-    {
-      id: 1,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Mistress Isabelle Brooks",
-      description:
-        "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-    },
-    {
-      id: 2,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Athena Sapphire",
-      description:
-        "This beautiful and talented queen will twirl and leave you begging for an encore...",
-    },
-    {
-      id: 3,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Violet Chachki",
-      description:
-        "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-    },
-    {
-      id: 4,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Eureka O'Hara",
-      description:
-        "She captivates & stuns audiences with her passionate performances...",
-    },
-    {
-      id: 1,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Mistress Isabelle Brooks",
-      description:
-        "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-    },
-    {
-      id: 2,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Athena Sapphire",
-      description:
-        "This beautiful and talented queen will twirl and leave you begging for an encore...",
-    },
-    {
-      id: 3,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Violet Chachki",
-      description:
-        "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-    },
-    {
-      id: 4,
-      mainImage: "/home/performer/permormer-image.png",
-      logoImage: "/home/performer/image-tag.png",
-      name: "Eureka O'Hara",
-      description:
-        "She captivates & stuns audiences with her passionate performances...",
-    },
-  ];
+  // const performers = [
+  //   {
+  //     id: 1,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Mistress Isabelle Brooks",
+  //     description:
+  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
+  //   },
+  //   {
+  //     id: 2,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Athena Sapphire",
+  //     description:
+  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
+  //   },
+  //   {
+  //     id: 3,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Violet Chachki",
+  //     description:
+  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
+  //   },
+  //   {
+  //     id: 4,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Eureka O'Hara",
+  //     description:
+  //       "She captivates & stuns audiences with her passionate performances...",
+  //   },
+  //   {
+  //     id: 1,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Mistress Isabelle Brooks",
+  //     description:
+  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
+  //   },
+  //   {
+  //     id: 2,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Athena Sapphire",
+  //     description:
+  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
+  //   },
+  //   {
+  //     id: 3,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Violet Chachki",
+  //     description:
+  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
+  //   },
+  //   {
+  //     id: 4,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Eureka O'Hara",
+  //     description:
+  //       "She captivates & stuns audiences with her passionate performances...",
+  //   },
+  //   {
+  //     id: 1,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Mistress Isabelle Brooks",
+  //     description:
+  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
+  //   },
+  //   {
+  //     id: 2,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Athena Sapphire",
+  //     description:
+  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
+  //   },
+  //   {
+  //     id: 3,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Violet Chachki",
+  //     description:
+  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
+  //   },
+  //   {
+  //     id: 4,
+  //     mainImage: "/home/performer/permormer-image.png",
+  //     logoImage: "/home/performer/image-tag.png",
+  //     name: "Eureka O'Hara",
+  //     description:
+  //       "She captivates & stuns audiences with her passionate performances...",
+  //   },
+  // ];
 
   return (
     <>
@@ -210,28 +214,28 @@ const Performer = ({ isPerformer }) => {
 
         {/* Performer cards grid */}
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {performers.map((performer) => (
+          {allPerformersData?.docs?.map((performer) => (
             <div
               key={performer.id}
               className="w-full h-[400px] md:h-[475px] relative"
             >
               {/* Main Image */}
               <div className="relative">
+                <img
+                  src={performer?.profilePhoto}
+                  alt={performer.name}
+                  className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                />
+                <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
+                {/* Logo/Icon Image */}
+                <div className="absolute bottom-[-40px] left-[35px]">
                   <img
-                    src={performer.mainImage}
-                    alt={performer.name}
-                    className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                    src="/home/performer/image-tag.png"
+                    alt={`${performer.name} logo`}
+                    className="w-[80px] h-[80px]"
                   />
-                  <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
-                  {/* Logo/Icon Image */}
-                  <div className="absolute bottom-[-40px] left-[35px]">
-                      <img
-                        src={performer.logoImage}
-                        alt={`${performer.name} logo`}
-                        className="w-[80px] h-[80px]"
-                      />
-                  </div>
                 </div>
+              </div>
 
               <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
                 <div className="h-[50px] md:h-[60px]">
@@ -257,6 +261,6 @@ const Performer = ({ isPerformer }) => {
       </div>
     </>
   );
-}
+};
 
-export default Performer
+export default Performer;
