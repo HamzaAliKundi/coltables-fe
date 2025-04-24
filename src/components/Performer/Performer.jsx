@@ -222,7 +222,7 @@ const Performer = ({ isPerformer }) => {
               {/* Main Image */}
               <div className="relative">
                 <img
-                  src={performer?.profilePhoto}
+                  src={performer?.images[0] || "/home/performer/permormer-image.png"}
                   alt={performer.name}
                   className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
                 />
