@@ -1,9 +1,37 @@
 import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
+import { useParams } from "react-router-dom";
+import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
+import { Youtube } from "lucide-react";
 
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
+  const { id } = useParams();
+  const { data: performerDetail, isLoading: performerDetailLoading } =
+    useGetSinglePerformerByIdQuery(id);
+
+  const formatDragAnniversary = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const month = date.toLocaleString("default", { month: "long" });
+    const year = date.getFullYear();
+    return `${month} '${year.toString().slice(-2)}`;
+  };
+
+  const venueOptions = [
+    { value: "jps-bar", label: "JP's Bar And Grill, Eagle" },
+    { value: "eagle", label: "Eagle" },
+    { value: "boheme", label: "Boheme" },
+    { value: "rich's", label: "Rich's/The Montrose Country Club" },
+    {
+      value: "hamburger-marys",
+      label: "Hamburger Mary's/YKYK, HALO (Bryan, TX)",
+    },
+    { value: "crush", label: "Crush (Dallas, TX)" },
+    { value: "havana", label: "Havana (Dallas TX)" },
+    { value: "woodlawn", label: "Woodlawn Pointe (San Antonio, TX)" },
+  ];
 
   return (
     <div className="min-h-screen  text-white p-4 lg:p-8">
@@ -11,169 +39,214 @@ const PerformerProfile = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
         {/* Left Section - Profile Info */}
         <div className="col-span-1 lg:col-span-8">
-          <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
-            Catalina Seymour-Alexander
-          </h1>
+          {performerDetailLoading ? (
+            <div className="flex mt-16 justify-center min-h-[300px]">
+              <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <>
+              <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
+                {performerDetail?.performer?.fullDragName}
+              </h1>
 
-          {/* Profile Image and Social Links */}
-          <div className="relative flex justify-center">
-            <img
-              src="/performer-profile/performer-profile.svg"
-              alt="Catalina Seymour-Alexander"
-              className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px]"
-            />
-
-            {/* Social Media Links */}
-            <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
-              >
+              {/* Profile Image and Social Links */}
+              <div className="relative flex justify-center">
                 <img
-                  src="/performer-profile/facebook.svg"
-                  alt="Facebook"
-                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
+                  src={performerDetail?.performer?.images[0]}
+                  alt={performerDetail?.performer?.name}
+                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px]"
                 />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/instagram.svg"
-                  alt="Instagram"
-                  className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
-                />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/x.svg"
-                  alt="Twitter"
-                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
-                />
-              </a>
-              <a
-                href="#"
-                className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
-              >
-                <img
-                  src="/performer-profile/tiktok.svg"
-                  alt="TikTok"
-                  className="w-[46px] h-[46px] lg:w-12 lg:h-12"
-                />
-              </a>
-            </div>
-          </div>
 
-          {/* Crown and Anniversary Section */}
-          <div className="relative mt-0 lg:mt-0">
-            <div className="flex items-center w-full justify-center">
-              <img
-                src="/home/performer/image-tag.png"
-                alt="Crown"
-                className="w-[70px] h-[70px] text-[#FF00A2]"
-              />
-              <div className="w-1/2">
-                <div className="h-[3px] bg-[#FF00A2] ml-0"></div>
+                {/* Social Media Links */}
+                <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
+                  {performerDetail?.performer?.socialMediaLinks?.facebook && (
+                    <a
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.facebook
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
+                    >
+                      <img
+                        src="/performer-profile/facebook.svg"
+                        alt="Facebook"
+                        className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
+                      />
+                    </a>
+                  )}
+
+                  {performerDetail?.performer?.socialMediaLinks?.instagram && (
+                    <a
+                      href={
+                        performerDetail.performer.socialMediaLinks.instagram
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
+                    >
+                      <img
+                        src="/performer-profile/instagram.svg"
+                        alt="Instagram"
+                        className="w-[46px] h-[46px] lg:w-[46] lg:h-[46]"
+                      />
+                    </a>
+                  )}
+
+                  {performerDetail?.performer?.socialMediaLinks?.twitter && (
+                    <a
+                      href={performerDetail.performer.socialMediaLinks.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                    >
+                      <img
+                        src="/performer-profile/x.svg"
+                        alt="Twitter"
+                        className="w-[46px] h-[46px] lg:w-12 lg:h-12"
+                      />
+                    </a>
+                  )}
+
+                  {performerDetail?.performer?.socialMediaLinks?.tiktok && (
+                    <a
+                      href={performerDetail.performer.socialMediaLinks.tiktok}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                    >
+                      <img
+                        src="/performer-profile/tiktok.svg"
+                        alt="TikTok"
+                        className="w-[46px] h-[46px] lg:w-12 lg:h-12"
+                      />
+                    </a>
+                  )}
+
+                  {performerDetail?.performer?.socialMediaLinks?.youtube && (
+                    <a
+                      href={performerDetail.performer.socialMediaLinks.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
+                    >
+                      <Youtube size={50} color="red" />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          <div className="absolute left-20 top-10 right-0 text-center">
-              <h2 className="text-[#FF00A2] text-[12px] sm:text-[20px] font-space-grotesk">
-                Drag Anniversary:
-                <span className="font-medium">October '22</span>
-              </h2>
-            </div>
-          </div>
 
-
-          {/* Tagline */}
-          <p className="text-xl lg:text-[20px] text-center mt-10 lg:mt-16 mb-12 lg:mb-16 max-w-[600px] mx-auto leading-tight font-normal">
-            This Beautiful And Talented Queen Will Twirl And Leave You Begging
-            For An Encore With Her Electrifying Energy!
-          </p>
-
-          {/* About Section */}
-          <div className="mb-6 lg:mb-8">
-            <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
-              About Catalina's Drag
-            </h2>
-            <p className="text-white/90 text-[18px] font-normal">
-              I am a Latin Showgirl with all of the kicks, splits, tricks and
-              dips! I have been performing for a little over 2 years now and
-              cannot wait to continue to grow and showcase my talents to the
-              world! I am influenced and inspired by all of my Spanish Culture
-              and Heritage and try to showcase it through my drag and
-              performance style!
-            </p>
-          </div>
-
-          {/* Sections Grid */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Drag Family Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
-              <div>
-                <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                  Drag Mother(s)
-                </h3>
-                <ul className="list-disc list-inside text-white/90">
-                  <li>Iris Seymour</li>
-                  <li>Mulan Alexander</li>
-                </ul>
+              {/* Crown and Anniversary Section */}
+              <div className="relative mt-0 lg:mt-0">
+                <div className="flex items-center w-full justify-center">
+                  <img
+                    src="/home/performer/image-tag.png"
+                    alt="Crown"
+                    className="w-[70px] h-[70px] text-[#FF00A2]"
+                  />
+                  <div className="w-1/2">
+                    <div className="h-[3px] bg-[#FF00A2] ml-0"></div>
+                  </div>
+                </div>
+                <div className="absolute left-20 top-10 right-0 text-center">
+                  <h2 className="text-[#FF00A2] text-[12px] sm:text-[20px] font-space-grotesk">
+                    Drag Anniversary:
+                    <span className="font-medium">
+                      {" "}
+                      {formatDragAnniversary(
+                        performerDetail?.performer?.dragAnniversary
+                      )}
+                    </span>
+                  </h2>
+                </div>
               </div>
-              <div>
-                <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                  Drag Family Associations
-                </h3>
-                <ul className="list-disc list-inside text-white/90">
-                  <li>Seymour</li>
-                  <li>Alexander</li>
-                </ul>
+
+              {/* Tagline */}
+              <p className="text-xl lg:text-[20px] text-center mt-10 lg:mt-16 mb-12 lg:mb-16 max-w-[600px] mx-auto leading-tight font-normal">
+                {performerDetail?.performer?.tagline}
+              </p>
+
+              {/* About Section */}
+              <div className="mb-6 lg:mb-8">
+                <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
+                  About {performerDetail?.performer?.firstName}'s Drag
+                </h2>
+                <p className="text-white/90 text-[18px] font-normal">
+                  {performerDetail?.performer?.description}
+                </p>
               </div>
-            </div>
 
-            {/* Other Sections */}
-            <div>
-              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                Competitions / Awards
-              </h3>
-              <ul className="list-disc list-inside text-white/90">
-                <li>Miss San Antonio Latina 2024</li>
-              </ul>
-            </div>
+              {/* Sections Grid */}
+              <div className="space-y-6 lg:space-y-8">
+                {/* Drag Family Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
+                  <div>
+                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                      Drag Mother(s)
+                    </h3>
+                    <ul className="list-disc list-inside text-white/90">
+                      {performerDetail?.performer?.dragMotherName
+                        ?.split(", ")
+                        .map((mother, index) => (
+                          <li key={index}>{mother}</li>
+                        ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                      Drag Family Associations
+                    </h3>
+                    <ul className="list-disc list-inside text-white/90">
+                      <li>Seymour</li>
+                      <li>Alexander</li>
+                    </ul>
+                  </div>
+                </div>
 
-            {/* Performance Types Grid */}
-            <div>
-              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                Drag Performances
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                <ul className="list-disc list-inside">
-                  <li>Hosting</li>
-                  <li>Lip Sync</li>
-                  <li>Dance/Twirl</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Burlesque</li>
-                  <li>Drag Trivia</li>
-                  <li>Drag Bingo</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Campy</li>
-                  <li>Drag Karaoke</li>
-                  <li>Comedy</li>
-                </ul>
-              </div>
-            </div>
+                {/* Other Sections */}
+                <div>
+                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                    Competitions / Awards
+                  </h3>
+                  <ul className="list-disc list-inside text-white/90">
+                    {performerDetail?.performer?.awards?.[0]
+                      ?.split(", ")
+                      .map((award, index) => (
+                        <li key={index}>{award}</li>
+                      ))}
+                  </ul>
+                </div>
 
-            {/* Illusions/Impersonations Section */}
-            <div>
-              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                Illusions/Impersonations
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                {/* Performance Types Grid */}
+                <div>
+                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                    Drag Performances
+                  </h3>
+                  <div>
+                    <ul className="list-disc list-inside grid grid-cols-2 lg:grid-cols-3 text-white/90">
+                      {performerDetail?.performer?.dragPerformances?.map(
+                        (item, index) => (
+                          <li key={index} className="capitalize">
+                            {item}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Illusions/Impersonations Section */}
+                <div>
+                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                    Illusions/Impersonations
+                  </h3>
+                  <div>
+                    <p className="text-white/90">
+                      {performerDetail?.performer?.illusions}
+                    </p>
+                  </div>
+
+                  {/* <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
                 <ul className="list-disc list-inside">
                   <li>Selena</li>
                 </ul>
@@ -183,58 +256,65 @@ const PerformerProfile = () => {
                 <ul className="list-disc list-inside">
                   <li>Nicole Scherzinger</li>
                 </ul>
-              </div>
-            </div>
+              </div> */}
+                </div>
 
-            {/* Music Genre's Performed Section */}
-            <div>
-              <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                Music Genre's Performed
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                <ul className="list-disc list-inside">
-                  <li>The 80's</li>
-                  <li>Tejano</li>
-                  <li>R&B</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Rock</li>
-                  <li>Pop</li>
-                  <li>Jazz/Blues</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Country</li>
-                  <li>Comedy</li>
-                  <li>Disney</li>
-                </ul>
-              </div>
-            </div>
+                {/* Music Genre's Performed Section */}
+                <div>
+                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
+                    Music Genre's Performed
+                  </h3>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 text-white/90">
+                    {performerDetail?.performer?.genres?.map((genre, index) => {
+                      const formattedGenre = (() => {
+                        switch (genre) {
+                          case "the80s":
+                            return "The 80's";
+                          case "rnb":
+                            return "R&B";
+                          case "jazzBlues":
+                            return "Jazz/Blues";
+                          default:
+                            return (
+                              genre.charAt(0).toUpperCase() + genre.slice(1)
+                            );
+                        }
+                      })();
 
-            {/* Venues Section */}
-            <div>
-              <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
-                Where Can You Catch Catalina Performing?
-              </h2>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                <ul className="list-disc list-inside">
-                  <li>JR's</li>
-                  <li>Rip's</li>
-                  <li>Boheme</li>
-                  <li>Rich's/The Montrose Country</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Hamburger Mary's/VKYK</li>
-                  <li>Eagle</li>
-                  <li>Heaven (Dallas, TX)</li>
-                  <li>Hidden Pointe (San Antonio, TX)</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>HALO (Bryan, TX)</li>
-                  <li>Crush (Dallas, TX)</li>
-                </ul>
+                      return (
+                        <ul
+                          key={index}
+                          className="list-disc list-inside capitalize"
+                        >
+                          <li>{formattedGenre}</li>
+                        </ul>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Venues Section */}
+                <div>
+                  <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
+                    Where Can You Catch Catalina Performing?
+                  </h2>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 text-white/90">
+                    {performerDetail?.performer?.venues?.map((venue, index) => {
+                      const venueLabel = venueOptions.find(
+                        (option) => option.value === venue
+                      )?.label;
+
+                      return (
+                        <ul key={index} className="list-disc list-inside">
+                          <li>{venueLabel}</li>
+                        </ul>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
 
         {/* Right Section - Calendar */}
@@ -385,7 +465,7 @@ const PerformerProfile = () => {
           </div>
         </div>
       </div>
-      <Gallery />
+      <Gallery images={performerDetail?.performer?.images} />
       <Reviews />
     </div>
   );

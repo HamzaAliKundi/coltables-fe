@@ -5,11 +5,10 @@ import { useGetAllVenuesQuery } from "../../apis/venues";
 
 const VenuesList = ({ isVenue }) => {
   const [page, setPage] = useState(1);
-  const limit = 12;
 
   const [activeTab, setActiveTab] = useState("Bar/Club");
   const { data: allVenuesData, isLoading: allVenuesLoading } =
-    useGetAllVenuesQuery({ page, limit });
+    useGetAllVenuesQuery({ page, limit: 1000 });
 
   const tabs = ["Bar/Club", "Restaurants/Dining", "Other"];
 
@@ -111,7 +110,7 @@ const VenuesList = ({ isVenue }) => {
         ) : filteredVenues.length > 0 ? (
           filteredVenues.map((venue) => (
             <div
-              key={venue.id}
+              key={venue._id}
               className="w-full h-[475px] md:h-[475px] relative"
             >
               {/* Main Image */}

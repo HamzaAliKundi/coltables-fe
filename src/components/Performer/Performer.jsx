@@ -5,7 +5,7 @@ import { useGetAllPerformersQuery } from "../../apis/performers";
 
 const Performer = ({ isPerformer }) => {
   const [page, setPage] = useState(1);
-  const limit = 12;
+  const limit = 8;
   const [activeTab, setActiveTab] = useState("Drag Queens");
   const { data: allPerformersData } = useGetAllPerformersQuery({ page, limit });
 
@@ -16,105 +16,9 @@ const Performer = ({ isPerformer }) => {
     "All Performers",
   ];
 
-  // const performers = [
-  //   {
-  //     id: 1,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Mistress Isabelle Brooks",
-  //     description:
-  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-  //   },
-  //   {
-  //     id: 2,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Athena Sapphire",
-  //     description:
-  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
-  //   },
-  //   {
-  //     id: 3,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Violet Chachki",
-  //     description:
-  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-  //   },
-  //   {
-  //     id: 4,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Eureka O'Hara",
-  //     description:
-  //       "She captivates & stuns audiences with her passionate performances...",
-  //   },
-  //   {
-  //     id: 1,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Mistress Isabelle Brooks",
-  //     description:
-  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-  //   },
-  //   {
-  //     id: 2,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Athena Sapphire",
-  //     description:
-  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
-  //   },
-  //   {
-  //     id: 3,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Violet Chachki",
-  //     description:
-  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-  //   },
-  //   {
-  //     id: 4,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Eureka O'Hara",
-  //     description:
-  //       "She captivates & stuns audiences with her passionate performances...",
-  //   },
-  //   {
-  //     id: 1,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Mistress Isabelle Brooks",
-  //     description:
-  //       "Internationally renowned and the baddest bitch in Houston, will twirl with unmatched ...",
-  //   },
-  //   {
-  //     id: 2,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Athena Sapphire",
-  //     description:
-  //       "This beautiful and talented queen will twirl and leave you begging for an encore...",
-  //   },
-  //   {
-  //     id: 3,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Violet Chachki",
-  //     description:
-  //       "She's a whirlwind of humor and high-energy charisma, lighting up the stage ...",
-  //   },
-  //   {
-  //     id: 4,
-  //     mainImage: "/home/performer/permormer-image.png",
-  //     logoImage: "/home/performer/image-tag.png",
-  //     name: "Eureka O'Hara",
-  //     description:
-  //       "She captivates & stuns audiences with her passionate performances...",
-  //   },
-  // ];
-
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
   return (
     <>
       <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
@@ -216,13 +120,16 @@ const Performer = ({ isPerformer }) => {
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {allPerformersData?.docs?.map((performer) => (
             <div
-              key={performer.id}
+              key={performer._id}
               className="w-full h-[400px] md:h-[475px] relative"
             >
               {/* Main Image */}
               <div className="relative">
                 <img
-                  src={performer?.images[0] || "/home/performer/permormer-image.png"}
+                  src={
+                    performer?.images[0] ||
+                    "/home/performer/permormer-image.png"
+                  }
                   alt={performer.name}
                   className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
                 />
@@ -244,7 +151,7 @@ const Performer = ({ isPerformer }) => {
                   </h3>
                 </div>
 
-                <Link to={`/performer-profile/${performer.id}`}>
+                <Link to={`/performer-profile/${performer?._id}`}>
                   <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                     View Profile
                   </button>
@@ -253,9 +160,13 @@ const Performer = ({ isPerformer }) => {
             </div>
           ))}
         </div>
-        {isPerformer && (
+        {isPerformer && allPerformersData?.totalPages > 1 && (
           <div className="flex justify-center w-full mt-8">
-            <Pagination />
+            <Pagination
+              currentPage={page}
+              totalPages={allPerformersData?.totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         )}
       </div>
