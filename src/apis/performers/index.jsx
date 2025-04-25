@@ -16,22 +16,11 @@ export const performersApi = createApi({
         `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1`,
     }),
 
-    getSingleVenueById: builder.query({
-      query: (id) => `/api/user/venue/get-single-venue/${id}`,
-    }),
-
-    updateVenueProfile: builder.mutation({
-      query: ({ data }) => ({
-        url: `auth/user/update-profile`,
-        method: "PATCH",
-        body: data,
-      }),
+    getSinglePerformerById: builder.query({
+      query: (id) => `/api/user/performer/get-single-performer/${id}`,
     }),
   }),
 });
 
-export const {
-  useGetAllPerformersQuery,
-  useGetSingleVenueByIdQuery,
-  useUpdateVenueProfileMutation,
-} = performersApi;
+export const { useGetAllPerformersQuery, useGetSinglePerformerByIdQuery } =
+  performersApi;

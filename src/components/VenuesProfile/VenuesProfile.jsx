@@ -144,7 +144,7 @@ const VenuesProfile = () => {
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
                     >
-                      <Youtube size={50} />
+                      <Youtube size={50} color="red" />
                     </a>
                   )}
                 </div>
