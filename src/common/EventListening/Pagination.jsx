@@ -46,9 +46,17 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       <button
         onClick={handlePrev}
         disabled={currentPage === 1}
-        className={`flex items-center space-x-2 ${
-          currentPage === 1 ? "text-[#BEBEBE] cursor-not-allowed" : "text-white"
-        }`}
+        className={`
+          relative
+          flex items-center justify-center
+          space-x-2
+          ${currentPage === 1 ? "text-[#BEBEBE]" : "text-white"}
+          ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}
+          px-3
+          rounded
+          hover:bg-opacity-10 hover:bg-white
+          transition-colors
+        `}
       >
         <img src="/events/left.svg" alt="Previous" className="w-4 h-4" />
         <span className="font-space-grotesk font-bold text-base leading-[40px] tracking-[0.6px] uppercase">
@@ -57,31 +65,53 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </button>
 
       {/* Page Numbers */}
-      <div className="flex items-center space-x-4">
+
+      <div className="flex items-center space-x-0">
         {getPageNumbers().map((pageNum) => (
-          <span
+          <button
             key={pageNum}
             onClick={() => handlePageClick(pageNum)}
-            className={`font-space-grotesk font-bold cursor-pointer ${
-              pageNum === currentPage
-                ? "text-[24px] text-white"
-                : "text-base text-[#BEBEBE]"
-            } leading-[40px] tracking-[0.6px] uppercase`}
+            className={`
+     font-space-grotesk font-bold
+     ${
+       pageNum === currentPage
+         ? "text-[24px] text-white"
+         : "text-base text-[#BEBEBE]"
+     }
+     tracking-[0.6px] uppercase
+     px-3 
+     rounded
+     flex items-center justify-center
+     cursor-pointer
+     hover:bg-opacity-10 hover:bg-white
+     transition-colors
+     relative
+     after:absolute after:inset-0 after:content-[''] 
+   `}
           >
-            {pageNum.toString().padStart(2, "0")}
-          </span>
+            <span class="relative z-10">
+              {pageNum.toString().padStart(2, "0")}
+            </span>
+          </button>
         ))}
       </div>
 
-      {/* Next Button */}
       <button
         onClick={handleNext}
         disabled={currentPage === totalPages}
-        className={`flex items-center space-x-2 ${
-          currentPage === totalPages
-            ? "text-[#BEBEBE] cursor-not-allowed"
-            : "text-white"
-        }`}
+        className={`
+          relative
+          flex items-center justify-center
+          space-x-2
+          ${currentPage === totalPages ? "text-[#BEBEBE]" : "text-white"}
+          ${
+            currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"
+          }
+          px-3 
+          rounded
+          hover:bg-opacity-10 hover:bg-white
+          transition-colors
+        `}
       >
         <span className="font-space-grotesk font-bold text-base leading-[40px] tracking-[0.6px] uppercase">
           NEXT

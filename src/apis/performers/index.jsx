@@ -12,8 +12,8 @@ export const performersApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllPerformers: builder.query({
-      query: ({ page, limit }) =>
-        `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1`,
+      query: ({ page, limit, search }) =>
+        `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1&search=${search}`,
     }),
 
     getSinglePerformerById: builder.query({

@@ -4,11 +4,12 @@ import Pagination from "../../common/EventListening/Pagination";
 import { useGetAllVenuesQuery } from "../../apis/venues";
 
 const VenuesList = ({ isVenue }) => {
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const venuesPerPage = 4;
 
-  const [activeTab, setActiveTab] = useState("Bar/Club");
+  const [activeTab, setActiveTab] = useState("Restaurants/Dining");
   const { data: allVenuesData, isLoading: allVenuesLoading } =
-    useGetAllVenuesQuery({ page, limit: 1000 });
+    useGetAllVenuesQuery({ page: 1, limit: 1000 });
 
   const tabs = ["Bar/Club", "Restaurants/Dining", "Other"];
 
@@ -25,7 +26,7 @@ const VenuesList = ({ isVenue }) => {
     }) || [];
 
   const handlePageChange = (newPage) => {
-    setPage(newPage);
+    setCurrentPage(newPage);
   };
 
   return (
@@ -86,8 +87,7 @@ const VenuesList = ({ isVenue }) => {
                       />
                     )}
                     <span className="font-['Space_Grotesk'] font-normal text-[18px] capitalize text-white">
-                      {tab.split("/")[0]}{" "}
-                      {/* Display only first part of the type */}
+                      {tab}
                     </span>
                   </div>
                   {activeTab === tab && (
@@ -101,42 +101,46 @@ const VenuesList = ({ isVenue }) => {
       </div>
 
       {/* Performer cards grid */}
-      {/* Performer cards grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6">
         {allVenuesLoading ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : filteredVenues.length > 0 ? (
-          filteredVenues.map((venue) => (
-            <div
-              key={venue._id}
-              className="w-full h-[475px] md:h-[475px] relative"
-            >
-              {/* Main Image */}
-              <div className="relative">
-                <img
-                  src={venue?.logo}
-                  alt={venue?.name}
-                  className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
-                />
-              </div>
-
-              <div className="text-black rounded-b-[8px] pt-8 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col items-center">
-                <div className="h-[60px] text-center">
-                  <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
-                    {venue?.name}
-                  </h3>
+          filteredVenues
+            .slice(
+              (currentPage - 1) * venuesPerPage,
+              currentPage * venuesPerPage
+            )
+            .map((venue) => (
+              <div
+                key={venue._id}
+                className="w-full h-[475px] md:h-[475px] relative"
+              >
+                {/* Main Image */}
+                <div className="relative">
+                  <img
+                    src={venue?.logo}
+                    alt={venue?.name}
+                    className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                  />
                 </div>
 
-                <Link to={`/venue-profile/${venue?._id}`}>
-                  <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
-                    View Details
-                  </button>
-                </Link>
+                <div className="text-black rounded-b-[8px] pt-8 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col items-center">
+                  <div className="h-[60px] text-center">
+                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
+                      {venue?.name}
+                    </h3>
+                  </div>
+
+                  <Link to={`/venue-profile/${venue?._id}`}>
+                    <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
+                      View Details
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
@@ -146,11 +150,11 @@ const VenuesList = ({ isVenue }) => {
         )}
       </div>
 
-      {isVenue && allVenuesData?.totalPages > 1 && (
-        <div className="flex justify-center w-full mt-8">
+      {isVenue && filteredVenues?.length > venuesPerPage && (
+        <div className="flex justify-center w-full">
           <Pagination
-            currentPage={page}
-            totalPages={allVenuesData?.totalPages}
+            currentPage={currentPage}
+            totalPages={Math.ceil(filteredVenues.length / venuesPerPage)}
             onPageChange={handlePageChange}
           />
         </div>
