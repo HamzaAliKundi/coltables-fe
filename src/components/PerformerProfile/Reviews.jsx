@@ -1,42 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ReviewModal from './ReviewModal';
 import { useParams } from 'react-router-dom';
-import { useGetPerformerReviewsQuery } from '../../apis/performers';
 
 const Reviews = () => {
   const { id: performerId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [localReviews, setLocalReviews] = useState([]);
+  const [reviews, setReviews] = useState([]);
   
-  const { data: reviewsData, isLoading, refetch } = useGetPerformerReviewsQuery(performerId);
-  
-  useEffect(() => {
-    if (reviewsData?.reviews) {
-      setLocalReviews(reviewsData.reviews);
-    }
-  }, [reviewsData]);
-  
+  // Calculate total pages
   const reviewsPerPage = 2;
-  const totalPages = Math.ceil(localReviews.length / reviewsPerPage);
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
   
+  // Get current reviews to display
   const getCurrentReviews = () => {
     const startIndex = currentPage * reviewsPerPage;
-    return localReviews.slice(startIndex, startIndex + reviewsPerPage);
+    return reviews.slice(startIndex, startIndex + reviewsPerPage);
   };
   
+  // Handle next page
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage(prev => prev + 1);
     }
   };
   
+  // Handle previous page
   const handlePrevPage = () => {
     if (currentPage > 0) {
       setCurrentPage(prev => prev - 1);
     }
   };
   
+  // Handle review submission
   const handleReviewSubmit = (reviewData) => {
     const newReview = {
       id: Date.now(),
@@ -46,8 +42,15 @@ const Reviews = () => {
       text: reviewData.review
     };
     
-    setLocalReviews([newReview, ...localReviews]);
+    // setReviews([newReview, ...reviews]);
     setCurrentPage(0);
+  };
+
+  // Calculate average rating
+  const calculateAverageRating = () => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews.length).toFixed(1);
   };
 
   return (
@@ -76,20 +79,16 @@ const Reviews = () => {
         </div>
         <div className="flex items-center gap-2 text-white">
           <span className="text-lg">TrustScore</span>
-          <span className="text-2xl font-bold">{reviewsData?.averageRating || '0.0'}</span>
+          <span className="text-2xl font-bold">{calculateAverageRating()}</span>
           <span className="text-lg">|</span>
-          <span className="text-2xl font-bold">{localReviews.length}</span>
+          <span className="text-2xl font-bold">{reviews.length}</span>
           <span className="text-lg">reviews</span>
         </div>
       </div>
 
       {/* Reviews Slider */}
       <div className="relative">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-[294px]">
-            <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        ) : localReviews.length === 0 ? (
+        {reviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[294px] bg-gradient-to-br from-[#FF00A2]/20 to-[#2A2A2A] rounded-2xl p-8">
             <h3 className="text-white text-xl font-space-grotesk mb-4">No Reviews Yet</h3>
             <p className="text-white/70 text-center max-w-md">

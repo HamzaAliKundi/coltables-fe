@@ -41,7 +41,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, performerId }) => {
       
       const result = await addReview({ performerId, reviewData }).unwrap();
       if (result.success) {
-        toast.success('Review submitted successfully!');
+        toast.success('Review Added Successfully! Please wait for approval.');
         onSubmit({ rating, review, name });
         setRating(0);
         setReview('');
