@@ -28,7 +28,6 @@ const VenuesProfile = () => {
       case "others":
         return "Others";
       default:
-        // Handle any unexpected values by capitalizing the first letter
         return facility.charAt(0).toUpperCase() + facility.slice(1);
     }
   };

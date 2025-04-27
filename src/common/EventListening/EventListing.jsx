@@ -1,95 +1,50 @@
 import React, { useState } from "react";
-import { FiClock, FiMapPin, FiCalendar } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import Pagination from './Pagination';
+import Pagination from "./Pagination";
+import { useGetAllEventsQuery } from "../../apis/events";
 
 const EventListing = ({ isEvent }) => {
-  const [activeTab, setActiveTab] = useState("Drag Show");
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 4;
+
+  const [activeTab, setActiveTab] = useState("drag-show");
+  const { data: allEventsData, isLoading: allEventsLoading } =
+    useGetAllEventsQuery({ page: 1, limit: 1000 });
 
   const tabs = [
-    "Drag Show",
-    "Drag Brunch",
-    "Drag Bingo",
-    "Drag Trivia",
-    "Other Event",
+    { value: "drag-show", label: "Drag Show" },
+    { value: "drag-brunch", label: "Drag Brunch" },
+    { value: "drag-bingo", label: "Drag Bingo" },
+    { value: "drag-trivia", label: "Drag Trivia" },
+    { value: "other", label: "Other" },
   ];
 
-  const events = [
-    {
-      id: 1,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Sunday Service Drag Brunch",
-      time: "Start 11AM, 1PM, 3PM",
-      location: "The Montrose Country Club, Houston",
-      badge: "2/2",
-    },
-    {
-      id: 2,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Showgirls",
-      time: "Start 8:00 PM",
-      location: "The Montrose Country Club, Houston",
-    },
-    {
-      id: 3,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "So You Think You Can Drag?",
-      time: "Start11:00 PM",
-      location: "South Beach, Houston",
-    },
-    {
-      id: 4,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Brunch On The Rooftop",
-      time: "Start 2:00 PM",
-      location: "Lustre Pearl, Houston",
-    },
-    {
-      id: 5,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Millennial Dolls",
-      time: "Start 11:00PM",
-      location: "South Beach, Houston",
-    },
-    {
-      id: 6,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Angels",
-      time: "Start 11:00 PM",
-      location: "JR's Bar and Grill, Houston",
-    },
-    {
-      id: 7,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Sunday Service Drag Brunch",
-      time: "Start 11AM, 1PM, 3PM",
-      location: "The Montrose Country Club, Houston",
-      badge: "2/2",
-    },
-    {
-      id: 8,
-      image: "/home/eventlisting/event.png",
-      date: "26",
-      month: "FEB",
-      title: "Millennial Dolls",
-      time: "Start 11:00PM",
-      location: "South Beach, Houston",
-    },
-  ];
+  const filteredEvents =
+    allEventsData?.docs?.filter((event) => {
+      if (activeTab === "other") {
+        return ![
+          "drag-show",
+          "drag-brunch",
+          "drag-bingo",
+          "drag-trivia",
+        ].includes(event.type);
+      }
+      return event.type === activeTab;
+    }) || [];
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const formatDate = (dateString) => {
+    const options = { weekday: "short", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
     <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
@@ -127,40 +82,40 @@ const EventListing = ({ isEvent }) => {
         <div className="flex justify-center space-x-6 min-w-max">
           {tabs.map((tab) => (
             <div
-              key={tab}
+              key={tab.value}
               className="relative cursor-pointer flex flex-col items-center"
-              onClick={() => setActiveTab(tab)}
+              onClick={() => setActiveTab(tab.value)}
             >
               <div className="flex items-center mb-2">
-                {tab === "Drag Show" && (
+                {tab.value === "drag-show" && (
                   <img
                     src="/home/eventlisting/drag-show.png"
                     alt="Drag Show"
                     className="w-6 h-6 mr-2"
                   />
                 )}
-                {tab === "Drag Brunch" && (
+                {tab.value === "drag-brunch" && (
                   <img
                     src="/home/eventlisting/drag-brunch.png"
                     alt="Drag Brunch"
                     className="w-6 h-6 mr-2"
                   />
                 )}
-                {tab === "Drag Bingo" && (
+                {tab.value === "drag-bingo" && (
                   <img
                     src="/home/eventlisting/drag-bingo.png"
                     alt="Drag Bingo"
                     className="w-6 h-6 mr-2"
                   />
                 )}
-                {tab === "Drag Trivia" && (
+                {tab.value === "drag-trivia" && (
                   <img
                     src="/home/eventlisting/drag-trive.png"
                     alt="Drag Trivia"
                     className="w-6 h-6 mr-2"
                   />
                 )}
-                {tab === "Other Event" && (
+                {tab.value === "other" && (
                   <img
                     src="/home/eventlisting/other-event.png"
                     alt="Other Event"
@@ -169,13 +124,13 @@ const EventListing = ({ isEvent }) => {
                 )}
                 <span
                   className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
-                    activeTab === tab ? "text-[#FF00A2]" : "text-white"
+                    activeTab === tab.value ? "text-[#FF00A2]" : "text-white"
                   }`}
                 >
-                  {tab}
+                  {tab.label}
                 </span>
               </div>
-              {activeTab === tab && (
+              {activeTab === tab.value && (
                 <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
               )}
             </div>
@@ -184,63 +139,92 @@ const EventListing = ({ isEvent }) => {
       </div>
 
       {/* Event Cards Grid */}
-      <div className="max-w-7xl  mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[544px] relative"
-          >
-            {/* Event Image */}
-            <div className="relative">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full h-[282px] md:w-[282px] object-cover rounded-lg"
-              />
-
-             
-            </div>
-
-            {/* Event Details */}
-            <div className="p-5">
-              <h3 className="font-['Space_Grotesk'] font-bold text-[24px] leading-[100%] capitalize text-white mb-6">
-                {event.title}
-              </h3>
-              <div className="flex items-center mb-4 text-gray-300">
-                <img
-                  src="/home/eventlisting/time.png"
-                  alt="Time"
-                  className="mr-2 w-4 h-4"
-                />
-                <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                  {event.time}
-                </span>
-              </div>
-
-              <div className="flex items-center mb-8 text-gray-300">
-                <img
-                  src="/home/eventlisting/location.png"
-                  alt="Location"
-                  className="mr-2 w-4 h-4"
-                />
-                <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                  {event.location}
-                </span>
-              </div>
-
-              {/* View Details Button */}
-              <div className="absolute bottom-5 left-0 w-full px-5">
-                <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
-                  VIEW DETAILS
-                </button>
-              </div>
-            </div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {allEventsLoading ? (
+          <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
+            <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ))}
+        ) : filteredEvents.length > 0 ? (
+          filteredEvents
+            .slice(
+              (currentPage - 1) * eventsPerPage,
+              currentPage * eventsPerPage
+            )
+            .map((event) => (
+              <div
+                key={event._id}
+                className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[544px] relative"
+              >
+                <div className="p-2 relative">
+                  <img
+                    src="/home/eventlisting/eventt.png"
+                    alt="Event"
+                    className="w-full h-[220px] rounded-[8px] object-cover"
+                  />
+                  <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-[#e3d4de] leading-none">
+                      {formatDate(event.startTime)?.split(" ")[2]}
+                    </span>
+                    <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
+                      {formatDate(event.startTime)?.slice(0, 3)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Event Details */}
+                <div className="p-5">
+                  <h3 className="font-['Space_Grotesk'] font-bold text-[24px] leading-[100%] capitalize text-white mb-6">
+                    {event.title}
+                  </h3>
+                  <div className="flex items-center mb-4 text-gray-300">
+                    <img
+                      src="/home/eventlisting/time.png"
+                      alt="Time"
+                      className="mr-2 w-4 h-4"
+                    />
+                    <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
+                      Start {formatTime(event.startTime)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center mb-8 text-gray-300">
+                    <img
+                      src="/home/eventlisting/location.png"
+                      alt="Location"
+                      className="mr-2 w-4 h-4"
+                    />
+                    <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
+                      {event.location || "Location not specified"}
+                    </span>
+                  </div>
+
+                  {/* View Details Button */}
+                  <div className="absolute bottom-5 left-0 w-full px-5">
+                    <Link to={`/event-details/${event._id}`}>
+                      <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
+                        VIEW DETAILS
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <p className="text-white text-xl">
+              No events found in this category
+            </p>
+          </div>
+        )}
       </div>
-      {isEvent && (
+
+      {isEvent && filteredEvents.length > eventsPerPage && (
         <div className="flex justify-center w-full mt-8">
-          <Pagination />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(filteredEvents.length / eventsPerPage)}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
     </div>
