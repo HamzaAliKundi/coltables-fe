@@ -10,6 +10,7 @@ const PerformerSlider = () => {
     useGetAllPerformersQuery({
       page: 1,
       limit: 1000,
+      search: "",
     });
 
   const scrollLeft = () => {
@@ -127,7 +128,7 @@ const PerformerSlider = () => {
                   {/* Main Image */}
                   <div className="relative">
                     <img
-                      src={performer?.images[0]}
+                      src={performer?.profilePhoto}
                       alt={performer?.name}
                       className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
                     />

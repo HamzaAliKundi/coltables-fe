@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../common/EventListening/Pagination";
 import { useGetAllPerformersQuery } from "../../apis/performers";
 
-const Performer = ({ isPerformer }) => {
+const Performer = ({ isPerformer, searchQuery }) => {
   const [page, setPage] = useState(1);
   const limit = 8;
   const [activeTab, setActiveTab] = useState("Drag Queens");
-  const { data: allPerformersData } = useGetAllPerformersQuery({ page, limit });
+  const { data: allPerformersData } = useGetAllPerformersQuery({
+    page,
+    limit,
+    search: searchQuery || "",
+  });
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
 
   const tabs = [
     "Drag Queens",
@@ -127,8 +135,7 @@ const Performer = ({ isPerformer }) => {
               <div className="relative">
                 <img
                   src={
-                    performer?.images[0] ||
-                    "/home/performer/permormer-image.png"
+                    performer?.profilePhoto
                   }
                   alt={performer.name}
                   className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"

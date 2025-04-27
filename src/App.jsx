@@ -10,14 +10,27 @@ import PerformerProfilePage from './pages/PerformerProfile/index'
 import Privacy from './components/privacy'
 import Terms from './components/terms'
 import CalendarPage from './pages/calendar'
+import { Toaster } from 'react-hot-toast'
+import { useState } from 'react'
+
 function App() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
     <BrowserRouter>
-    <Navbar />
+      <Navbar onSearch={handleSearch} />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/venues" element={<Venues />} />
-        <Route path="/performers" element={<Performers />} />
+        <Route 
+          path="/performers" 
+          element={<Performers searchQuery={searchQuery} />} 
+        />
         <Route path="/events" element={<EventListingPage />} />
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/venue-profile/:id" element={<VenueProfilePage />} />
