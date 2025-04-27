@@ -120,7 +120,7 @@ const Reviews = () => {
             onClick={() => setIsModalOpen(true)}
             className="bg-[#FF00A2] text-white text-lg font-space-grotesk py-4 px-12 rounded-full hover:bg-[#FF00A2]/90 transition-colors"
           >
-            Leave Reviews
+            Leave a Review
           </button>
         </div>
       </div>
