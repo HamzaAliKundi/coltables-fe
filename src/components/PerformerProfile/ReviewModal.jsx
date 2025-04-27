@@ -12,7 +12,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, performerId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!name.trim()) {
+    if (!name.trim()) {     
       toast.error('Please enter your name');
       return;
     }
@@ -39,13 +39,17 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, performerId }) => {
         rating
       };
       
-      await addReview({ performerId, reviewData }).unwrap();
-      toast.success('Review submitted successfully!');
-      onSubmit({ rating, review, name });
-      setRating(0);
-      setReview('');
-      setName('');
-      onClose();
+      const result = await addReview({ performerId, reviewData }).unwrap();
+      if (result.success) {
+        toast.success('Review submitted successfully!');
+        onSubmit({ rating, review, name });
+        setRating(0);
+        setReview('');
+        setName('');
+        onClose();
+      } else {
+        toast.error('Failed to submit review. Please try again.');
+      }
     } catch (error) {
       toast.error(error.data?.message || 'Failed to submit review. Please try again.');
     }

@@ -10,10 +10,13 @@ import PerformerProfilePage from './pages/PerformerProfile/index'
 import Privacy from './components/privacy'
 import Terms from './components/terms'
 import CalendarPage from './pages/calendar'
+import { Toaster } from 'react-hot-toast'
+
 function App() {
   return (
     <BrowserRouter>
-    <Navbar />
+      <Navbar />
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/venues" element={<Venues />} />

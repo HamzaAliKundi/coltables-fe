@@ -20,9 +20,13 @@ export const performersApi = createApi({
       query: (id) => `/api/user/performer/get-single-performer/${id}`,
     }),
 
+    getPerformerReviews: builder.query({
+      query: (performerId) => `/api/user/review/performer/get-single-performer/${performerId}`,
+    }),
+
     addPerformerReview: builder.mutation({
       query: ({ performerId, reviewData }) => ({
-        url: `/v1/api/performer/review/add-review`,
+        url: `api/user/review/add-review`,
         method: 'POST',
         body: {
           performerId,
@@ -38,5 +42,6 @@ export const performersApi = createApi({
 export const { 
   useGetAllPerformersQuery, 
   useGetSinglePerformerByIdQuery,
+  useGetPerformerReviewsQuery,
   useAddPerformerReviewMutation
 } = performersApi;
