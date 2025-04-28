@@ -260,8 +260,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                         {performer.name}
                       </h3>
                     </div>
-
-                    <Link to={`/performer-profile/${performer?._id}`}>
+                    <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
                       <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                         View Profile
                       </button>
