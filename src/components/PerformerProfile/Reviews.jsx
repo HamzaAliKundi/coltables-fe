@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import ReviewModal from './ReviewModal';
 import { useParams } from 'react-router-dom';
+import { useGetAllReviewsQuery } from '../../apis/performers';
 
 const Reviews = () => {
   const { id: performerId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [reviews, setReviews] = useState([]);
+  const { data: reviewsData, isLoading, error } = useGetAllReviewsQuery({ page: 0, limit: 100, userId: performerId });
   
-  // Calculate total pages
+  // Calculate total pages for UI pagination
   const reviewsPerPage = 2;
-  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+  const totalPages = reviewsData ? Math.ceil(reviewsData.docs.length / reviewsPerPage) : 0;
   
   // Get current reviews to display
   const getCurrentReviews = () => {
+    if (!reviewsData?.docs) return [];
     const startIndex = currentPage * reviewsPerPage;
-    return reviews.slice(startIndex, startIndex + reviewsPerPage);
+    return reviewsData.docs.slice(startIndex, startIndex + reviewsPerPage);
   };
   
   // Handle next page
@@ -32,26 +34,32 @@ const Reviews = () => {
     }
   };
   
-  // Handle review submission
-  const handleReviewSubmit = (reviewData) => {
-    const newReview = {
-      id: Date.now(),
-      name: reviewData.name,
-      image: `https://placehold.co/64x64/FF0000/FFFFFF?text=${reviewData.name.substring(0, 2).toUpperCase()}`,
-      rating: reviewData.rating,
-      text: reviewData.review
-    };
-    
-    // setReviews([newReview, ...reviews]);
-    setCurrentPage(0);
-  };
-
   // Calculate average rating
   const calculateAverageRating = () => {
-    if (reviews.length === 0) return 0;
-    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return (sum / reviews.length).toFixed(1);
+    if (!reviewsData?.docs?.length) return 0;
+    const sum = reviewsData.docs.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviewsData.docs.length).toFixed(1);
   };
+
+  if (isLoading) {
+    return (
+      <div className="mt-20 max-w-7xl mx-auto px-4 lg:px-8">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF00A2]"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-20 max-w-7xl mx-auto px-4 lg:px-8">
+        <div className="text-center text-red-500">
+          Error loading reviews. Please try again later.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-20 max-w-7xl mx-auto px-4 lg:px-8">
@@ -81,14 +89,14 @@ const Reviews = () => {
           <span className="text-lg">TrustScore</span>
           <span className="text-2xl font-bold">{calculateAverageRating()}</span>
           <span className="text-lg">|</span>
-          <span className="text-2xl font-bold">{reviews.length}</span>
+          <span className="text-2xl font-bold">{reviewsData?.docs?.length || 0}</span>
           <span className="text-lg">reviews</span>
         </div>
       </div>
 
       {/* Reviews Slider */}
       <div className="relative">
-        {reviews.length === 0 ? (
+        {!reviewsData?.docs?.length ? (
           <div className="flex flex-col items-center justify-center h-[294px] bg-gradient-to-br from-[#FF00A2]/20 to-[#2A2A2A] rounded-2xl p-8">
             <h3 className="text-white text-xl font-space-grotesk mb-4">No Reviews Yet</h3>
             <p className="text-white/70 text-center max-w-md">
@@ -100,14 +108,14 @@ const Reviews = () => {
             <div className="flex gap-6 overflow-hidden">
               {getCurrentReviews().map((review) => (
                 <div 
-                  key={review.id} 
+                  key={review._id} 
                   className={`flex-none w-full md:w-[calc(50%-12px)] h-[294px] rounded-2xl p-8 relative
                     bg-gradient-to-br from-[#FF00A2]/40 to-[#2A2A2A]`}
                 >
                   <div className="absolute left-0 top-0 w-2 h-full bg-[#FF00A2] rounded-l-2xl"></div>
                   <div className="flex items-center gap-4 mb-4">
                     <img 
-                      src={review.image || `https://placehold.co/64x64/FF0000/FFFFFF?text=${review.name.substring(0, 2).toUpperCase()}`} 
+                      src={`https://placehold.co/64x64/FF0000/FFFFFF?text=${review.name.substring(0, 2).toUpperCase()}`} 
                       alt={review.name} 
                       className="w-16 h-16 rounded-xl object-cover"
                     />
@@ -127,7 +135,7 @@ const Reviews = () => {
                       </div>
                     </div>
                   </div>
-                  <p className="text-white/90 text-lg leading-relaxed">{review.text}</p>
+                  <p className="text-white/90 text-lg leading-relaxed">{review.description}</p>
                 </div>
               ))}
             </div>
@@ -164,7 +172,6 @@ const Reviews = () => {
       <ReviewModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleReviewSubmit}
         performerId={performerId}
       />
     </div>

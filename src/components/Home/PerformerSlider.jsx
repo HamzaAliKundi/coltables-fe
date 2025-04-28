@@ -41,6 +41,7 @@ const PerformerSlider = () => {
         <Link
           to="/performers"
           className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%] align-middle text-[#FF00A2]"
+          onClick={() => window.scrollTo(0, 0)}
         >
           VIEW ALL
         </Link>
@@ -172,7 +173,7 @@ const PerformerSlider = () => {
                     </div>
 
                     <div className="flex justify- mt-4">
-                      <Link to={`/performer-profile/${performer?._id}`}>
+                      <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
                         <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                           View Profile
                         </button>

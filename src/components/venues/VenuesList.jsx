@@ -36,12 +36,12 @@ const VenuesList = ({ isVenue }) => {
           <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
         </div>
         <div>
-          <Link
+          {/* <Link
             to="#"
             className="font-['Space_Grotesk'] font-[400] text-[16px] leading-[100%] text-[#FF00A2] px-4 py-2 rounded"
           >
             View All
-          </Link>
+          </Link> */}
         </div>
       </div>
 
@@ -132,8 +132,7 @@ const VenuesList = ({ isVenue }) => {
                       {venue?.name}
                     </h3>
                   </div>
-
-                  <Link to={`/venue-profile/${venue?._id}`}>
+                  <Link to={`/venue-profile/${venue?._id}`} onClick={() => window.scrollTo(0, 0)}>
                     <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                       View Details
                     </button>

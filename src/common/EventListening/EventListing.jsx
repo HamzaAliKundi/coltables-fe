@@ -52,12 +52,12 @@ const EventListing = ({ isEvent }) => {
         <div className="flex items-center gap-4">
           <div className="w-[105px] h-[6px] bg-[#FF00A2] rounded-[10px]"></div>
         </div>
-        <Link
+        {/* <Link
           to="/events"
           className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%] align-middle text-[#FF00A2]"
         >
           VIEW ALL
-        </Link>
+        </Link> */}
       </div>
 
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
@@ -68,13 +68,13 @@ const EventListing = ({ isEvent }) => {
         </div>
 
         {/* Calendar Icon */}
-        <Link to="/create-event">
+        {/* <Link to="/create-event">
           <img
             src="/home/eventlisting/calendar.png"
             alt="calendar"
             className="w-[51px] h-[51px]"
           />
-        </Link>
+        </Link> */}
       </div>
 
       {/* Category Tabs */}
@@ -200,7 +200,7 @@ const EventListing = ({ isEvent }) => {
 
                   {/* View Details Button */}
                   <div className="absolute bottom-5 left-0 w-full px-5">
-                    <Link to={`/event-details/${event._id}`}>
+                    <Link to={`/event-detail/${event._id}`} onClick={() => window.scrollTo(0, 0)}>
                       <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
                         VIEW DETAILS
                       </button>

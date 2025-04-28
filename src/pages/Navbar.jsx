@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import {
   FaHome,
@@ -16,9 +16,50 @@ export default function Navbar({ onSearch }) {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
+  const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
+  const registerTimeoutRef = useRef(null);
+  const loginTimeoutRef = useRef(null);
+  const registerRef = useRef(null);
+  const loginRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (registerTimeoutRef.current) clearTimeout(registerTimeoutRef.current);
+      if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
+    };
+  }, []);
 
   const handleLinkClick = () => {
     setIsOpen(false);
+    setShowRegisterDropdown(false);
+    setShowLoginDropdown(false);
+  };
+
+  const handleRegisterMouseEnter = () => {
+    if (registerTimeoutRef.current) clearTimeout(registerTimeoutRef.current);
+    setShowRegisterDropdown(true);
+  };
+
+  const handleRegisterMouseLeave = () => {
+    registerTimeoutRef.current = setTimeout(() => {
+      if (!registerRef.current?.contains(document.activeElement)) {
+        setShowRegisterDropdown(false);
+      }
+    }, 200);
+  };
+
+  const handleLoginMouseEnter = () => {
+    if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
+    setShowLoginDropdown(true);
+  };
+
+  const handleLoginMouseLeave = () => {
+    loginTimeoutRef.current = setTimeout(() => {
+      if (!loginRef.current?.contains(document.activeElement)) {
+        setShowLoginDropdown(false);
+      }
+    }, 200);
   };
 
   const toggleSearch = () => {
@@ -32,8 +73,8 @@ export default function Navbar({ onSearch }) {
     e.preventDefault();
     if (searchQuery.trim()) {
       console.log("Searching for:", searchQuery);
-      onSearch(searchQuery); // Pass the search query to parent
-      setShowSearch(false); // Close search after submitting
+      onSearch(searchQuery);
+      setShowSearch(false); 
     }
   };
 
@@ -48,7 +89,7 @@ export default function Navbar({ onSearch }) {
 
       {/* Middle Navigation - Desktop */}
       <div
-        className="hidden md:flex items-center w-[616px] h-[66px] p-2 rounded-full shadow-lg backdrop-blur-sm"
+        className="hidden md:flex items-center w-[425px] h-[66px] p-2 rounded-full shadow-lg backdrop-blur-sm"
         style={{
           background:
             "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(24, 24, 24, 0.9) 50%, rgba(255, 255, 255, 0.1) 100%)",
@@ -90,14 +131,14 @@ export default function Navbar({ onSearch }) {
                 <div className="w-full h-[3px] bg-[#FF00A2] rounded-[5px] mt-2"></div>
               )}
             </div>
-            <div className="flex flex-col items-center">
+            {/* <div className="flex flex-col items-center">
               <Link to="/more" className="flex items-center gap-2">
                 <FaTh className="w-4 h-4" /> More
               </Link>
               {location.pathname === "/more" && (
                 <div className="w-full h-[3px] bg-[#FF00A2] rounded-[5px] mt-2"></div>
               )}
-            </div>
+            </div> */}
           </div>
         ) : (
           <form
@@ -134,29 +175,108 @@ export default function Navbar({ onSearch }) {
         )}
 
         {/* Search Icon - Only shows when search is closed */}
-        {!showSearch && (
+        {/* {!showSearch && (
           <div
             className="ml-auto bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 cursor-pointer"
             onClick={toggleSearch}
           >
             <FiSearch className="text-white w-6 h-6" />
           </div>
-        )}
+        )} */}
       </div>
 
-      {/* Right Links */}
-      <div className="hidden md:flex space-x-6">
-        <Link to="#" className="text-sm mt-1">
-          Registration
-        </Link>
-        <Link to="#" className="text-sm flex items-center gap-2">
-          <img
-            src="/home/navbar/login-icon.svg"
-            alt="Login"
-            className="w-[19px] h-[20px] mb-1"
-          />
-          <span>Login</span>
-        </Link>
+      {/* Right Links with Dropdowns */}
+      <div className="hidden md:flex items-center space-x-6">
+        {/* Registration Dropdown */}
+        <div 
+          className="relative"
+          ref={registerRef}
+          onMouseEnter={handleRegisterMouseEnter}
+          onMouseLeave={handleRegisterMouseLeave}
+        >
+          <button
+            className="text-sm text-white hover:text-[#FF00A2] transition-colors"
+          >
+            Registration
+          </button>
+          {showRegisterDropdown && (
+            <div 
+              className="absolute top-full left-0 mt-2 w-48 bg-[#2A2A2A] rounded-lg shadow-lg py-2 z-50"
+              onMouseEnter={handleRegisterMouseEnter}
+              onMouseLeave={handleRegisterMouseLeave}
+            >
+              <a
+                href="https://coltable-deshabord-performer.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
+                onClick={handleLinkClick}
+              >
+                Register as Performer
+              </a>
+              <a
+                href="https://coltable-deshboard-venues.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
+                onClick={handleLinkClick}
+              >
+                Register as Venue
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Login Dropdown */}
+        <div 
+          className="relative"
+          ref={loginRef}
+          onMouseEnter={handleLoginMouseEnter}
+          onMouseLeave={handleLoginMouseLeave}
+        >
+          <button
+            className="text-sm text-white hover:text-[#FF00A2] transition-colors flex items-center gap-2"
+          >
+            <img
+              src="/home/navbar/login-icon.svg"
+              alt="Login"
+              className="w-[19px] h-[20px]"
+            />
+            <span>Login</span>
+          </button>
+          {showLoginDropdown && (
+            <div 
+              className="absolute top-full right-0 mt-2 w-48 bg-[#2A2A2A] rounded-lg shadow-lg py-2 z-50"
+              onMouseEnter={handleLoginMouseEnter}
+              onMouseLeave={handleLoginMouseLeave}
+            >
+              <a
+                href="https://coltable-deshabord-performer.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
+                onClick={handleLinkClick}
+              >
+                <div className="flex items-center gap-2">
+                  <img src="/home/navbar/login-icon.svg" alt="Performer" className="w-4 h-4" />
+                  <span>Login as Performer</span>
+                </div>
+              </a>
+              <a
+                href="https://coltable-deshboard-venues.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
+                onClick={handleLinkClick}
+              >
+                <div className="flex items-center gap-2">
+                  <img src="/home/navbar/login-icon.svg" alt="Venue" className="w-4 h-4" />
+                  <span>Login as Venue</span>
+                </div>
+              </a>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Mobile Menu Button */}
@@ -174,22 +294,6 @@ export default function Navbar({ onSearch }) {
             transition={{ duration: 0.2 }}
             className="absolute top-[100px] left-0 w-full bg-gray-900 text-white flex flex-col space-y-4 p-5 md:hidden z-50 shadow-lg"
           >
-            <form onSubmit={handleSearch} className="relative mb-4">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full bg-gray-800 rounded-lg px-4 py-2 text-white focus:outline-none pr-12"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-2"
-                disabled={!searchQuery.trim()}
-              >
-                <FiSearch className="text-white w-4 h-4" />
-              </button>
-            </form>
             <Link
               to="/"
               className="flex items-center gap-2 py-2"
@@ -218,28 +322,77 @@ export default function Navbar({ onSearch }) {
             >
               <FaCalendarAlt /> Events
             </Link>
-            <Link
-              to="/more"
-              className="flex items-center gap-2 py-2"
-              onClick={handleLinkClick}
-            >
-              <FaTh /> More
-            </Link>
-            <Link to="/registration" className="py-2" onClick={handleLinkClick}>
-              Registration
-            </Link>
-            <Link
-              to="/login"
-              className="flex items-center gap-2 py-2"
-              onClick={handleLinkClick}
-            >
-              <img
-                src="/home/navbar/login-icon.png"
-                alt="Login"
-                className="w-4 h-4"
-              />
-              <span>Login</span>
-            </Link>
+
+            {/* Mobile Registration Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowRegisterDropdown(!showRegisterDropdown)}
+                className="flex items-center gap-2 py-2 w-full text-left"
+              >
+                Registration
+              </button>
+              {showRegisterDropdown && (
+                <div className="pl-4 space-y-2">
+                  <a
+                    href="https://coltable-deshabord-performer.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    Register as Performer
+                  </a>
+                  <a
+                    href="https://coltable-deshboard-venues.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    Register as Venue
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Login Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowLoginDropdown(!showLoginDropdown)}
+                className="flex items-center gap-2 py-2 w-full text-left"
+              >
+                <img
+                  src="/home/navbar/login-icon.svg"
+                  alt="Login"
+                  className="w-4 h-4"
+                />
+                <span>Login</span>
+              </button>
+              {showLoginDropdown && (
+                <div className="pl-4 space-y-2">
+                  <a
+                    href="https://coltable-deshabord-performer.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <img src="/home/navbar/login-icon.svg" alt="Performer" className="w-4 h-4" />
+                    <span>Login as Performer</span>
+                  </a>
+                  <a
+                    href="https://coltable-deshboard-venues.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <img src="/home/navbar/login-icon.svg" alt="Venue" className="w-4 h-4" />
+                    <span>Login as Venue</span>
+                  </a>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
