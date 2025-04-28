@@ -12,8 +12,8 @@ export const performersApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllPerformers: builder.query({
-      query: ({ page, limit, search }) =>
-        `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1&search=${search}`,
+      query: ({ page, limit, search, address }) =>
+        `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1&search=${search}&address=${address}`,
     }),
 
     getSinglePerformerById: builder.query({
@@ -21,7 +21,8 @@ export const performersApi = createApi({
     }),
 
     getPerformerReviews: builder.query({
-      query: (performerId) => `/api/user/review/performer/get-single-performer/${performerId}`,
+      query: (performerId) =>
+        `/api/user/review/performer/get-single-performer/${performerId}`,
     }),
 
     getAllReviews: builder.query({
@@ -32,20 +33,20 @@ export const performersApi = createApi({
     addPerformerReview: builder.mutation({
       query: ({ performerId, reviewData }) => ({
         url: `api/user/review/add-review`,
-        method: 'POST',
+        method: "POST",
         body: {
           performerId,
           name: reviewData.name,
           description: reviewData.description,
-          rating: reviewData.rating
+          rating: reviewData.rating,
         },
       }),
     }),
   }),
 });
 
-export const { 
-  useGetAllPerformersQuery, 
+export const {
+  useGetAllPerformersQuery,
   useGetSinglePerformerByIdQuery,
   useGetPerformerReviewsQuery,
   useGetAllReviewsQuery,
