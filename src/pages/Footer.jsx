@@ -62,35 +62,35 @@ const Footer = ({ isHome }) => {
           <h3 className="text-xl font-bold">Useful Links</h3>
           <ul className="mt-4 space-y-2 text-[15px] font-spaceGrotesk">
             <li className="flex flex-col">
-              <div className="flex items-center gap-4 cursor-pointer text-[#878787]">
+              <Link to="/" className="flex items-center gap-4 cursor-pointer text-[#878787]" onClick={() => window.scrollTo(0, 0)}>
                 <img src="/footer/arrow.png" alt="arrow" /> Home
-              </div>
+              </Link>
               <div className="w-[310px] border-b border-[#878787] mt-2"></div>
             </li>
             <li className="flex flex-col">
-              <div className="flex items-center gap-4 cursor-pointer text-[#878787]">
+              <Link to="/performers" className="flex items-center gap-4 cursor-pointer text-[#878787]" onClick={() => window.scrollTo(0, 0)}>
                 <img src="/footer/arrow.png" alt="arrow" /> Performers
-              </div>
+              </Link>
               <div className="w-[310px] border-b border-[#878787] mt-2"></div>
             </li>
             <li className="flex flex-col">
-              <div className="flex items-center gap-4 cursor-pointer text-[#878787]">
+              <Link to="/venues" className="flex items-center gap-4 cursor-pointer text-[#878787]" onClick={() => window.scrollTo(0, 0)}>
                 <img src="/footer/arrow.png" alt="arrow" /> Venues
-              </div>
+              </Link>
               <div className="w-[310px] border-b border-[#878787] mt-2"></div>
             </li>
             <li className="flex flex-col">
-              <div className="flex items-center gap-4 cursor-pointer text-[#878787]">
+              <Link to="/events" className="flex items-center gap-4 cursor-pointer text-[#878787]" onClick={() => window.scrollTo(0, 0)}>
                 <img src="/footer/arrow.png" alt="arrow" /> Events
-              </div>
+              </Link>
               <div className="w-[310px] border-b border-[#878787] mt-2"></div>
             </li>
-            <li className="flex flex-col">
+            {/* <li className="flex flex-col">
               <div className="flex items-center gap-4 cursor-pointer text-[#878787]">
                 <img src="/footer/arrow.png" alt="arrow" /> FAQ's
               </div>
               <div className="w-[310px] border-b border-[#878787] mt-2"></div>
-            </li>
+            </li> */}
           </ul>
         </div>
 

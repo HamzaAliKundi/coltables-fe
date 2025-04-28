@@ -88,12 +88,13 @@ const UpComingEvents = () => {
             <Link
               to="/events"
               className="font-['Space_Grotesk'] text-[#FF00A2] text-base mb-2"
+              onClick={() => window.scrollTo(0, 0)}
             >
               VIEW ALL
             </Link>
-            <Link to="/calendar" className="w-[51px] h-[51px] rounded-full flex items-center justify-center">
+            {/* <Link to="/calendar" className="w-[51px] h-[51px] rounded-full flex items-center justify-center">
               <img src="/home/eventlisting/calendar.png" alt="Calendar" />
-            </Link>
+            </Link> */}
           </div>
         </div>
 
@@ -175,13 +176,13 @@ const UpComingEvents = () => {
 
                       {/* Card Actions */}
                       <div className="flex mt-auto space-x-1 md:space-x-2">
-                        <Link to={`/events/${event.id}`}>
+                        <Link to="#">
                           <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 transition">
                             VIEW DETAILS
                           </button>
                         </Link>
 
-                        <Link to="/events">
+                        <Link to="/events" onClick={() => window.scrollTo(0, 0)}>
                           <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>

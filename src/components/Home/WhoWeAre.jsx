@@ -30,7 +30,7 @@ const WhoWeAre = () => {
           </h3>
           <p className="font-['Space_Grotesk'] font-normal text-[14px] md:text-[16px] leading-[22px] md:leading-[26px] text-left">
             Designed to assist venues in managing their profiles, providing an easy way to showcase the unique atmosphere and experiences they offer. With an intuitive platform, venues can quickly update their information{" "}
-            <span className="text-[#FF00A2] underline cursor-pointer">see more</span>
+            {/* <span className="text-[#FF00A2] underline cursor-pointer">see more</span> */}
           </p>
         </div>
 
@@ -46,7 +46,7 @@ const WhoWeAre = () => {
           </h3>
           <p className="font-['Space_Grotesk'] font-normal text-[14px] md:text-[16px] leading-[22px] md:leading-[26px] text-left">
             DragSpace makes it effortless for performers to showcase their unique talents to fans and offering them a user-friendly platform to easily connect with venues and unlock incredible opportunities{" "}
-            <span className="text-[#FF00A2] underline cursor-pointer">see more</span>
+            {/* <span className="text-[#FF00A2] underline cursor-pointer">see more</span> */}
           </p>
         </div>
 
@@ -62,19 +62,19 @@ const WhoWeAre = () => {
           </h3>
           <p className="font-['Space_Grotesk'] font-normal text-[14px] md:text-[16px] leading-[22px] md:leading-[26px] text-left">
             Committed to providing comprehensive online and phone support to ensure you make the most of your experience on the platform. Whether you need help navigating the platform{" "}
-            <span className="text-[#FF00A2] underline cursor-pointer">see more</span>
+            {/* <span className="text-[#FF00A2] underline cursor-pointer">see more</span> */}
           </p>
         </div>
       </div>
 
       {/* CTA Button */}
-      <div className="flex justify-center px-4 md:px-0">
+      {/* <div className="flex justify-center px-4 md:px-0">
         <Link to="/host-event" className="w-full md:w-auto">
           <button className="w-full md:w-[448px] bg-[#FF00A2] h-[40px] md:h-[46px] rounded-[50px] px-6 md:px-10 py-2 font-['Space_Grotesk'] font-normal text-[16px] md:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition-colors">
             Looking to Host a Private Event?
           </button>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
