@@ -4,10 +4,10 @@ import { useParams } from 'react-router-dom';
 import { useGetAllReviewsQuery } from '../../apis/performers';
 
 const Reviews = () => {
-  const { id: performerId } = useParams();
+  const { id: userId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const { data: reviewsData, isLoading, error } = useGetAllReviewsQuery({ page: 0, limit: 100, userId: performerId });
+  const { data: reviewsData, isLoading, error } = useGetAllReviewsQuery({ page: 0, limit: 100, userId: userId });
   
   // Calculate total pages for UI pagination
   const reviewsPerPage = 2;
@@ -172,7 +172,7 @@ const Reviews = () => {
       <ReviewModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        performerId={performerId}
+        userId={userId}
       />
     </div>
   );

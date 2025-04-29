@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { useAddReviewMutation } from '../../apis/performers';
 import { toast } from 'react-hot-toast';
+import { useAddReviewMutation } from '../../apis/performers';
 
 const ReviewModal = ({ isOpen, onClose, onSubmit, userId }) => {
   const [rating, setRating] = useState(0);
@@ -28,7 +28,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, userId }) => {
     }
 
     if (!userId) {
-      toast.error('Performer ID is missing');
+      toast.error('Venues ID is missing');
       return;
     }
 
@@ -37,25 +37,21 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, userId }) => {
         name: name.trim(),
         description: review.trim(),
         rating,
-        userType: 'performer'
+        userType: 'venue'
       };
       
       const result = await addReview({ userId, reviewData }).unwrap();
-      
-      if (result?.success) {
+      if (result.success) {
         toast.success('Review Added Successfully! Please wait for approval.');
         setRating(0);
         setReview('');
         setName('');
         onClose();
       } else {
-        const errorMessage = result?.message || 'Failed to submit review. Please try again.';
-        toast.error(errorMessage);
+        toast.error('Failed to submit review. Please try again.');
       }
     } catch (error) {
-      console.error('Review submission error:', error);
-      const errorMessage = error?.data?.message || error?.message || 'Failed to submit review. Please try again.';
-      toast.error(errorMessage);
+      toast.error(error.data?.message || 'Failed to submit review. Please try again.');
     }
   };
 
