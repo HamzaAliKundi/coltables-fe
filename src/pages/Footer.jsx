@@ -15,7 +15,7 @@ const Footer = ({ isHome }) => {
           <div className="mt-6 md:mt-[90px] text-[15px] font-spaceGrotesk space-y-1">
             <p className="flex items-center gap-1 lg:whitespace-nowrap">
               <img src="/footer/location.png" />
-              2000 West Loop S, Suite 2280, Houston, TX 77027
+              2000 West Loop S, Suite 2200, Houston, TX 77027
             </p>
             <p className="flex items-center gap-2">
               <img src="/footer/email.png" />
@@ -29,31 +29,37 @@ const Footer = ({ isHome }) => {
             Check Out Our Socials!
           </h3>
           <div className="flex gap-4 mt-2">
-            <img
-              src="/footer/facebook.png"
-              alt="Facebook"
-              className="w-[9.98px] h-[27px] cursor-pointer"
-            />
-            <img
-              src="/footer/twitter.png"
-              alt="Twitter"
-              className="w-[18.61px] h-[27px] cursor-pointer"
-            />
-            <img
+            <a href="https://www.facebook.com/profile.php?id=61574105501530" target="_blank" rel="noopener noreferrer">
+              <img
+                src="/footer/facebook.png"
+                alt="Facebook"
+                className="w-[9.98px] h-[27px] cursor-pointer"
+              />
+            </a>
+            <a href="https://x.com/Yourdragspace" target="_blank" rel="noopener noreferrer">
+              <img
+                src="/footer/twitter.png"
+                alt="Twitter"
+                className="w-[18.61px] h-[27px] cursor-pointer"
+              />
+            </a>
+            {/* <img
               src="/footer/chat.png"
               alt="Twitter"
               className="w-[16.36px] h-[27px] cursor-pointer"
-            />
-            <img
+            /> */}
+            {/* <img
               src="/footer/google-plus.png"
               alt="Google"
               className="w-[23.11px] h-[27px] cursor-pointer"
-            />
-            <img
-              src="/footer/instagram.png"
-              alt="Google"
-              className="w-[16.36px] h-[27px] cursor-pointer"
-            />
+            /> */}
+            <a href="https://www.instagram.com/officialdragspace" target="_blank" rel="noopener noreferrer">
+              <img
+                src="/footer/instagram.png"
+                alt="Instagram"
+                className="w-[16.36px] h-[27px] cursor-pointer"
+              />
+            </a>
           </div>
         </div>
 
