@@ -200,7 +200,10 @@ const EventListing = ({ isEvent }) => {
 
                   {/* View Details Button */}
                   <div className="absolute bottom-5 left-0 w-full px-5">
-                    <Link to={`/event-detail/${event._id}`} onClick={() => window.scrollTo(0, 0)}>
+                    <Link
+                      to={`/event-detail/${event._id}`}
+                      onClick={() => window.scrollTo(0, 0)}
+                    >
                       <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
                         VIEW DETAILS
                       </button>

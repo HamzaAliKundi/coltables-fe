@@ -16,9 +16,9 @@ export const eventsApi = createApi({
         `/api/user/event/get-all-events?limit=${limit}&page=${page}&sort=-1`,
     }),
 
-    // getSingleEventById: builder.query({
-    //   query: (id) => `/api/user/event/get-single-event/${id}`,
-    // }),
+    getSingleEventById: builder.query({
+      query: (id) => `/api/user/event/get-single-event/${id}`,
+    }),
 
     // updateVenueProfile: builder.mutation({
     //   query: ({ data }) => ({
@@ -30,4 +30,4 @@ export const eventsApi = createApi({
   }),
 });
 
-export const { useGetAllEventsQuery } = eventsApi;
+export const { useGetAllEventsQuery, useGetSingleEventByIdQuery } = eventsApi;
