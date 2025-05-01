@@ -8,7 +8,7 @@ import { Youtube } from "lucide-react";
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
   const { id } = useParams();
-  const { data: performerDetail, isLoading: performerDetailLoading } =
+  const { data: performerDetail, isLoading: performerDetailLoading, error: performerError } =
     useGetSinglePerformerByIdQuery(id);
 
   const formatDragAnniversary = (dateString) => {
@@ -33,8 +33,19 @@ const PerformerProfile = () => {
     { value: "woodlawn", label: "Woodlawn Pointe (San Antonio, TX)" },
   ];
 
+  if (performerError) {
+    return (
+      <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl text-[#FF00A2] mb-4">Error Loading Profile</h2>
+          <p className="text-white/80">Please try again later</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen  text-white p-4 lg:p-8">
+    <div className="min-h-screen text-white p-4 lg:p-8">
       {/* Main Container */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
         {/* Left Section - Profile Info */}
@@ -46,24 +57,22 @@ const PerformerProfile = () => {
           ) : (
             <>
               <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
-                {performerDetail?.performer?.fullDragName}
+                {performerDetail?.performer?.fullDragName || "Performer Name"}
               </h1>
 
               {/* Profile Image and Social Links */}
               <div className="relative flex justify-center">
                 <img
-                  src={performerDetail?.performer?.images[0]}
-                  alt={performerDetail?.performer?.name}
-                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px]"
+                  src={performerDetail?.performer?.profilePhoto || performerDetail?.performer?.images?.[0]}
+                  alt={performerDetail?.performer?.fullDragName || "Performer"}
+                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-cover"
                 />
 
                 {/* Social Media Links */}
                 <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
                   {performerDetail?.performer?.socialMediaLinks?.facebook && (
                     <a
-                      href={
-                        performerDetail?.performer?.socialMediaLinks?.facebook
-                      }
+                      href={performerDetail?.performer?.socialMediaLinks?.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
@@ -78,9 +87,7 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.instagram && (
                     <a
-                      href={
-                        performerDetail.performer.socialMediaLinks.instagram
-                      }
+                      href={performerDetail?.performer?.socialMediaLinks?.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
@@ -95,7 +102,7 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.twitter && (
                     <a
-                      href={performerDetail.performer.socialMediaLinks.twitter}
+                      href={performerDetail?.performer?.socialMediaLinks?.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -110,7 +117,7 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.tiktok && (
                     <a
-                      href={performerDetail.performer.socialMediaLinks.tiktok}
+                      href={performerDetail?.performer?.socialMediaLinks?.tiktok}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -125,7 +132,7 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.youtube && (
                     <a
-                      href={performerDetail.performer.socialMediaLinks.youtube}
+                      href={performerDetail?.performer?.socialMediaLinks?.youtube}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -153,9 +160,7 @@ const PerformerProfile = () => {
                     Drag Anniversary:
                     <span className="font-medium">
                       {" "}
-                      {formatDragAnniversary(
-                        performerDetail?.performer?.dragAnniversary
-                      )}
+                      {formatDragAnniversary(performerDetail?.performer?.dragAnniversary)}
                     </span>
                   </h2>
                 </div>
@@ -163,7 +168,7 @@ const PerformerProfile = () => {
 
               {/* Tagline */}
               <p className="text-xl lg:text-[20px] text-center mt-10 lg:mt-16 mb-12 lg:mb-16 max-w-[600px] mx-auto leading-tight font-normal">
-                {performerDetail?.performer?.tagline}
+                {performerDetail?.performer?.tagline || "No tagline available"}
               </p>
 
               {/* About Section */}
@@ -172,7 +177,7 @@ const PerformerProfile = () => {
                   About {performerDetail?.performer?.firstName}'s Drag
                 </h2>
                 <p className="text-white/90 text-[18px] font-normal">
-                  {performerDetail?.performer?.description}
+                  {performerDetail?.performer?.description || "No description available"}
                 </p>
               </div>
 
@@ -184,22 +189,27 @@ const PerformerProfile = () => {
                     <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                       Drag Mother(s)
                     </h3>
-                    <ul className="list-disc list-inside text-white/90">
-                      {performerDetail?.performer?.dragMotherName
-                        ?.split(", ")
-                        .map((mother, index) => (
-                          <li key={index}>{mother}</li>
-                        ))}
-                    </ul>
+                    <div className="grid grid-cols-2 gap-2 text-white/90">
+                      {performerDetail?.performer?.dragMotherName?.map((mother, index) => (
+                        <div key={index} className="flex items-center">
+                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                          <span>{mother}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                       Drag Family Associations
                     </h3>
-                    <ul className="list-disc list-inside text-white/90">
-                      <li>Seymour</li>
-                      <li>Alexander</li>
-                    </ul>
+                    <div className="grid grid-cols-2 gap-2 text-white/90">
+                      {performerDetail?.performer?.dragFamilyAssociation?.map((family, index) => (
+                        <div key={index} className="flex items-center">
+                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                          <span>{family}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -208,13 +218,14 @@ const PerformerProfile = () => {
                   <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                     Competitions / Awards
                   </h3>
-                  <ul className="list-disc list-inside text-white/90">
-                    {performerDetail?.performer?.awards?.[0]
-                      ?.split(", ")
-                      .map((award, index) => (
-                        <li key={index}>{award}</li>
-                      ))}
-                  </ul>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-white/90">
+                    {performerDetail?.performer?.awards?.map((award, index) => (
+                      <div key={index} className="flex items-center">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                        <span>{award}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Performance Types Grid */}
@@ -224,13 +235,11 @@ const PerformerProfile = () => {
                   </h3>
                   <div>
                     <ul className="list-disc list-inside grid grid-cols-2 lg:grid-cols-3 text-white/90">
-                      {performerDetail?.performer?.dragPerformances?.map(
-                        (item, index) => (
-                          <li key={index} className="capitalize">
-                            {item}
-                          </li>
-                        )
-                      )}
+                      {performerDetail?.performer?.dragPerformances?.map((item, index) => (
+                        <li key={index} className="capitalize">
+                          {item}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -240,23 +249,13 @@ const PerformerProfile = () => {
                   <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                     Illusions/Impersonations
                   </h3>
-                  <div>
-                    <p className="text-white/90">
-                      {performerDetail?.performer?.illusions}
-                    </p>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                    {performerDetail?.performer?.illusions?.map((illusion, index) => (
+                      <ul key={index} className="list-disc list-inside">
+                        <li>{illusion}</li>
+                      </ul>
+                    ))}
                   </div>
-
-                  {/* <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                <ul className="list-disc list-inside">
-                  <li>Selena</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Jennifer Lopez</li>
-                </ul>
-                <ul className="list-disc list-inside">
-                  <li>Nicole Scherzinger</li>
-                </ul>
-              </div> */}
                 </div>
 
                 {/* Music Genre's Performed Section */}
@@ -275,17 +274,12 @@ const PerformerProfile = () => {
                           case "jazzBlues":
                             return "Jazz/Blues";
                           default:
-                            return (
-                              genre.charAt(0).toUpperCase() + genre.slice(1)
-                            );
+                            return genre.charAt(0).toUpperCase() + genre.slice(1);
                         }
                       })();
 
                       return (
-                        <ul
-                          key={index}
-                          className="list-disc list-inside capitalize"
-                        >
+                        <ul key={index} className="list-disc list-inside capitalize">
                           <li>{formattedGenre}</li>
                         </ul>
                       );
@@ -296,7 +290,7 @@ const PerformerProfile = () => {
                 {/* Venues Section */}
                 <div>
                   <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
-                    Where Can You Catch Catalina Performing?
+                    Where Can You Catch {performerDetail?.performer?.firstName} Performing?
                   </h2>
                   <div className="grid grid-cols-2 lg:grid-cols-3 text-white/90">
                     {performerDetail?.performer?.venues?.map((venue, index) => {
@@ -465,7 +459,7 @@ const PerformerProfile = () => {
           </div>
         </div>
       </div>
-      <Gallery images={performerDetail?.performer?.images} />
+      <Gallery images={performerDetail?.performer?.images || []} />
       <Reviews />
     </div>
   );

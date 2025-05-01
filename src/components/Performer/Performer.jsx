@@ -248,7 +248,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                     <div className="absolute bottom-[-40px] left-[35px]">
                       <img
                         src="/home/performer/image-tag.png"
-                        alt={`${performer.name} logo`}
+                        alt={`${performer.drag} logo`}
                         className="w-[80px] h-[80px]"
                       />
                     </div>
@@ -257,7 +257,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                   <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
                     <div className="h-[50px] md:h-[60px]">
                       <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4">
-                        {performer.name}
+                        {performer?.fullDragName}
                       </h3>
                     </div>
                     <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
