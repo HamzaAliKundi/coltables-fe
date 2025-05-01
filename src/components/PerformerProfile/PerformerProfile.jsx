@@ -292,16 +292,16 @@ const PerformerProfile = () => {
                   <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
                     Where Can You Catch {performerDetail?.performer?.firstName} Performing?
                   </h2>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 text-white/90">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 text-white/90">
                     {performerDetail?.performer?.venues?.map((venue, index) => {
                       const venueLabel = venueOptions.find(
                         (option) => option.value === venue
                       )?.label;
-
                       return (
-                        <ul key={index} className="list-disc list-inside">
-                          <li>{venueLabel}</li>
-                        </ul>
+                        <div key={index} className="flex items-center">
+                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                          <span>{venueLabel}</span>
+                        </div>
                       );
                     })}
                   </div>
