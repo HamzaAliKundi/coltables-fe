@@ -167,11 +167,9 @@ const VenuesProfile = () => {
                     Which Performers May You Find Here?
                   </h3>
                   <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
-                    {venueDetail?.venue?.topDragPerformers
-                      ?.split(", ")
-                      .map((performer, index) => (
-                        <li key={index}>{performer}</li>
-                      ))}
+                    {venueDetail?.venue?.topDragPerformers?.map((performer, index) => (
+                      <li key={index}>{performer}</li>
+                    ))}
                   </ul>
                 </div>
 
