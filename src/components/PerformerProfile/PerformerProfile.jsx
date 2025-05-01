@@ -64,7 +64,7 @@ const PerformerProfile = () => {
               <div className="relative flex justify-center">
                 <img
                   src={performerDetail?.performer?.profilePhoto || performerDetail?.performer?.images?.[0]}
-                  alt={performerDetail?.performer?.fullDragName || "Performer"}
+                  alt={performerDetail?.performer?.fullDragName?.split(" ")[0] || "Performer"}
                   className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-cover"
                 />
 
