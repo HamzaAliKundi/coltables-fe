@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
-import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
+import { useGetEventsByDateQuery, useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 
 const PerformerProfile = () => {
@@ -11,34 +11,15 @@ const PerformerProfile = () => {
   const { id } = useParams();
   const { data: performerDetail, isLoading: performerDetailLoading, error: performerError } =
     useGetSinglePerformerByIdQuery(id);
+  const { data: events, isLoading: eventsLoading, error: eventsError } = useGetEventsByDateQuery({
+    userId: id,
+    userType: "performer",
+    month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+  });
 
-  // Mock event data - This will be replaced with API data later
-  const eventDates = {
-    "2025-05": {
-      "3": { events: 4 },
-      "8": { events: 1 },
-      "10": { events: 3 },
-      "14": { events: 2 },
-      "18": { events: 1 },
-      "21": { events: 2 },
-      "23": { events: 1 },
-      "25": { events: 3 },
-      "28": { events: 1 },
-      "30": { events: 2 }
-    },
-    "2025-06": {
-      "2": { events: 1 },
-      "5": { events: 2 },
-      "8": { events: 3 },
-      "12": { events: 1 },
-      "15": { events: 2 },
-      "18": { events: 1 },
-      "22": { events: 3 },
-      "25": { events: 2 },
-      "28": { events: 1 },
-      "30": { events: 2 }
-    }
-  };
+  // Use API response for event dates
+  const eventDates = events?.eventDates || {};
+
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
