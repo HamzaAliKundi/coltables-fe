@@ -174,7 +174,7 @@ const PerformerProfile = () => {
               {/* About Section */}
               <div className="mb-6 lg:mb-8">
                 <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
-                  About {performerDetail?.performer?.firstName}'s Drag
+                  About {performerDetail?.performer?.fullDragName?.split(' ')[0] || "Performer"}'s Drag
                 </h2>
                 <p className="text-white/90 text-[18px] font-normal">
                   {performerDetail?.performer?.description || "No description available"}
@@ -290,7 +290,7 @@ const PerformerProfile = () => {
                 {/* Venues Section */}
                 <div>
                   <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
-                    Where Can You Catch {performerDetail?.performer?.firstName} Performing?
+                    Where Can You Catch {performerDetail?.performer?.fullDragName?.split(' ')[0] || "Performer"} Performing?
                   </h2>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 text-white/90">
                     {performerDetail?.performer?.venues?.map((venue, index) => {
