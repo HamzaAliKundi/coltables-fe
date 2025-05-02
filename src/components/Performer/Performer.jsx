@@ -225,7 +225,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
             <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
               <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
             </div>
-          ) : filteredPerformers.length > 0 ? (
+          ) : filteredPerformers?.length > 0 ? (
             filteredPerformers
               .slice(
                 (currentPage - 1) * performersPerPage,
@@ -240,7 +240,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                   <div className="relative">
                     <img
                       src={performer?.profilePhoto}
-                      alt={performer.name}
+                      alt={performer?.fullDragName?.split(" ")[0]}
                       className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
                     />
                     <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>

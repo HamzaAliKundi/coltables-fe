@@ -130,7 +130,7 @@ const PerformerSlider = () => {
                   <div className="relative">
                     <img
                       src={performer?.profilePhoto}
-                      alt={performer?.name}
+                      alt={performer?.fullDragName?.split(" ")[0]}
                       className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
                     />
                     <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
@@ -146,17 +146,14 @@ const PerformerSlider = () => {
 
                   <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[250px] flex flex-col">
                     <div className="flex-grow">
-                      <h3
-                        className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer"
-                        title={performer?.name}
-                      >
-                        {performer?.name?.length > 16 ? (
+                      <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer">
+                        {performer?.fullDragName?.length > 16 ? (
                           <>
-                            {performer?.name.slice(0, 16)}
+                            {performer?.fullDragName.slice(0, 16)}
                             <span className="text-[#FF00A2]">...</span>
                           </>
                         ) : (
-                          performer?.name
+                          performer?.fullDragName
                         )}
                       </h3>
 
@@ -173,7 +170,10 @@ const PerformerSlider = () => {
                     </div>
 
                     <div className="flex justify- mt-4">
-                      <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
+                      <Link
+                        to={`/performer-profile/${performer?._id}`}
+                        onClick={() => window.scrollTo(0, 0)}
+                      >
                         <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                           View Profile
                         </button>
