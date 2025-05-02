@@ -9,35 +9,38 @@ const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const { id } = useParams();
-  const { data: performerDetail, isLoading: performerDetailLoading, error: performerError } =
-    useGetSinglePerformerByIdQuery(id);
+  const {
+    data: performerDetail,
+    isLoading: performerDetailLoading,
+    error: performerError,
+  } = useGetSinglePerformerByIdQuery(id);
 
   // Mock event data - This will be replaced with API data later
   const eventDates = {
     "2025-05": {
-      "3": { events: 4 },
-      "8": { events: 1 },
-      "10": { events: 3 },
-      "14": { events: 2 },
-      "18": { events: 1 },
-      "21": { events: 2 },
-      "23": { events: 1 },
-      "25": { events: 3 },
-      "28": { events: 1 },
-      "30": { events: 2 }
+      3: { events: 4 },
+      8: { events: 1 },
+      10: { events: 3 },
+      14: { events: 2 },
+      18: { events: 1 },
+      21: { events: 2 },
+      23: { events: 1 },
+      25: { events: 3 },
+      28: { events: 1 },
+      30: { events: 2 },
     },
     "2025-06": {
-      "2": { events: 1 },
-      "5": { events: 2 },
-      "8": { events: 3 },
-      "12": { events: 1 },
-      "15": { events: 2 },
-      "18": { events: 1 },
-      "22": { events: 3 },
-      "25": { events: 2 },
-      "28": { events: 1 },
-      "30": { events: 2 }
-    }
+      2: { events: 1 },
+      5: { events: 2 },
+      8: { events: 3 },
+      12: { events: 1 },
+      15: { events: 2 },
+      18: { events: 1 },
+      22: { events: 3 },
+      25: { events: 2 },
+      28: { events: 1 },
+      30: { events: 2 },
+    },
   };
 
   const getDaysInMonth = (date) => {
@@ -47,43 +50,61 @@ const PerformerProfile = () => {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
-    
+
     // Get previous month's days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    const prevMonthDays = Array.from({ length: startingDay }, (_, i) => prevMonthLastDay - startingDay + i + 1);
-    
+    const prevMonthDays = Array.from(
+      { length: startingDay },
+      (_, i) => prevMonthLastDay - startingDay + i + 1
+    );
+
     // Get current month's days
-    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    
+    const currentMonthDays = Array.from(
+      { length: daysInMonth },
+      (_, i) => i + 1
+    );
+
     // Get next month's days
     const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
-    const nextMonthDays = Array.from({ length: remainingDays }, (_, i) => i + 1);
-    
+    const nextMonthDays = Array.from(
+      { length: remainingDays },
+      (_, i) => i + 1
+    );
+
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
   const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+    );
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+    );
   };
 
   const formatMonthYear = (date) => {
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
   const getEventDots = (day) => {
-    const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const monthKey = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`;
     const events = eventDates[monthKey]?.[day]?.events;
-    
+
     if (!events) return null;
-    
+
     return (
       <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
         {Array.from({ length: events }, (_, i) => (
-          <div key={i} className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
+          <div
+            key={i}
+            className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"
+          ></div>
         ))}
       </div>
     );
@@ -115,7 +136,9 @@ const PerformerProfile = () => {
     return (
       <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl text-[#FF00A2] mb-4">Error Loading Profile</h2>
+          <h2 className="text-2xl text-[#FF00A2] mb-4">
+            Error Loading Profile
+          </h2>
           <p className="text-white/80">Please try again later</p>
         </div>
       </div>
@@ -134,23 +157,31 @@ const PerformerProfile = () => {
             </div>
           ) : (
             <>
-              <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
+              <h1 className="font-tangerine text-5xl py-6 md:py-0 md:text-[64px] font-bold mb-4 lg:mb-8 text-center">
                 {performerDetail?.performer?.fullDragName || "Performer Name"}
               </h1>
 
               {/* Profile Image and Social Links */}
               <div className="relative flex justify-center">
                 <img
-                  src={performerDetail?.performer?.profilePhoto || performerDetail?.performer?.images?.[0]}
-                  alt={performerDetail?.performer?.fullDragName?.split(" ")[0] || "Performer"}
-                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-cover"
+                  src={
+                    performerDetail?.performer?.profilePhoto ||
+                    performerDetail?.performer?.images?.[0]
+                  }
+                  alt={
+                    performerDetail?.performer?.fullDragName?.split(" ")[0] ||
+                    "Performer"
+                  }
+                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-contain"
                 />
 
                 {/* Social Media Links */}
-                <div className="flex flex-col gap-3 lg:gap-4 absolute right-0 top-0">
+                <div className="flex flex-col gap-3 lg:gap-4 absolute lg:top-0 right-0 top-1">
                   {performerDetail?.performer?.socialMediaLinks?.facebook && (
                     <a
-                      href={performerDetail?.performer?.socialMediaLinks?.facebook}
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.facebook
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 rounded-full flex items-center justify-center"
@@ -165,7 +196,9 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.instagram && (
                     <a
-                      href={performerDetail?.performer?.socialMediaLinks?.instagram}
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.instagram
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-gradient-to-r from-[#F58529] to-[#DD2A7B] rounded-full flex items-center justify-center"
@@ -180,7 +213,9 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.twitter && (
                     <a
-                      href={performerDetail?.performer?.socialMediaLinks?.twitter}
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.twitter
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -195,7 +230,9 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.tiktok && (
                     <a
-                      href={performerDetail?.performer?.socialMediaLinks?.tiktok}
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.tiktok
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -210,7 +247,9 @@ const PerformerProfile = () => {
 
                   {performerDetail?.performer?.socialMediaLinks?.youtube && (
                     <a
-                      href={performerDetail?.performer?.socialMediaLinks?.youtube}
+                      href={
+                        performerDetail?.performer?.socialMediaLinks?.youtube
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-[46px] h-[46px] lg:w-12 lg:h-12 bg-black rounded-full flex items-center justify-center"
@@ -222,7 +261,7 @@ const PerformerProfile = () => {
               </div>
 
               {/* Crown and Anniversary Section */}
-              <div className="relative mt-0 lg:mt-0">
+              <div className="relative mt-[-20px] lg:mt-[-10px]">
                 <div className="flex items-center w-full justify-center">
                   <img
                     src="/home/performer/image-tag.png"
@@ -230,15 +269,17 @@ const PerformerProfile = () => {
                     className="w-[70px] h-[70px] text-[#FF00A2]"
                   />
                   <div className="w-1/2">
-                    <div className="h-[3px] bg-[#FF00A2] ml-0"></div>
+                    <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
                   </div>
                 </div>
                 <div className="absolute left-20 top-10 right-0 text-center">
-                  <h2 className="text-[#FF00A2] text-[12px] sm:text-[20px] font-space-grotesk">
+                  <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
                     Drag Anniversary:
                     <span className="font-medium">
                       {" "}
-                      {formatDragAnniversary(performerDetail?.performer?.dragAnniversary)}
+                      {formatDragAnniversary(
+                        performerDetail?.performer?.dragAnniversary
+                      )}
                     </span>
                   </h2>
                 </div>
@@ -252,56 +293,66 @@ const PerformerProfile = () => {
               {/* About Section */}
               <div className="mb-6 lg:mb-8">
                 <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
-                  About {performerDetail?.performer?.fullDragName?.split(' ')[0] || "Performer"}'s Drag
+                  About{" "}
+                  {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
+                    "Performer"}
+                  's Drag
                 </h2>
                 <p className="text-white/90 text-[18px] font-normal">
-                  {performerDetail?.performer?.description || "No description available"}
+                  {performerDetail?.performer?.description ||
+                    "No description available"}
                 </p>
               </div>
 
               {/* Sections Grid */}
               <div className="space-y-6 lg:space-y-8">
-                {/* Drag Family Section */}
+                {/* Drag Mothers Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
                   <div>
                     <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                       Drag Mother(s)
                     </h3>
                     <div className="grid grid-cols-2 gap-2 text-white/90">
-                      {performerDetail?.performer?.dragMotherName?.map((mother, index) => (
-                        <div key={index} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                          <span>{mother}</span>
-                        </div>
-                      ))}
+                      {performerDetail?.performer?.dragMotherName?.map(
+                        (mother, index) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{mother}</span>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
+
+                  {/* Drag Family Section */}
                   <div>
                     <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                       Drag Family Associations
                     </h3>
                     <div className="grid grid-cols-2 gap-2 text-white/90">
-                      {performerDetail?.performer?.dragFamilyAssociation?.map((family, index) => (
-                        <div key={index} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                          <span>{family}</span>
-                        </div>
-                      ))}
+                      {performerDetail?.performer?.dragFamilyAssociation?.map(
+                        (family, index) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{family}</span>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Other Sections */}
+
                 <div>
                   <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
                     Competitions / Awards
                   </h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-white/90">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
                     {performerDetail?.performer?.awards?.map((award, index) => (
-                      <div key={index} className="flex items-center">
-                        <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                        <span>{award}</span>
-                      </div>
+                      <ul key={index} className="list-disc list-inside">
+                        <li>{award}</li>
+                      </ul>
                     ))}
                   </div>
                 </div>
@@ -313,11 +364,13 @@ const PerformerProfile = () => {
                   </h3>
                   <div>
                     <ul className="list-disc list-inside grid grid-cols-2 lg:grid-cols-3 text-white/90">
-                      {performerDetail?.performer?.dragPerformances?.map((item, index) => (
-                        <li key={index} className="capitalize">
-                          {item}
-                        </li>
-                      ))}
+                      {performerDetail?.performer?.dragPerformances?.map(
+                        (item, index) => (
+                          <li key={index} className="capitalize">
+                            {item}
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -328,11 +381,13 @@ const PerformerProfile = () => {
                     Illusions/Impersonations
                   </h3>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                    {performerDetail?.performer?.illusions?.map((illusion, index) => (
-                      <ul key={index} className="list-disc list-inside">
-                        <li>{illusion}</li>
-                      </ul>
-                    ))}
+                    {performerDetail?.performer?.illusions?.map(
+                      (illusion, index) => (
+                        <ul key={index} className="list-disc list-inside">
+                          <li>{illusion}</li>
+                        </ul>
+                      )
+                    )}
                   </div>
                 </div>
 
@@ -352,12 +407,17 @@ const PerformerProfile = () => {
                           case "jazzBlues":
                             return "Jazz/Blues";
                           default:
-                            return genre.charAt(0).toUpperCase() + genre.slice(1);
+                            return (
+                              genre.charAt(0).toUpperCase() + genre.slice(1)
+                            );
                         }
                       })();
 
                       return (
-                        <ul key={index} className="list-disc list-inside capitalize">
+                        <ul
+                          key={index}
+                          className="list-disc list-inside capitalize"
+                        >
                           <li>{formattedGenre}</li>
                         </ul>
                       );
@@ -367,10 +427,13 @@ const PerformerProfile = () => {
 
                 {/* Venues Section */}
                 <div>
-                  <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl">
-                    Where Can You Catch {performerDetail?.performer?.fullDragName?.split(' ')[0] || "Performer"} Performing?
+                  <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-md lg:text-xl">
+                    Where Can You Catch{" "}
+                    {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
+                      "Performer"}{" "}
+                    Performing?
                   </h2>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 text-white/90">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 text-white/90">
                     {performerDetail?.performer?.venues?.map((venue, index) => {
                       const venueLabel = venueOptions.find(
                         (option) => option.value === venue
@@ -413,7 +476,7 @@ const PerformerProfile = () => {
           <div className="bg-[#1A1A1A] rounded-xl p-4 lg:p-6">
             {/* Month Navigation */}
             <div className="flex justify-between items-center mb-6 lg:mb-8">
-              <button 
+              <button
                 onClick={handlePrevMonth}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
@@ -436,7 +499,7 @@ const PerformerProfile = () => {
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
                 {formatMonthYear(currentDate)}
               </span>
-              <button 
+              <button
                 onClick={handleNextMonth}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
@@ -475,9 +538,19 @@ const PerformerProfile = () => {
                 <div
                   key={index}
                   className={`relative h-8 lg:h-12 flex items-center justify-center
-                    ${day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() ? "bg-[#FF00A2]" : "bg-[#2A2A2A]"} 
+                    ${
+                      day === new Date().getDate() &&
+                      currentDate.getMonth() === new Date().getMonth()
+                        ? "bg-[#FF00A2]"
+                        : "bg-[#2A2A2A]"
+                    } 
                     rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                    ${day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() ? "text-white" : "text-white/60"}`}
+                    ${
+                      day === new Date().getDate() &&
+                      currentDate.getMonth() === new Date().getMonth()
+                        ? "text-white"
+                        : "text-white/60"
+                    }`}
                 >
                   {day}
                   {getEventDots(day)}

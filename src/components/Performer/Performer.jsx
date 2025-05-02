@@ -241,7 +241,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                     <img
                       src={performer?.profilePhoto}
                       alt={performer?.fullDragName?.split(" ")[0]}
-                      className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                      className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-contain"
                     />
                     <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
                     {/* Logo/Icon Image */}
