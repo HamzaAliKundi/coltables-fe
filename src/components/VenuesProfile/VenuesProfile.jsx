@@ -7,9 +7,76 @@ import { Youtube } from "lucide-react";
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const { id } = useParams();
   const { data: venueDetail, isLoading: venueDetailLoading } =
     useGetSingleVenueByIdQuery(id);
+
+  // Mock event data - This will be replaced with API data later
+  const eventDates = {
+    "2025-05": {
+      "3": { events: 1 },
+      "8": { events: 1 },
+      "10": { events: 2 },
+      "14": { events: 3 },
+      "23": { events: 1 }
+    },
+    "2025-06": {
+      "5": { events: 2 },
+      "12": { events: 1 },
+      "18": { events: 3 },
+      "25": { events: 1 }
+    }
+  };
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    // Get previous month's days
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthDays = Array.from({ length: startingDay }, (_, i) => prevMonthLastDay - startingDay + i + 1);
+    
+    // Get current month's days
+    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Get next month's days
+    const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
+    const nextMonthDays = Array.from({ length: remainingDays }, (_, i) => i + 1);
+    
+    return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+  };
+
+  const formatMonthYear = (date) => {
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+
+  const getEventDots = (day) => {
+    const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const events = eventDates[monthKey]?.[day]?.events;
+    
+    if (!events) return null;
+    
+    return (
+      <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
+        {Array.from({ length: events }, (_, i) => (
+          <div key={i} className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
+        ))}
+      </div>
+    );
+  };
 
   const formatFacility = (facility) => {
     switch (facility) {
@@ -272,7 +339,10 @@ const VenuesProfile = () => {
           <div className="bg-[#1A1A1A] rounded-xl p-3 lg:p-5">
             {/* Month Navigation */}
             <div className="flex justify-between items-center mb-5 lg:mb-6">
-              <button className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
+              <button 
+                onClick={handlePrevMonth}
+                className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
+              >
                 <svg
                   width="20"
                   height="20"
@@ -290,9 +360,12 @@ const VenuesProfile = () => {
                 </svg>
               </button>
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
-                May - 2024
+                {formatMonthYear(currentDate)}
               </span>
-              <button className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center">
+              <button 
+                onClick={handleNextMonth}
+                className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
+              >
                 <svg
                   width="20"
                   height="20"
@@ -324,39 +397,16 @@ const VenuesProfile = () => {
               ))}
 
               {/* Calendar Days */}
-              {[
-                28, 29, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                16, 17, 18, 19, 29, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-                1, 2, 3, 4, 5, 6, 7, 8,
-              ].map((day, index) => (
+              {getDaysInMonth(currentDate).map((day, index) => (
                 <div
                   key={index}
                   className={`relative h-7 lg:h-10 flex items-center justify-center
-                    ${day === 3 ? "bg-[#FF00A2]" : "bg-[#2A2A2A]"} 
+                    ${day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() ? "bg-[#FF00A2]" : "bg-[#2A2A2A]"} 
                     rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                    ${day === 3 ? "text-white" : "text-white/60"}`}
+                    ${day === new Date().getDate() && currentDate.getMonth() === new Date().getMonth() ? "text-white" : "text-white/60"}`}
                 >
                   {day}
-                  {/* Event Dots */}
-                  {day === 8 && (
-                    <div className="absolute bottom-1 lg:bottom-2 w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                  )}
-                  {day === 10 && (
-                    <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
-                      <div className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                      <div className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                    </div>
-                  )}
-                  {day === 14 && (
-                    <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
-                      <div className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                      <div className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                      <div className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                    </div>
-                  )}
-                  {day === 23 && (
-                    <div className="absolute bottom-1 lg:bottom-2 w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"></div>
-                  )}
+                  {getEventDots(day)}
                 </div>
               ))}
             </div>
