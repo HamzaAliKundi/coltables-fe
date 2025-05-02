@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
-import { useGetSingleVenueByIdQuery } from "../../apis/venues";
+import { useGetSingleVenueByIdQuery, useGetEventsByDateQuery } from "../../apis/venues";
 import { Youtube } from "lucide-react";
 
 const VenuesProfile = () => {
@@ -11,23 +11,15 @@ const VenuesProfile = () => {
   const { id } = useParams();
   const { data: venueDetail, isLoading: venueDetailLoading } =
     useGetSingleVenueByIdQuery(id);
+  const { data: events, isLoading: eventsLoading, error: eventsError } = useGetEventsByDateQuery({
+    userId: id,
+    userType: "venue",
+    month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+  });
 
-  // Mock event data - This will be replaced with API data later
-  const eventDates = {
-    "2025-05": {
-      "3": { events: 1 },
-      "8": { events: 1 },
-      "10": { events: 2 },
-      "14": { events: 3 },
-      "23": { events: 1 }
-    },
-    "2025-06": {
-      "5": { events: 2 },
-      "12": { events: 1 },
-      "18": { events: 3 },
-      "25": { events: 1 }
-    }
-  };
+  // Use API response for event dates
+  const eventDates = events?.eventDates || {};
+
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();

@@ -27,6 +27,12 @@ export const venuesApi = createApi({
         body: data,
       }),
     }),
+
+    getEventsByDate: builder.query({
+      query: ({ userId, userType, month }) => 
+        `/api/user/event/get-events-by-date?userId=${userId}&userType=${userType}&month=${month}`,
+    }),
+
   }),
 });
 
@@ -34,4 +40,5 @@ export const {
   useGetAllVenuesQuery,
   useGetSingleVenueByIdQuery,
   useUpdateVenueProfileMutation,
+  useGetEventsByDateQuery,
 } = venuesApi;
