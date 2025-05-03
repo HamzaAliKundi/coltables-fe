@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { useGetSingleEventByIdQuery } from "../../apis/events";
-import { useParams } from "react-router-dom";
-import { format } from "date-fns";
+import { Link, useParams } from "react-router-dom";
 
 const EventDetail = () => {
   const { id } = useParams();
+
   const { data: getEventsByVenuesById, isLoading: getEventLoading } =
     useGetSingleEventByIdQuery(id);
   const [showMore, setShowMore] = useState(false);
 
-  const text = getEventsByVenuesById?.event?.performersList?.length
-    ? getEventsByVenuesById?.event?.performersList?.join(", ")
-    : "N/A";
+  const performers = getEventsByVenuesById?.event?.performersList || [];
 
   const formatDate = (dateString) => {
     const options = {
@@ -71,14 +69,14 @@ const EventDetail = () => {
             alt="event"
             className="w-full max-w-[750px] h-auto object-cover rounded-lg"
           />
-          {/* <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
+          <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
-              {formatDateTime(getEventsByVenuesById?.event.startTime)?.split(" ")[1]?.replace(",", "")}
+              {formatDate(getEventsByVenuesById?.event?.startDate)?.slice(4, 6)}
             </span>
             <span className="text-base md:text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
-              {formatDateTime(getEventsByVenuesById?.event.startTime)?.slice(0, 3)}
+              {formatDate(getEventsByVenuesById?.event?.startDate)?.slice(0, 3)}
             </span>
-          </div> */}
+          </div>
         </div>
 
         <div className="w-full max-w-xl">
@@ -108,18 +106,33 @@ const EventDetail = () => {
                       alt="bullet"
                       className="w-5 h-5 mt-1"
                     />
+
                     <div className="flex flex-col">
-                      <span
+                      <div
                         className={`${
-                          showMore ? "whitespace-normal" : "truncate"
-                        } block max-w-xs`}
+                          showMore ? "flex-wrap" : "truncate"
+                        } flex gap-2 max-w-xs`}
                       >
-                        {text}
-                      </span>
-                      {text.length > 60 && (
+                        {performers.length > 0 ? (
+                          performers.map((performer) => (
+                            <Link
+                              key={performer?._id}
+                              to={`/performer-profile/${performer?._id}`}
+                              onClick={() => window.scrollTo(0, 0)}
+                              className="border-b border-gray-400"
+                            >
+                              {performer?.fullDragName}
+                            </Link>
+                          ))
+                        ) : (
+                          <span>N/A</span>
+                        )}
+                      </div>
+
+                      {performers.length > 2 && (
                         <button
                           onClick={() => setShowMore(!showMore)}
-                          className="text-blue-500 text-sm underline mt-1 self-start"
+                          className="text-[#D876B5] text-sm underline mt-1 self-start"
                         >
                           {showMore ? "Show less" : "Show more"}
                         </button>
