@@ -148,3 +148,16 @@ const WhoWeAre = () => {
 };
 
 export default WhoWeAre;
+
+{
+  /* CTA Button */
+}
+{
+  /* <div className="flex justify-center px-4 md:px-0">
+  <Link to="/host-event" className="w-full md:w-auto">
+    <button className="w-full md:w-[448px] bg-[#FF00A2] h-[40px] md:h-[46px] rounded-[50px] px-6 md:px-10 py-2 font-['Space_Grotesk'] font-normal text-[16px] md:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition-colors">
+      Looking to Host a Private Event?
+    </button>
+  </Link>
+</div> */
+}
