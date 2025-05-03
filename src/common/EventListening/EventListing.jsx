@@ -180,7 +180,7 @@ const EventListing = ({ isEvent }) => {
                       {formatDate(event.startDate)?.slice(3, 6)}
                     </span>
                     <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
-                      {formatDate(event.startTime)?.slice(0, 3)}
+                      {formatDate(event.startDate)?.slice(0, 3)}
                     </span>
                   </div>
                 </div>

@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
-import { useGetEventsByDateQuery, useGetSinglePerformerByIdQuery, useGetUpcomingEventsQuery } from "../../apis/performers";
+import {
+  useGetEventsByDateQuery,
+  useGetSinglePerformerByIdQuery,
+  useGetUpcomingEventsQuery,
+} from "../../apis/performers";
 import { Youtube } from "lucide-react";
 
 const PerformerProfile = () => {
@@ -10,19 +14,23 @@ const PerformerProfile = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedWeekStart, setSelectedWeekStart] = useState(new Date());
   const { id } = useParams();
-  const { data: performerDetail, isLoading: performerDetailLoading, error: performerError } =
-    useGetSinglePerformerByIdQuery(id);
+  const {
+    data: performerDetail,
+    isLoading: performerDetailLoading,
+    error: performerError,
+  } = useGetSinglePerformerByIdQuery(id);
   const { data: events } = useGetEventsByDateQuery({
     userId: id,
     userType: "performer",
-    month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+    month: `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`,
   });
   const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
   console.log(upcomingEvents);
 
   // Use API response for event dates
   const eventDates = events?.eventDates || {};
-
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -72,15 +80,32 @@ const PerformerProfile = () => {
   };
 
   const getEventDots = (day, isWeekView = false) => {
-    const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+    const monthKey = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`;
     const events = eventDates[monthKey]?.[day]?.events;
 
     if (!events) return null;
 
     // Check if this day is in the current week
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const isInCurrentWeek = date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                           date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    const isInCurrentWeek =
+      date >=
+        new Date(
+          selectedWeekStart.getFullYear(),
+          selectedWeekStart.getMonth(),
+          selectedWeekStart.getDate() - selectedWeekStart.getDay()
+        ) &&
+      date <=
+        new Date(
+          selectedWeekStart.getFullYear(),
+          selectedWeekStart.getMonth(),
+          selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6
+        );
 
     return (
       <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
@@ -113,7 +138,13 @@ const PerformerProfile = () => {
     start.setDate(date.getDate() - date.getDay());
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    return `${start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })} - ${end.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })}`;
   };
 
   const formatDragAnniversary = (dateString) => {
@@ -267,7 +298,7 @@ const PerformerProfile = () => {
               </div>
 
               {/* Crown and Anniversary Section */}
-              <div className="relative mt-[-20px] lg:mt-[-10px]">
+              <div className="relative mt-[-20px] lg:mt-[-15px]">
                 <div className="flex items-center w-full justify-center">
                   <img
                     src="/home/performer/image-tag.png"
@@ -447,7 +478,7 @@ const PerformerProfile = () => {
                       return (
                         <div key={index} className="flex items-center">
                           <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                          <span>{venueLabel}</span>
+                          <span>{venueLabel ? venueLabel : venue}</span>
                         </div>
                       );
                     })}
@@ -503,7 +534,9 @@ const PerformerProfile = () => {
                 </svg>
               </button>
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
-                {isMonthView ? formatMonthYear(currentDate) : formatWeekRange(selectedWeekStart)}
+                {isMonthView
+                  ? formatMonthYear(currentDate)
+                  : formatWeekRange(selectedWeekStart)}
               </span>
               <button
                 onClick={isMonthView ? handleNextMonth : handleNextWeek}
@@ -541,25 +574,48 @@ const PerformerProfile = () => {
 
               {/* Calendar Days */}
               {getDaysInMonth(currentDate).map((day, index) => {
-                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                const isToday = date.toDateString() === new Date().toDateString();
-                const isInCurrentWeek = isMonthView ? false : 
-                  (date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                   date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6));
-                
+                const date = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth(),
+                  day
+                );
+                const isToday =
+                  date.toDateString() === new Date().toDateString();
+                const isInCurrentWeek = isMonthView
+                  ? false
+                  : date >=
+                      new Date(
+                        selectedWeekStart.getFullYear(),
+                        selectedWeekStart.getMonth(),
+                        selectedWeekStart.getDate() - selectedWeekStart.getDay()
+                      ) &&
+                    date <=
+                      new Date(
+                        selectedWeekStart.getFullYear(),
+                        selectedWeekStart.getMonth(),
+                        selectedWeekStart.getDate() -
+                          selectedWeekStart.getDay() +
+                          6
+                      );
+
                 return (
                   <div
                     key={index}
                     className={`relative h-8 lg:h-12 flex items-center justify-center
-                      ${isToday 
-                        ? "bg-[#FF00A2] text-white" 
-                        : isInCurrentWeek 
-                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30" 
+                      ${
+                        isToday
+                          ? "bg-[#FF00A2] text-white"
+                          : isInCurrentWeek
+                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
                           : "bg-[#2A2A2A] text-white/60"
                       }
                       rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
                       transition-colors duration-200
-                      ${isInCurrentWeek ? 'hover:bg-[#2A1E2A]' : 'hover:bg-[#3A3A3A]'}`}
+                      ${
+                        isInCurrentWeek
+                          ? "hover:bg-[#2A1E2A]"
+                          : "hover:bg-[#3A3A3A]"
+                      }`}
                   >
                     {day}
                     {getEventDots(day, !isMonthView && isInCurrentWeek)}
@@ -573,10 +629,22 @@ const PerformerProfile = () => {
           <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() : 'FRIDAY'}
+                {upcomingEvents?.events?.[0]?.startTime
+                  ? new Date(upcomingEvents.events[0].startTime)
+                      .toLocaleDateString("en-US", { weekday: "long" })
+                      .toUpperCase()
+                  : "FRIDAY"}
               </h3>
               <span className="text-white/60 text-[14px] lg:text-[16px]">
-                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '03/05/2024'}
+                {upcomingEvents?.events?.[0]?.startTime
+                  ? new Date(
+                      upcomingEvents.events[0].startTime
+                    ).toLocaleDateString("en-US", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      year: "numeric",
+                    })
+                  : "03/05/2024"}
               </span>
             </div>
             <div className="space-y-2">
@@ -587,7 +655,12 @@ const PerformerProfile = () => {
                     i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
                   }`}
                 >
-                  {new Date(event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - {event.host}
+                  {new Date(event.startTime).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}{" "}
+                  - {event.host}
                 </div>
               ))}
             </div>

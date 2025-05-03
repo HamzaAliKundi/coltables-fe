@@ -19,14 +19,6 @@ export const eventsApi = createApi({
     getSingleEventById: builder.query({
       query: (id) => `/api/user/event/get-single-event/${id}`,
     }),
-
-    // updateVenueProfile: builder.mutation({
-    //   query: ({ data }) => ({
-    //     url: `auth/user/update-profile`,
-    //     method: "PATCH",
-    //     body: data,
-    //   }),
-    // }),
   }),
 });
 
