@@ -48,6 +48,11 @@ export const performersApi = createApi({
       query: ({ userId, userType, month }) => 
         `/api/user/event/get-events-by-date?userId=${userId}&userType=${userType}&month=${month}`,
     }),
+
+    getUpcomingEvents: builder.query({
+      query: (userId) => 
+        `/api/user/event/get-upcoming-events?userId=${userId}`,
+    }),
   }),
 });
 
@@ -57,5 +62,6 @@ export const {
   useGetPerformerReviewsQuery,
   useGetAllReviewsQuery,
   useAddReviewMutation,
-  useGetEventsByDateQuery
+  useGetEventsByDateQuery,
+  useGetUpcomingEventsQuery
 } = performersApi;

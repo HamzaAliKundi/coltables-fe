@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
-import { useGetEventsByDateQuery, useGetSinglePerformerByIdQuery } from "../../apis/performers";
+import { useGetEventsByDateQuery, useGetSinglePerformerByIdQuery, useGetUpcomingEventsQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedWeekStart, setSelectedWeekStart] = useState(new Date());
   const { id } = useParams();
   const { data: performerDetail, isLoading: performerDetailLoading, error: performerError } =
     useGetSinglePerformerByIdQuery(id);
@@ -16,6 +17,8 @@ const PerformerProfile = () => {
     userType: "performer",
     month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
   });
+  const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
+  console.log(upcomingEvents);
 
   // Use API response for event dates
   const eventDates = events?.eventDates || {};
@@ -68,24 +71,49 @@ const PerformerProfile = () => {
     return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
-  const getEventDots = (day) => {
-    const monthKey = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`;
+  const getEventDots = (day, isWeekView = false) => {
+    const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
     const events = eventDates[monthKey]?.[day]?.events;
 
     if (!events) return null;
+
+    // Check if this day is in the current week
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const isInCurrentWeek = date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
+                           date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
 
     return (
       <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
         {Array.from({ length: events }, (_, i) => (
           <div
             key={i}
-            className="w-1 lg:w-1.5 h-1 lg:h-1.5 bg-[#FF00A2] rounded-full"
+            className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full ${
+              isWeekView && isInCurrentWeek ? "bg-white" : "bg-[#FF00A2]"
+            }`}
           ></div>
         ))}
       </div>
     );
+  };
+
+  const handlePrevWeek = () => {
+    const newDate = new Date(selectedWeekStart);
+    newDate.setDate(newDate.getDate() - 7);
+    setSelectedWeekStart(newDate);
+  };
+
+  const handleNextWeek = () => {
+    const newDate = new Date(selectedWeekStart);
+    newDate.setDate(newDate.getDate() + 7);
+    setSelectedWeekStart(newDate);
+  };
+
+  const formatWeekRange = (date) => {
+    const start = new Date(date);
+    start.setDate(date.getDate() - date.getDay());
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
   };
 
   const formatDragAnniversary = (dateString) => {
@@ -452,10 +480,10 @@ const PerformerProfile = () => {
 
           {/* Calendar Component */}
           <div className="bg-[#1A1A1A] rounded-xl p-4 lg:p-6">
-            {/* Month Navigation */}
+            {/* Month/Week Navigation */}
             <div className="flex justify-between items-center mb-6 lg:mb-8">
               <button
-                onClick={handlePrevMonth}
+                onClick={isMonthView ? handlePrevMonth : handlePrevWeek}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
                 <svg
@@ -475,10 +503,10 @@ const PerformerProfile = () => {
                 </svg>
               </button>
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
-                {formatMonthYear(currentDate)}
+                {isMonthView ? formatMonthYear(currentDate) : formatWeekRange(selectedWeekStart)}
               </span>
               <button
-                onClick={handleNextMonth}
+                onClick={isMonthView ? handleNextMonth : handleNextWeek}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
                 <svg
@@ -512,28 +540,32 @@ const PerformerProfile = () => {
               ))}
 
               {/* Calendar Days */}
-              {getDaysInMonth(currentDate).map((day, index) => (
-                <div
-                  key={index}
-                  className={`relative h-8 lg:h-12 flex items-center justify-center
-                    ${
-                      day === new Date().getDate() &&
-                      currentDate.getMonth() === new Date().getMonth()
-                        ? "bg-[#FF00A2]"
-                        : "bg-[#2A2A2A]"
-                    } 
-                    rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                    ${
-                      day === new Date().getDate() &&
-                      currentDate.getMonth() === new Date().getMonth()
-                        ? "text-white"
-                        : "text-white/60"
-                    }`}
-                >
-                  {day}
-                  {getEventDots(day)}
-                </div>
-              ))}
+              {getDaysInMonth(currentDate).map((day, index) => {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                const isToday = date.toDateString() === new Date().toDateString();
+                const isInCurrentWeek = isMonthView ? false : 
+                  (date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
+                   date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6));
+                
+                return (
+                  <div
+                    key={index}
+                    className={`relative h-8 lg:h-12 flex items-center justify-center
+                      ${isToday 
+                        ? "bg-[#FF00A2] text-white" 
+                        : isInCurrentWeek 
+                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30" 
+                          : "bg-[#2A2A2A] text-white/60"
+                      }
+                      rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                      transition-colors duration-200
+                      ${isInCurrentWeek ? 'hover:bg-[#2A1E2A]' : 'hover:bg-[#3A3A3A]'}`}
+                  >
+                    {day}
+                    {getEventDots(day, !isMonthView && isInCurrentWeek)}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -541,21 +573,21 @@ const PerformerProfile = () => {
           <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                FRIDAY
+                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() : 'FRIDAY'}
               </h3>
               <span className="text-white/60 text-[14px] lg:text-[16px]">
-                03/05/2024
+                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '03/05/2024'}
               </span>
             </div>
             <div className="space-y-2">
-              {[1, 2, 3, 4].map((_, i) => (
+              {upcomingEvents?.events?.map((event, i) => (
                 <div
-                  key={i}
+                  key={event._id}
                   className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
                     i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
                   }`}
                 >
-                  7PM - Performance Place-
+                  {new Date(event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - {event.host}
                 </div>
               ))}
             </div>
