@@ -108,7 +108,7 @@ const UpComingEvents = () => {
           {/* Cards Scrollable Area */}
           <div
             ref={containerRef}
-            className="flex space-x-6 overflow-x-auto hide-scrollbar py-4 px-12"
+            className="flex space-x-6 overflow-x-auto hide-scrollbar py-4 md:px-12"
             style={{ scrollbarWidth: "none" }}
           >
             {events.map((event, index) => (

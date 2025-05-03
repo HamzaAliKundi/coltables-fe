@@ -36,14 +36,28 @@ const EventListing = ({ isEvent }) => {
     setCurrentPage(newPage);
   };
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
-  const formatDate = (dateString) => {
-    const options = { weekday: "short", month: "short", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const extractTime = (dateString) => {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+    return `${hours}:${minutes} ${ampm}`;
   };
 
   return (
@@ -163,7 +177,7 @@ const EventListing = ({ isEvent }) => {
                   />
                   <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold text-[#e3d4de] leading-none">
-                      {formatDate(event.startTime)?.split(" ")[2]}
+                      {formatDate(event.startDate)?.slice(3, 6)}
                     </span>
                     <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
                       {formatDate(event.startTime)?.slice(0, 3)}
@@ -183,7 +197,7 @@ const EventListing = ({ isEvent }) => {
                       className="mr-2 w-4 h-4"
                     />
                     <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                      Start {formatTime(event.startTime)}
+                      Starts: {extractTime(event.startTime)}
                     </span>
                   </div>
 
@@ -194,7 +208,7 @@ const EventListing = ({ isEvent }) => {
                       className="mr-2 w-4 h-4"
                     />
                     <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                      {event.location || "Location not specified"}
+                      {event.location || "N/A"}
                     </span>
                   </div>
 

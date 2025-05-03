@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useGetSingleEventByIdQuery } from "../../apis/events";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
@@ -7,11 +7,34 @@ const EventDetail = () => {
   const { id } = useParams();
   const { data: getEventsByVenuesById, isLoading: getEventLoading } =
     useGetSingleEventByIdQuery(id);
+  const [showMore, setShowMore] = useState(false);
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "Not specified";
+  const text = getEventsByVenuesById?.event?.performersList?.length
+    ? getEventsByVenuesById?.event?.performersList?.join(", ")
+    : "N/A";
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
+  const extractTime = (dateString) => {
     const date = new Date(dateString);
-    return format(date, "MMMM d, yyyy 'at' h:mm a");
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+    return `${hours}:${minutes} ${ampm}`;
   };
 
   const formatEventType = (type) => {
@@ -42,7 +65,9 @@ const EventDetail = () => {
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 justify-center w-full max-w-[1200px]">
         <div className="p-2 relative w-full lg:w-auto">
           <img
-            src={getEventsByVenuesById?.event?.image || "/events/event-1.jpg.svg"}
+            src={
+              getEventsByVenuesById?.event?.image || "/events/event-1.jpg.svg"
+            }
             alt="event"
             className="w-full max-w-[750px] h-auto object-cover rounded-lg"
           />
@@ -56,7 +81,7 @@ const EventDetail = () => {
           </div> */}
         </div>
 
-        <div className="w-full">
+        <div className="w-full max-w-xl">
           <div className="mb-6 lg:mb-8 mt-4 lg:mt-12">
             <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-base md:text-lg lg:text-xl text-center">
               {getEventsByVenuesById?.event?.title}
@@ -66,17 +91,40 @@ const EventDetail = () => {
               {/* First row */}
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-20">
-                  <div className="flex items-center gap-2">
-                    <img src="/events/Background.png" alt="bullet" className="w-5 h-5" />
-                    <span className="truncate">{getEventsByVenuesById?.event?.host}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <img src="/events/Background-1.png" alt="bullet" className="w-5 h-5" />
+                  <div className="flex items-start gap-2">
+                    <img
+                      src="/events/Background.png"
+                      alt="bullet"
+                      className="w-5 h-5"
+                    />
                     <span className="truncate">
-                      {getEventsByVenuesById?.event?.performersList?.length
-                        ? getEventsByVenuesById.event.performersList.map((p) => p.name).join(", ")
-                        : "Adriana LaRue, Adriana LaRue, Adriana LaRue"}
+                      {getEventsByVenuesById?.event?.host}
                     </span>
+                  </div>
+
+                  <div className="flex items-start gap-2 max-w-sm">
+                    <img
+                      src="/events/Background-1.png"
+                      alt="bullet"
+                      className="w-5 h-5 mt-1"
+                    />
+                    <div className="flex flex-col">
+                      <span
+                        className={`${
+                          showMore ? "whitespace-normal" : "truncate"
+                        } block max-w-xs`}
+                      >
+                        {text}
+                      </span>
+                      {text.length > 60 && (
+                        <button
+                          onClick={() => setShowMore(!showMore)}
+                          className="text-blue-500 text-sm underline mt-1 self-start"
+                        >
+                          {showMore ? "Show less" : "Show more"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -85,13 +133,26 @@ const EventDetail = () => {
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-16">
                   <div className="flex items-center gap-2">
-                    <img src="/events/Background-3.png" alt="bullet" className="w-5 h-5" />
-                    <span className="truncate">{formatDateTime(getEventsByVenuesById?.event?.startTime)}</span>
+                    <img
+                      src="/events/Background-3.png"
+                      alt="bullet"
+                      className="w-5 h-5"
+                    />
+                    <span className="truncate">
+                      {formatDate(
+                        getEventsByVenuesById?.event?.startDate
+                      )?.slice(0, 12)}
+                      , {extractTime(getEventsByVenuesById?.event?.startTime)}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <img src="/events/Background-2.png" alt="bullet" className="w-5 h-5" />
+                    <img
+                      src="/events/Background-2.png"
+                      alt="bullet"
+                      className="w-5 h-5"
+                    />
                     <span className="truncate">
-                      {getEventsByVenuesById?.event?.location || "The Montrose Country Club, Houston"}
+                      {getEventsByVenuesById?.event?.location || "N/A"}
                     </span>
                   </div>
                 </div>
@@ -100,8 +161,14 @@ const EventDetail = () => {
               {/* Third row - single item centered */}
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <div className="flex items-center gap-2">
-                  <img src="/events/Background-4.png" alt="bullet" className="w-5 h-5" />
-                  <span>{formatEventType(getEventsByVenuesById?.event?.type)}</span>
+                  <img
+                    src="/events/Background-4.png"
+                    alt="bullet"
+                    className="w-5 h-5"
+                  />
+                  <span>
+                    {formatEventType(getEventsByVenuesById?.event?.type)}
+                  </span>
                 </div>
               </div>
             </div>
