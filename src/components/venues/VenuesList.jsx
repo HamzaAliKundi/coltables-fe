@@ -56,7 +56,7 @@ const VenuesList = ({ isVenue }) => {
       {/* Category Tabs with Filter Dropdown */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="block md:flex md:justify-between md:items-center">
-          <div className="md:flex-grow md:flex md:justify-center scrollbar-hide overflow-x-auto pb-2">
+          <div className="md:flex-grow md:flex md:justify-center scrollbar-hide overflow-x-auto pb-6 md:pb-2">
             <div className="flex justify-center space-x-6 min-w-max">
               {tabs.map((tab) => (
                 <div

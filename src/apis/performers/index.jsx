@@ -26,8 +26,8 @@ export const performersApi = createApi({
     }),
 
     getAllReviews: builder.query({
-      query: ({ page, limit, userId }) =>
-        `/api/user/review/get-all-reviews?limit=${limit}&page=${page}&userId=${userId}`,
+      query: ({ page, limit, userId, userType }) =>
+        `/api/user/review/get-all-reviews?limit=${limit}&page=${page}&userId=${userId}&userType=${userType}`,
     }),
 
     addReview: builder.mutation({

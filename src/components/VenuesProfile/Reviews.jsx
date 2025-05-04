@@ -2,6 +2,57 @@ import React, { useState } from "react";
 import ReviewModal from "./ReviewModal";
 import { useParams } from "react-router-dom";
 import { useGetAllReviewsQuery } from "../../apis/performers";
+import { FaCrown } from "react-icons/fa";
+
+const StarRating = ({ rating }) => {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  return (
+    <div className="flex gap-1 mb-2">
+      {[...Array(5)].map((_, i) => {
+        if (i < fullStars) {
+          return (
+            <div
+              key={i}
+              className="bg-[#FF00A2] w-12 h-12 flex justify-center items-center rounded-md"
+            >
+              <FaCrown color="#ffff00" size={25} className="rotate-45" />
+            </div>
+          );
+        } else if (i === fullStars && hasHalfStar) {
+          return (
+            <div key={i} className="relative w-12 h-12">
+              <div className="absolute bg-white w-12 h-12 rounded-md overflow-hidden">
+                <div className="bg-[#FF00A2] w-6 h-12"></div>
+              </div>
+              <FaCrown
+                color="#ffff00"
+                size={25}
+                className="rotate-45 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              />
+            </div>
+          );
+        } else {
+          return (
+            <div
+              key={i}
+              className="bg-white w-12 h-12 flex justify-center items-center rounded-md"
+            >
+              <FaCrown color="#ffff00" size={25} className="rotate-45" />
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+};
+
+const calculateAverageRating = (reviews) => {
+  if (!reviews || reviews.length === 0) return 0;
+  const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+  return (totalRating / reviews.length).toFixed(1);
+};
 
 const Reviews = () => {
   const { id: userId } = useParams();
@@ -11,44 +62,34 @@ const Reviews = () => {
     data: reviewsData,
     isLoading,
     error,
-  } = useGetAllReviewsQuery({ page: 0, limit: 100, userId });
+  } = useGetAllReviewsQuery({ page: 0, limit: 100, userId, userType: "venue" });
 
-  // Calculate total pages for UI pagination
+  const averageRating = reviewsData?.docs
+    ? calculateAverageRating(reviewsData.docs)
+    : 0;
+
   const reviewsPerPage = 2;
   const totalPages = reviewsData
     ? Math.ceil(reviewsData.docs.length / reviewsPerPage)
     : 0;
 
-  // Get current reviews to display
   const getCurrentReviews = () => {
     if (!reviewsData?.docs) return [];
     const startIndex = currentPage * reviewsPerPage;
     return reviewsData.docs.slice(startIndex, startIndex + reviewsPerPage);
   };
 
-  // Handle next page
-  const handleNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
+  // const handleNextPage = () => {
+  //   if (currentPage < totalPages - 1) {
+  //     setCurrentPage((prev) => prev + 1);
+  //   }
+  // };
 
-  // Handle previous page
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
-
-  // Calculate average rating
-  const calculateAverageRating = () => {
-    if (!reviewsData?.docs?.length) return 0;
-    const sum = reviewsData.docs.reduce(
-      (acc, review) => acc + review.rating,
-      0
-    );
-    return (sum / reviewsData.docs.length).toFixed(1);
-  };
+  // const handlePrevPage = () => {
+  //   if (currentPage > 0) {
+  //     setCurrentPage((prev) => prev - 1);
+  //   }
+  // };
 
   if (isLoading) {
     return (
@@ -73,7 +114,7 @@ const Reviews = () => {
   return (
     <div className="mt-20 max-w-7xl mx-auto px-4 lg:px-8">
       {/* Reviews Header */}
-      <div className="flex flex-col items-center mb-12">
+      <div className="flex flex-col items-center mb-4">
         <h2 className="text-[32px] font-space-grotesk text-white">
           Fan Reviews!
         </h2>
@@ -82,23 +123,16 @@ const Reviews = () => {
 
       {/* TrustScore Section */}
       <div className="flex flex-col items-center mb-12">
-        <div className="flex gap-1 mb-2">
-          {[1, 2, 3, 4, 5].map((_, index) => (
-            <div
-              key={index}
-              className="w-12 h-12 bg-[#FF00A2] flex items-center justify-center rounded-lg"
-            >
-              <img src="/performer-profile/crown2.svg" alt="crown" />
-            </div>
-          ))}
-        </div>
-        {/* <div className="flex items-center gap-2 text-white">
+        {/* <div className="flex items-center gap-2 text-white mb-4">
           <span className="text-lg">TrustScore</span>
-          <span className="text-2xl font-bold">{calculateAverageRating()}</span>
+          <span className="text-2xl font-bold">{averageRating}</span>
           <span className="text-lg">|</span>
-          <span className="text-2xl font-bold">{reviewsData?.docs?.length || 0}</span>
+          <span className="text-2xl font-bold">
+            {reviewsData?.docs?.length || 0}
+          </span>
           <span className="text-lg">reviews</span>
         </div> */}
+        <StarRating rating={averageRating} />
       </div>
 
       {/* Reviews Slider */}
