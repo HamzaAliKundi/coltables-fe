@@ -183,7 +183,7 @@ const PerformerSlider = () => {
                 </div>
               ))
             ) : (
-              <h1>Nothing to show!</h1>
+              <h1 className="w-full text-center">Nothing to show!</h1>
             )}
           </div>
         </div>
