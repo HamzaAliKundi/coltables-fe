@@ -149,11 +149,11 @@ const Reviews = () => {
           </div>
         ) : (
           <>
-            <div className="flex gap-6 overflow-hidden">
-              {getCurrentReviews().map((review) => (
+            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 md:overflow-hidden md:mx-0 md:px-0">
+              {reviewsData.docs.map((review) => (
                 <div
                   key={review._id}
-                  className={`flex-none w-full md:w-[calc(50%-12px)] h-[294px] rounded-2xl p-8 relative
+                  className={`flex-none w-full md:w-[calc(50%-12px)] h-[294px] rounded-2xl p-8 relative snap-center
                     bg-gradient-to-br from-[#FF00A2]/40 to-[#2A2A2A]`}
                 >
                   <div className="absolute left-0 top-0 w-2 h-full bg-[#FF00A2] rounded-l-2xl"></div>
@@ -196,9 +196,9 @@ const Reviews = () => {
               ))}
             </div>
 
-            {/* Navigation Dots */}
+            {/* Show dots only on desktop since mobile has scroll */}
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-8">
+              <div className="hidden md:flex justify-center gap-2 mt-8">
                 {Array(totalPages)
                   .fill(null)
                   .map((_, index) => (
