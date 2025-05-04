@@ -167,22 +167,22 @@ const EventListing = ({ isEvent }) => {
             .map((event) => (
               <div
                 key={event._id}
-                className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[544px] relative"
+                className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[475px] relative"
               >
                 <div className="p-2 relative">
                   <img
-                    src="/home/eventlisting/eventt.png"
+                    src={event.image}
                     alt="Event"
                     className="w-full h-[220px] rounded-[8px] object-cover"
                   />
-                  <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
+                  {/* <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
                     <span className="text-2xl font-bold text-[#e3d4de] leading-none">
                     {formatDate(event.startDate)?.replace(',', '').slice(3, 6)}
                     </span>
                     <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
                       {formatDate(event.startDate)?.slice(0, 3)}
                     </span>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Event Details */}
