@@ -66,7 +66,7 @@ const Banner = () => {
       {/* Text Content */}
       <div className="absolute left-0 right-0 top-[140px] md:top-[280px] z-10 px-4 text-center">
         
-        <h1 className="font-['Space_Grotesk'] font-bold text-[32px] md:text-[68px] leading-[36px] md:leading-[70px] text-white">
+        <h1 className="font-['Space_Grotesk'] font-bold text-[28px] md:text-[68px] leading-[36px] md:leading-[70px] text-white">
         Where can <span className="text-[#FF00A2]">you find</span><br />the Drag?
         </h1>
       </div>
@@ -87,7 +87,7 @@ const Banner = () => {
               <img 
                 src={bannerImages[currentSlide]} 
                 alt="Venue visual" 
-                className="object-cover w-full h-full"
+                className="object-contain w-full md:w-[650px] h-[400px] md:h-[650px]"
               />
             </motion.div>
           </AnimatePresence>

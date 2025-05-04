@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
 import { useGetSingleVenueByIdQuery, useGetEventsByDateQuery } from "../../apis/venues";
 import { Youtube } from "lucide-react";
 import { useGetUpcomingEventsQuery } from "../../apis/performers";
+import Gallery from "../PerformerProfile/Gallery";
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
@@ -485,7 +485,7 @@ const VenuesProfile = () => {
           </div>
         </div>
       </div>
-      <Gallery />
+      <Gallery images={venueDetail?.venue?.images || []} />
       <Reviews />
     </div>
   );

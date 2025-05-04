@@ -182,7 +182,7 @@ const UpComingEvents = () => {
                           </button>
                         </Link>
 
-                        <Link to="/events" onClick={() => window.scrollTo(0, 0)}>
+                        <Link to="#">
                           <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>
