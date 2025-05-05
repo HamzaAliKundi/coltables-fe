@@ -12,8 +12,14 @@ export const venuesApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllVenues: builder.query({
-      query: ({ page, limit }) =>
-        `/api/user/venue/get-all-venues?limit=${limit}&page=${page}&sort=-1`,
+      query: ({ page, limit, venueType }) => {
+        const params = new URLSearchParams();
+        params.append('limit', limit);
+        params.append('page', page);
+        // params.append('sort', -1);
+        if (venueType) params.append('venueType', venueType);
+        return `/api/user/venue/get-all-venues?${params.toString()}`;
+      },
     }),
 
     getSingleVenueById: builder.query({

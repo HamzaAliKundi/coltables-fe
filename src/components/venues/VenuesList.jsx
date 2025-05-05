@@ -1,33 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../../common/EventListening/Pagination";
 import { useGetAllVenuesQuery } from "../../apis/venues";
 
 const VenuesList = ({ isVenue }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const venuesPerPage = 4;
-
+  const venuesPerPage = 12;
   const [activeTab, setActiveTab] = useState("Restaurants/Dining");
-  const { data: allVenuesData, isLoading: allVenuesLoading } =
-    useGetAllVenuesQuery({ page: 1, limit: 1000 });
+  const [isTabLoading, setIsTabLoading] = useState(false);
+
+  const { data: allVenuesData, isLoading: allVenuesLoading, isFetching } = useGetAllVenuesQuery({
+    page: currentPage,
+    limit: venuesPerPage,
+    venueType: activeTab
+  }, {
+    refetchOnMountOrArgChange: true
+  });
 
   const tabs = ["Bar/Club", "Restaurants/Dining", "Other"];
-
-  const filteredVenues =
-    allVenuesData?.docs?.filter((venue) => {
-      if (activeTab === "Bar/Club") {
-        return venue.venueType === "Bar/Club";
-      } else if (activeTab === "Restaurants/Dining") {
-        return venue.venueType === "Restaurants/Dining";
-      } else if (activeTab === "Other") {
-        return venue.venueType === "Other";
-      }
-      return true;
-    }) || [];
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
+  const handleTabChange = (tabValue) => {
+    if (tabValue === activeTab) return; // Don't do anything if clicking the same tab
+    setIsTabLoading(true);
+    setActiveTab(tabValue);
+    setCurrentPage(1);
+  };
+
+  // Reset loading state when data is fetched
+  useEffect(() => {
+    if (!isFetching) {
+      setIsTabLoading(false);
+    }
+  }, [isFetching]);
 
   return (
     <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
@@ -62,7 +70,7 @@ const VenuesList = ({ isVenue }) => {
                 <div
                   key={tab}
                   className="relative cursor-pointer flex flex-col items-center"
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabChange(tab)}
                 >
                   <div className="flex items-center mb-2">
                     {tab === "Bar/Club" && (
@@ -86,7 +94,9 @@ const VenuesList = ({ isVenue }) => {
                         className="w-6 h-6 mr-2"
                       />
                     )}
-                    <span className="font-['Space_Grotesk'] font-normal text-[18px] capitalize text-white">
+                    <span className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
+                      activeTab === tab ? "text-[#FF00A2]" : "text-white"
+                    }`}>
                       {tab}
                     </span>
                   </div>
@@ -102,44 +112,39 @@ const VenuesList = ({ isVenue }) => {
 
       {/* Performer cards grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6">
-        {allVenuesLoading ? (
+        {(allVenuesLoading || isTabLoading) ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : filteredVenues.length > 0 ? (
-          filteredVenues
-            .slice(
-              (currentPage - 1) * venuesPerPage,
-              currentPage * venuesPerPage
-            )
-            .map((venue) => (
-              <div
-                key={venue._id}
-                className="w-full h-[475px] md:h-[475px] relative"
-              >
-                {/* Main Image */}
-                <div className="relative">
-                  <img
-                    src={venue?.logo}
-                    alt={venue?.name}
-                    className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
-                  />
-                </div>
-
-                <div className="text-black rounded-b-[8px] pt-8 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col items-center">
-                  <div className="h-[60px] text-center">
-                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
-                      {venue?.name}
-                    </h3>
-                  </div>
-                  <Link to={`/venue-profile/${venue?._id}`} onClick={() => window.scrollTo(0, 0)}>
-                    <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
-                      View Details
-                    </button>
-                  </Link>
-                </div>
+        ) : allVenuesData?.docs?.length > 0 ? (
+          allVenuesData.docs.map((venue) => (
+            <div
+              key={venue._id}
+              className="w-full h-[475px] md:h-[475px] relative"
+            >
+              {/* Main Image */}
+              <div className="relative">
+                <img
+                  src={venue?.logo}
+                  alt={venue?.name}
+                  className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                />
               </div>
-            ))
+
+              <div className="text-black rounded-b-[8px] pt-8 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col items-center">
+                <div className="h-[60px] text-center">
+                  <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
+                    {venue?.name}
+                  </h3>
+                </div>
+                <Link to={`/venue-profile/${venue?._id}`} onClick={() => window.scrollTo(0, 0)}>
+                  <button className="w-[160px] sm:w-[198px] h-[50px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[16px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
+                    View Details
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ))
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
@@ -149,11 +154,11 @@ const VenuesList = ({ isVenue }) => {
         )}
       </div>
 
-      {isVenue && filteredVenues?.length > venuesPerPage && (
+      {isVenue && allVenuesData?.totalPages > 1 && (
         <div className="flex justify-center w-full">
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.ceil(filteredVenues.length / venuesPerPage)}
+            totalPages={allVenuesData.totalPages}
             onPageChange={handlePageChange}
           />
         </div>
