@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
@@ -7,11 +7,14 @@ const EventListing = ({ isEvent }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = isEvent ? 10 : 8;
   const [activeTab, setActiveTab] = useState("drag-show");
+  const [isTabLoading, setIsTabLoading] = useState(false);
 
-  const { data: allEventsData, isLoading: allEventsLoading } = useGetAllEventsQuery({
+  const { data: allEventsData, isLoading: allEventsLoading, isFetching, refetch } = useGetAllEventsQuery({
     page: currentPage,
     limit: eventsPerPage,
     type: activeTab === "other" ? "other" : activeTab
+  }, {
+    refetchOnMountOrArgChange: true
   });
 
   const tabs = [
@@ -27,9 +30,19 @@ const EventListing = ({ isEvent }) => {
   };
 
   const handleTabChange = (tabValue) => {
+    if (tabValue === activeTab) return; // Don't do anything if clicking the same tab
+    setIsTabLoading(true);
     setActiveTab(tabValue);
-    setCurrentPage(1); // Reset to first page when changing tabs
+    setCurrentPage(1);
+    refetch(); // Force refetch when tab changes
   };
+
+  // Reset loading state when data is fetched
+  useEffect(() => {
+    if (!isFetching) {
+      setIsTabLoading(false);
+    }
+  }, [isFetching]);
 
   const formatDate = (dateString) => {
     const options = {
@@ -149,7 +162,7 @@ const EventListing = ({ isEvent }) => {
 
       {/* Event Cards Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {allEventsLoading ? (
+        {(allEventsLoading || isTabLoading) ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
