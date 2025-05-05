@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import Reviews from "./Reviews";
 import { useParams } from "react-router-dom";
-import { useGetSingleVenueByIdQuery, useGetEventsByDateQuery } from "../../apis/venues";
+import {
+  useGetSingleVenueByIdQuery,
+  useGetEventsByDateQuery,
+} from "../../apis/venues";
 import { Youtube } from "lucide-react";
 import { useGetUpcomingEventsQuery } from "../../apis/performers";
 import Gallery from "../PerformerProfile/Gallery";
@@ -13,16 +16,21 @@ const VenuesProfile = () => {
   const { id } = useParams();
   const { data: venueDetail, isLoading: venueDetailLoading } =
     useGetSingleVenueByIdQuery(id);
-  const { data: events, isLoading: eventsLoading, error: eventsError } = useGetEventsByDateQuery({
+  const {
+    data: events,
+    isLoading: eventsLoading,
+    error: eventsError,
+  } = useGetEventsByDateQuery({
     userId: id,
     userType: "venue",
-    month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+    month: `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`,
   });
   const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
 
   // Use API response for event dates
   const eventDates = events?.eventDates || {};
-
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -31,27 +39,40 @@ const VenuesProfile = () => {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
-    
+
     // Get previous month's days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    const prevMonthDays = Array.from({ length: startingDay }, (_, i) => prevMonthLastDay - startingDay + i + 1);
-    
+    const prevMonthDays = Array.from(
+      { length: startingDay },
+      (_, i) => prevMonthLastDay - startingDay + i + 1
+    );
+
     // Get current month's days
-    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    
+    const currentMonthDays = Array.from(
+      { length: daysInMonth },
+      (_, i) => i + 1
+    );
+
     // Get next month's days
     const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
-    const nextMonthDays = Array.from({ length: remainingDays }, (_, i) => i + 1);
-    
+    const nextMonthDays = Array.from(
+      { length: remainingDays },
+      (_, i) => i + 1
+    );
+
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
   const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+    );
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+    );
   };
 
   const handlePrevWeek = () => {
@@ -67,7 +88,7 @@ const VenuesProfile = () => {
   };
 
   const formatMonthYear = (date) => {
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
   const formatWeekRange = (date) => {
@@ -75,20 +96,43 @@ const VenuesProfile = () => {
     start.setDate(date.getDate() - date.getDay());
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    return `${start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })} - ${end.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })}`;
   };
 
   const getEventDots = (day) => {
-    const monthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const monthKey = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}`;
     const events = eventDates[monthKey]?.[day]?.events;
-    
+
     if (!events) return null;
 
     // Check if this day is in the current week
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const isInCurrentWeek = date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                          date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
-    
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    const isInCurrentWeek =
+      date >=
+        new Date(
+          selectedWeekStart.getFullYear(),
+          selectedWeekStart.getMonth(),
+          selectedWeekStart.getDate() - selectedWeekStart.getDay()
+        ) &&
+      date <=
+        new Date(
+          selectedWeekStart.getFullYear(),
+          selectedWeekStart.getMonth(),
+          selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6
+        );
+
     return (
       <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
         {Array.from({ length: events }, (_, i) => (
@@ -259,9 +303,11 @@ const VenuesProfile = () => {
                     Which Performers May You Find Here?
                   </h3>
                   <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
-                    {venueDetail?.venue?.topDragPerformers?.map((performer, index) => (
-                      <li key={index}>{performer}</li>
-                    ))}
+                    {venueDetail?.venue?.topDragPerformers?.map(
+                      (performer, index) => (
+                        <li key={index}>{performer}</li>
+                      )
+                    )}
                   </ul>
                 </div>
 
@@ -364,7 +410,7 @@ const VenuesProfile = () => {
           <div className="bg-[#1A1A1A] rounded-xl p-3 lg:p-5">
             {/* Month/Week Navigation */}
             <div className="flex justify-between items-center mb-5 lg:mb-6">
-              <button 
+              <button
                 onClick={isMonthView ? handlePrevMonth : handlePrevWeek}
                 className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
@@ -385,9 +431,11 @@ const VenuesProfile = () => {
                 </svg>
               </button>
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
-                {isMonthView ? formatMonthYear(currentDate) : formatWeekRange(selectedWeekStart)}
+                {isMonthView
+                  ? formatMonthYear(currentDate)
+                  : formatWeekRange(selectedWeekStart)}
               </span>
-              <button 
+              <button
                 onClick={isMonthView ? handleNextMonth : handleNextWeek}
                 className="w-9 h-9 lg:w-10 lg:h-10 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
               >
@@ -423,25 +471,48 @@ const VenuesProfile = () => {
 
               {/* Calendar Days */}
               {getDaysInMonth(currentDate).map((day, index) => {
-                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                const isToday = date.toDateString() === new Date().toDateString();
-                const isInCurrentWeek = isMonthView ? false : 
-                  (date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                   date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6));
-                
+                const date = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth(),
+                  day
+                );
+                const isToday =
+                  date.toDateString() === new Date().toDateString();
+                const isInCurrentWeek = isMonthView
+                  ? false
+                  : date >=
+                      new Date(
+                        selectedWeekStart.getFullYear(),
+                        selectedWeekStart.getMonth(),
+                        selectedWeekStart.getDate() - selectedWeekStart.getDay()
+                      ) &&
+                    date <=
+                      new Date(
+                        selectedWeekStart.getFullYear(),
+                        selectedWeekStart.getMonth(),
+                        selectedWeekStart.getDate() -
+                          selectedWeekStart.getDay() +
+                          6
+                      );
+
                 return (
                   <div
                     key={index}
                     className={`relative h-7 lg:h-10 flex items-center justify-center
-                      ${isToday 
-                        ? "bg-[#FF00A2] text-white" 
-                        : isInCurrentWeek 
-                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30" 
+                      ${
+                        isToday
+                          ? "bg-[#FF00A2] text-white"
+                          : isInCurrentWeek
+                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
                           : "bg-[#2A2A2A] text-white/60"
                       }
                       rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
                       transition-colors duration-200
-                      ${isInCurrentWeek ? 'hover:bg-[#2A1E2A]' : 'hover:bg-[#3A3A3A]'}`}
+                      ${
+                        isInCurrentWeek
+                          ? "hover:bg-[#2A1E2A]"
+                          : "hover:bg-[#3A3A3A]"
+                      }`}
                   >
                     {day}
                     {getEventDots(day)}
@@ -452,28 +523,47 @@ const VenuesProfile = () => {
           </div>
 
           {/* Events Section */}
-          <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase() : 'FRIDAY'}
-              </h3>
-              <span className="text-white/60 text-[14px] lg:text-[16px]">
-                {upcomingEvents?.events?.[0]?.startTime ? new Date(upcomingEvents.events[0].startTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '03/05/2024'}
-              </span>
+          {upcomingEvents?.events?.length ? (
+            <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
+                  {upcomingEvents?.events?.[0]?.startTime
+                    ? new Date(upcomingEvents.events[0].startTime)
+                        .toLocaleDateString("en-US", { weekday: "long" })
+                        .toUpperCase()
+                    : "FRIDAY"}
+                </h3>
+                <span className="text-white/60 text-[14px] lg:text-[16px]">
+                  {upcomingEvents?.events?.[0]?.startTime
+                    ? new Date(
+                        upcomingEvents.events[0].startTime
+                      ).toLocaleDateString("en-US", {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric",
+                      })
+                    : "03/05/2024"}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {upcomingEvents?.events?.map((event, i) => (
+                  <div
+                    key={event._id}
+                    className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
+                      i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
+                    }`}
+                  >
+                    {new Date(event.startTime).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}{" "}
+                    - {event.host}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {upcomingEvents?.events?.map((event, i) => (
-                <div
-                  key={event._id}
-                  className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
-                    i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
-                  }`}
-                >
-                  {new Date(event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} - {event.host}
-                </div>
-              ))}
-            </div>
-          </div>
+          ) : null}
 
           {/* Ad Image */}
           <div className="mt-5">

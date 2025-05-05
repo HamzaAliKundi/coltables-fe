@@ -73,11 +73,11 @@ const Reviews = () => {
     ? Math.ceil(reviewsData.docs.length / reviewsPerPage)
     : 0;
 
-  const getCurrentReviews = () => {
-    if (!reviewsData?.docs) return [];
-    const startIndex = currentPage * reviewsPerPage;
-    return reviewsData.docs.slice(startIndex, startIndex + reviewsPerPage);
-  };
+  // const getCurrentReviews = () => {
+  //   if (!reviewsData?.docs) return [];
+  //   const startIndex = currentPage * reviewsPerPage;
+  //   return reviewsData.docs.slice(startIndex, startIndex + reviewsPerPage);
+  // };
 
   // const handleNextPage = () => {
   //   if (currentPage < totalPages - 1) {
