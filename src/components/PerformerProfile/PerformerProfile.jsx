@@ -626,45 +626,47 @@ const PerformerProfile = () => {
           </div>
 
           {/* Events Section */}
-          <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                {upcomingEvents?.events?.[0]?.startTime
-                  ? new Date(upcomingEvents.events[0].startTime)
-                      .toLocaleDateString("en-US", { weekday: "long" })
-                      .toUpperCase()
-                  : "FRIDAY"}
-              </h3>
-              <span className="text-white/60 text-[14px] lg:text-[16px]">
-                {upcomingEvents?.events?.[0]?.startTime
-                  ? new Date(
-                      upcomingEvents.events[0].startTime
-                    ).toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      year: "numeric",
-                    })
-                  : "03/05/2024"}
-              </span>
+          {upcomingEvents?.events?.length ? (
+            <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
+                  {upcomingEvents?.events?.[0]?.startTime
+                    ? new Date(upcomingEvents.events[0].startTime)
+                        .toLocaleDateString("en-US", { weekday: "long" })
+                        .toUpperCase()
+                    : "FRIDAY"}
+                </h3>
+                <span className="text-white/60 text-[14px] lg:text-[16px]">
+                  {upcomingEvents?.events?.[0]?.startTime
+                    ? new Date(
+                        upcomingEvents.events[0].startTime
+                      ).toLocaleDateString("en-US", {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric",
+                      })
+                    : "03/05/2024"}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {upcomingEvents?.events?.map((event, i) => (
+                  <div
+                    key={event._id}
+                    className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
+                      i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
+                    }`}
+                  >
+                    {new Date(event.startTime).toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}{" "}
+                    - {event.host}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {upcomingEvents?.events?.map((event, i) => (
-                <div
-                  key={event._id}
-                  className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
-                    i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
-                  }`}
-                >
-                  {new Date(event.startTime).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}{" "}
-                  - {event.host}
-                </div>
-              ))}
-            </div>
-          </div>
+          ) : null}
 
           {/* Ad Image */}
           <div className="mt-5">
