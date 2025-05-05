@@ -5,11 +5,14 @@ import { useGetAllEventsQuery } from "../../apis/events";
 
 const EventListing = ({ isEvent }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 4;
-
+  const eventsPerPage = isEvent ? 10 : 8;
   const [activeTab, setActiveTab] = useState("drag-show");
-  const { data: allEventsData, isLoading: allEventsLoading } =
-    useGetAllEventsQuery({ page: 1, limit: 1000 });
+
+  const { data: allEventsData, isLoading: allEventsLoading } = useGetAllEventsQuery({
+    page: currentPage,
+    limit: eventsPerPage,
+    type: activeTab === "other" ? "other" : activeTab
+  });
 
   const tabs = [
     { value: "drag-show", label: "Drag Show" },
@@ -19,21 +22,13 @@ const EventListing = ({ isEvent }) => {
     { value: "other", label: "Other" },
   ];
 
-  const filteredEvents =
-    allEventsData?.docs?.filter((event) => {
-      if (activeTab === "other") {
-        return ![
-          "drag-show",
-          "drag-brunch",
-          "drag-bingo",
-          "drag-trivia",
-        ].includes(event.type);
-      }
-      return event.type === activeTab;
-    }) || [];
-
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+  };
+
+  const handleTabChange = (tabValue) => {
+    setActiveTab(tabValue);
+    setCurrentPage(1); // Reset to first page when changing tabs
   };
 
   const formatDate = (dateString) => {
@@ -98,7 +93,7 @@ const EventListing = ({ isEvent }) => {
             <div
               key={tab.value}
               className="relative cursor-pointer flex flex-col items-center"
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => handleTabChange(tab.value)}
             >
               <div className="flex items-center mb-2">
                 {tab.value === "drag-show" && (
@@ -158,74 +153,69 @@ const EventListing = ({ isEvent }) => {
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : filteredEvents.length > 0 ? (
-          filteredEvents
-            .slice(
-              (currentPage - 1) * eventsPerPage,
-              currentPage * eventsPerPage
-            )
-            .map((event) => (
-              <div
-                key={event._id}
-                className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[475px] relative"
-              >
-                <div className="p-2 relative">
+        ) : allEventsData?.docs?.length > 0 ? (
+          allEventsData.docs.map((event) => (
+            <div
+              key={event._id}
+              className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[475px] relative"
+            >
+              <div className="p-2 relative">
+                <img
+                  src={event.image}
+                  alt="Event"
+                  className="w-full h-[220px] rounded-[8px] object-cover"
+                />
+                {/* <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-[#e3d4de] leading-none">
+                  {formatDate(event.startDate)?.replace(',', '').slice(3, 6)}
+                  </span>
+                  <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
+                    {formatDate(event.startDate)?.slice(0, 3)}
+                  </span>
+                </div> */}
+              </div>
+
+              {/* Event Details */}
+              <div className="p-5">
+                <h3 className="font-['Space_Grotesk'] font-bold text-[24px] leading-[100%] capitalize text-white mb-6">
+                  {event.title}
+                </h3>
+                <div className="flex items-center mb-4 text-gray-300">
                   <img
-                    src={event.image}
-                    alt="Event"
-                    className="w-full h-[220px] rounded-[8px] object-cover"
+                    src="/home/eventlisting/time.png"
+                    alt="Time"
+                    className="mr-2 w-4 h-4"
                   />
-                  {/* <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold text-[#e3d4de] leading-none">
-                    {formatDate(event.startDate)?.replace(',', '').slice(3, 6)}
-                    </span>
-                    <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
-                      {formatDate(event.startDate)?.slice(0, 3)}
-                    </span>
-                  </div> */}
+                  <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
+                    Starts: {extractTime(event.startTime)}
+                  </span>
                 </div>
 
-                {/* Event Details */}
-                <div className="p-5">
-                  <h3 className="font-['Space_Grotesk'] font-bold text-[24px] leading-[100%] capitalize text-white mb-6">
-                    {event.title}
-                  </h3>
-                  <div className="flex items-center mb-4 text-gray-300">
-                    <img
-                      src="/home/eventlisting/time.png"
-                      alt="Time"
-                      className="mr-2 w-4 h-4"
-                    />
-                    <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                      Starts: {extractTime(event.startTime)}
-                    </span>
-                  </div>
+                <div className="flex items-center mb-8 text-gray-300">
+                  <img
+                    src="/home/eventlisting/location.png"
+                    alt="Location"
+                    className="mr-2 w-4 h-4"
+                  />
+                  <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
+                    {event?.host || "N/A"}
+                  </span>
+                </div>
 
-                  <div className="flex items-center mb-8 text-gray-300">
-                    <img
-                      src="/home/eventlisting/location.png"
-                      alt="Location"
-                      className="mr-2 w-4 h-4"
-                    />
-                    <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                      {event.location || "N/A"}
-                    </span>
-                  </div>
-
-                  {/* View Details Button */}
-                  <div className="absolute bottom-5 left-0 w-full px-5">
-                    <Link
-                      to={`/event-detail/${event._id}`}
-                      onClick={() => window.scrollTo(0, 0)}
-                    >
-                      <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
-                        VIEW DETAILS
-                      </button>
-                    </Link>
-                  </div>
+                {/* View Details Button */}
+                <div className="absolute bottom-5 left-0 w-full px-5">
+                  <Link
+                    to={`/event-detail/${event._id}`}
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
+                    <button className="w-full h-[51px] bg-[#FF00A2] rounded-[30px] font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase text-white hover:bg-pink-600 transition">
+                      VIEW DETAILS
+                    </button>
+                  </Link>
                 </div>
               </div>
-            ))
+            </div>
+          ))
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
@@ -235,11 +225,11 @@ const EventListing = ({ isEvent }) => {
         )}
       </div>
 
-      {isEvent && filteredEvents.length > eventsPerPage && (
+      {isEvent && allEventsData?.totalPages > 1 && (
         <div className="flex justify-center w-full mt-8">
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.ceil(filteredEvents.length / eventsPerPage)}
+            totalPages={allEventsData.totalPages}
             onPageChange={handlePageChange}
           />
         </div>
