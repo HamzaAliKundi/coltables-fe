@@ -9,7 +9,7 @@ const EventListing = ({ isEvent }) => {
   const [activeTab, setActiveTab] = useState("drag-show");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
-  const { data: allEventsData, isLoading: allEventsLoading, isFetching, refetch } = useGetAllEventsQuery({
+  const { data: allEventsData, isLoading: allEventsLoading, isFetching } = useGetAllEventsQuery({
     page: currentPage,
     limit: eventsPerPage,
     type: activeTab === "other" ? "other" : activeTab
@@ -34,7 +34,6 @@ const EventListing = ({ isEvent }) => {
     setIsTabLoading(true);
     setActiveTab(tabValue);
     setCurrentPage(1);
-    refetch(); // Force refetch when tab changes
   };
 
   // Reset loading state when data is fetched
