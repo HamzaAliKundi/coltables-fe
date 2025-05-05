@@ -12,8 +12,16 @@ export const performersApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllPerformers: builder.query({
-      query: ({ page, limit, search, address }) =>
-        `/api/user/performer/get-all-performers?limit=${limit}&page=${page}&sort=-1&search=${search}&address=${address}`,
+      query: ({ page, limit, search, address, pronoun }) => {
+        const params = new URLSearchParams();
+        params.append('limit', limit);
+        params.append('page', page);
+        // params.append('sort', -1);
+        if (search) params.append('search', search);
+        if (address) params.append('address', address);
+        if (pronoun) params.append('pronoun', pronoun);
+        return `/api/user/performer/get-all-performers?${params.toString()}`;
+      },
     }),
 
     getSinglePerformerById: builder.query({

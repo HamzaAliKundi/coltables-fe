@@ -9,7 +9,7 @@ const PerformerSlider = () => {
   const { data: allPerformersData, isLoading: allPerformersDataLoading } =
     useGetAllPerformersQuery({
       page: 1,
-      limit: 1000,
+      limit: 12,
       search: "",
     });
 
