@@ -7,24 +7,28 @@ import { cityOptions } from "../../utils/citiesList";
 const Performer = ({ isPerformer, searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const performersPerPage = 8;
-  const [activeTab, setActiveTab] = useState("all performers");
+  const [activeTab, setActiveTab] = useState("all");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState({
     label: "Filter by",
     value: "",
   });
+  const [isTabLoading, setIsTabLoading] = useState(false);
   const dropdownRef = useRef(null);
 
   const {
     data: allPerformersData,
-    isLoading,
-    refetch,
+    isLoading: allPerformersLoading,
+    isFetching,
   } = useGetAllPerformersQuery({
-    page: 1,
-    limit: 1000,
+    page: currentPage,
+    limit: performersPerPage,
     search: searchQuery || "",
     address: selectedOption.value || undefined,
+    pronoun: activeTab === "all" ? undefined : activeTab
+  }, {
+    refetchOnMountOrArgChange: true
   });
 
   useEffect(() => {
@@ -32,24 +36,29 @@ const Performer = ({ isPerformer, searchQuery }) => {
   }, [searchQuery, activeTab, selectedOption]);
 
   const tabs = [
-    { label: "Drag Queens", value: "she/her" },
-    { label: "Drag Kings", value: "he/him" },
-    { label: "Other Performers", value: "other" },
-    { label: "All Performers", value: "all performers" },
+    { label: "Drag Queens", value: "drag-queen" },
+    { label: "Drag Kings", value: "drag-king" },
+    { label: "Other Performers", value: "other-performer" },
+    { label: "All Performers", value: "all" },
   ];
-
-  const filteredPerformers =
-    allPerformersData?.docs?.filter((performer) => {
-      if (activeTab === "all performers") return true;
-      if (activeTab === "other") {
-        return !["she/her", "he/him"].includes(performer.pronoun);
-      }
-      return performer.pronoun === activeTab;
-    }) || [];
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
+  const handleTabChange = (tabValue) => {
+    if (tabValue === activeTab) return; // Don't do anything if clicking the same tab
+    setIsTabLoading(true);
+    setActiveTab(tabValue);
+    setCurrentPage(1);
+  };
+
+  // Reset loading state when data is fetched
+  useEffect(() => {
+    if (!isFetching) {
+      setIsTabLoading(false);
+    }
+  }, [isFetching]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -75,7 +84,6 @@ const Performer = ({ isPerformer, searchQuery }) => {
     setSelectedOption(option);
     setIsOpen(false);
     setSearchTerm("");
-    refetch();
   };
 
   return (
@@ -104,31 +112,31 @@ const Performer = ({ isPerformer, searchQuery }) => {
                   <div
                     key={tab.value}
                     className="relative cursor-pointer flex flex-col items-center"
-                    onClick={() => setActiveTab(tab.value)}
+                    onClick={() => handleTabChange(tab.value)}
                   >
                     <div className="flex items-center mb-2">
-                      {tab.value === "she/her" && (
+                      {tab.value === "drag-queen" && (
                         <img
                           src="/home/eventlisting/drag-show.png"
                           alt="Drag Queens"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab.value === "he/him" && (
+                      {tab.value === "drag-king" && (
                         <img
                           src="/home/eventlisting/drag-brunch.png"
                           alt="Drag Kings"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab.value === "other" && (
+                      {tab.value === "other-performer" && (
                         <img
                           src="/home/eventlisting/drag-bingo.png"
                           alt="Other Performers"
                           className="w-6 h-6 mr-2"
                         />
                       )}
-                      {tab.value === "all performers" && (
+                      {tab.value === "all" && (
                         <img
                           src="/home/eventlisting/other-event.png"
                           alt="All Performers"
@@ -221,53 +229,48 @@ const Performer = ({ isPerformer, searchQuery }) => {
 
         {/* Performer cards grid */}
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {isLoading ? (
+          {(allPerformersLoading || isTabLoading) ? (
             <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
               <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
             </div>
-          ) : filteredPerformers?.length > 0 ? (
-            filteredPerformers
-              .slice(
-                (currentPage - 1) * performersPerPage,
-                currentPage * performersPerPage
-              )
-              .map((performer) => (
-                <div
-                  key={performer._id}
-                  className="w-full h-[400px] md:h-[475px] relative"
-                >
-                  {/* Main Image */}
-                  <div className="relative">
+          ) : allPerformersData?.docs?.length > 0 ? (
+            allPerformersData.docs.map((performer) => (
+              <div
+                key={performer._id}
+                className="w-full h-[400px] md:h-[475px] relative"
+              >
+                {/* Main Image */}
+                <div className="relative">
+                  <img
+                    src={performer?.profilePhoto}
+                    alt={performer?.fullDragName?.split(" ")[0]}
+                    className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-contain"
+                  />
+                  <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
+                  {/* Logo/Icon Image */}
+                  <div className="absolute bottom-[-40px] left-[35px]">
                     <img
-                      src={performer?.profilePhoto}
-                      alt={performer?.fullDragName?.split(" ")[0]}
-                      className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-contain"
+                      src="/home/performer/image-tag.png"
+                      alt={`${performer.drag} logo`}
+                      className="w-[80px] h-[80px]"
                     />
-                    <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
-                    {/* Logo/Icon Image */}
-                    <div className="absolute bottom-[-40px] left-[35px]">
-                      <img
-                        src="/home/performer/image-tag.png"
-                        alt={`${performer.drag} logo`}
-                        className="w-[80px] h-[80px]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
-                    <div className="h-[50px] md:h-[60px]">
-                      <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4">
-                        {performer?.fullDragName}
-                      </h3>
-                    </div>
-                    <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
-                      <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
-                        View Profile
-                      </button>
-                    </Link>
                   </div>
                 </div>
-              ))
+
+                <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
+                  <div className="h-[50px] md:h-[60px]">
+                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4">
+                      {performer?.fullDragName}
+                    </h3>
+                  </div>
+                  <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
+                    <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
+                      View Profile
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))
           ) : (
             <div className="col-span-full text-center py-12">
               <p className="text-white text-xl">
@@ -277,13 +280,11 @@ const Performer = ({ isPerformer, searchQuery }) => {
           )}
         </div>
 
-        {isPerformer && filteredPerformers.length > performersPerPage && (
+        {isPerformer && allPerformersData?.totalPages > 1 && (
           <div className="flex justify-center w-full mt-8">
             <Pagination
               currentPage={currentPage}
-              totalPages={Math.ceil(
-                filteredPerformers.length / performersPerPage
-              )}
+              totalPages={allPerformersData.totalPages}
               onPageChange={handlePageChange}
             />
           </div>
