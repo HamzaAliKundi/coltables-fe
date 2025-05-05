@@ -244,7 +244,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                   <img
                     src={performer?.profilePhoto}
                     alt={performer?.fullDragName?.split(" ")[0]}
-                    className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-contain"
+                    className="w-[295px] h-[200px] rounded-[8px] object-cover"
                   />
                   <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
                   {/* Logo/Icon Image */}
@@ -259,7 +259,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
 
                 <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
                   <div className="h-[50px] md:h-[60px]">
-                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4">
+                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4 mt-2 md:mt-0">
                       {performer?.fullDragName}
                     </h3>
                   </div>
