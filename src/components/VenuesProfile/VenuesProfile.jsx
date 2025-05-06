@@ -389,11 +389,11 @@ const VenuesProfile = () => {
                 )}
 
                 {/* Visit Button */}
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <button className="w-[222px] h-[62px] bg-[#FF00A2] hover:bg-[#d40085] text-white rounded-[83px] shadow-md font-['Space_Grotesk'] font-normal text-[20px] leading-[100%] uppercase flex items-center justify-center">
                     Visit
                   </button>
-                </div>
+                </div> */}
               </div>
             </>
           )}
