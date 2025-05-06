@@ -8,15 +8,15 @@ export const eventsApi = createApi({
       const token = localStorage.getItem("token");
       if (token) headers.set("Authorization", `Bearer ${token}`);
       return headers;
-    },
+    }
   }),
   endpoints: (builder) => ({
     getAllEvents: builder.query({
-      query: ({ page, limit, type }) => {
+      query: ({ page = 1, limit = 10, type, sort = -1, isUpcoming = 1 }) => {
         const params = new URLSearchParams();
         params.append('limit', limit);
         params.append('page', page);
-        // params.append('sort', -1);
+        params.append('sort', sort);
         if (type) params.append('type', type);
         return `/api/user/event/get-all-events?${params.toString()}`;
       },
@@ -25,7 +25,21 @@ export const eventsApi = createApi({
     getSingleEventById: builder.query({
       query: (id) => `/api/user/event/get-single-event/${id}`,
     }),
+
+    getUpcomingEvents: builder.query({
+      query: ({ page = 1, limit = 10, sort = -1 }) => {
+        const params = new URLSearchParams();
+        params.append('limit', limit);
+        params.append('page', page);
+        params.append('isUpcoming', 1);
+        return `/api/user/event/get-all-events?${params.toString()}`;
+      },
+    }),
   }),
 });
 
-export const { useGetAllEventsQuery, useGetSingleEventByIdQuery } = eventsApi;
+export const { 
+  useGetAllEventsQuery, 
+  useGetSingleEventByIdQuery,
+  useGetUpcomingEventsQuery 
+} = eventsApi;

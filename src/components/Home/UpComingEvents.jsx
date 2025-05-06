@@ -1,56 +1,27 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useGetUpcomingEventsQuery } from "../../apis/events";
 
 const UpComingEvents = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const containerRef = useRef(null);
 
-  const events = [
-    {
-      id: 1,
-      image: "/home/upcomping/upcoming.png",
-      date: "26",
-      month: "FEB",
-      title: "Rachel's Rpdr Watch Party",
-      host: "Hosted By rachel Bitchface",
-      time: "Start 06:45pm-22:00pm",
-      location: "Club Pause",
-      featured: true,
-    },
-    {
-      id: 2,
-      image: "/home/upcomping/upcoming.png",
-      date: "26",
-      month: "FEB",
-      title: "Rachel's Rpdr Watch Party",
-      host: "Hosted By rachel Bitchface",
-      time: "Start 06:45pm-22:00pm",
-      location: "Club Pause",
-      featured: true,
-    },
-    {
-      id: 3,
-      image: "/home/upcomping/upcoming.png",
-      date: "28",
-      month: "FEB",
-      title: "Rachel's Rpdr Watch Party",
-      host: "Hosted By rachel Bitchface",
-      time: "Start 06:45pm-22:00pm",
-      location: "Club Pause",
-      featured: true,
-    },
-    {
-      id: 4,
-      image: "/home/upcomping/upcoming.png",
-      date: "2",
-      month: "MAR",
-      title: "Rachel's Rpdr Watch Party",
-      host: "Hosted By rachel Bitchface",
-      time: "Start 06:45pm-22:00pm",
-      location: "Club Pause",
-      featured: false,
-    },
-  ];
+  const { data: upcomingEventsData, isLoading, error } = useGetUpcomingEventsQuery({
+    page: 1,
+    limit: 10
+  });
+
+  const events = upcomingEventsData?.docs?.map((event) => ({
+    id: event._id,
+    image: event.image || "/home/upcomping/upcoming.png",
+    date: new Date(event.startDate).getDate(),
+    month: new Date(event.startDate).toLocaleString('default', { month: 'short' }).toUpperCase(),
+    title: event.title,
+    host: `Hosted By ${event.host}`,
+    time: `Start ${new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+    location: event.venuesList?.length > 0 ? event.venuesList[0].name : 'TBA',
+    featured: event.type === 'drag-show'
+  })) || [];
 
   const scrollTo = (index) => {
     setActiveSlide(index);
@@ -62,6 +33,11 @@ const UpComingEvents = () => {
       });
     }
   };
+
+  if (isLoading) return <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
+    <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
+  </div>;
+  if (error) return <div className="text-white text-center py-12">Error loading events</div>;
 
   return (
     <div className="relative py-12 px-4 md:px-8 text-white">
@@ -92,9 +68,6 @@ const UpComingEvents = () => {
             >
               VIEW ALL
             </Link>
-            {/* <Link to="/calendar" className="w-[51px] h-[51px] rounded-full flex items-center justify-center">
-              <img src="/home/eventlisting/calendar.png" alt="Calendar" />
-            </Link> */}
           </div>
         </div>
 
@@ -176,14 +149,21 @@ const UpComingEvents = () => {
 
                       {/* Card Actions */}
                       <div className="flex mt-auto space-x-1 md:space-x-2">
-                        <Link to="#">
-                          <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 transition">
+                        <Link to={`/event-detail/${event.id}`}>
+                          <button 
+                            onClick={() => {
+                              window.scrollTo(0, 0);
+                            }}
+                            className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] bg-[#FF00A2] border-[#FF00A2] border-2 rounded-l-full text-white font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 transition"
+                          >
                             VIEW DETAILS
                           </button>
                         </Link>
 
-                        <Link to="#">
-                          <button className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 hover:text-white transition">
+                        <Link to="/events">
+                          <button onClick={() => {
+                              window.scrollTo(0, 0);
+                            }}  className="w-[80px] md:w-[120px] h-[28px] md:h-[40px] border-2 border-[#FF00A2] rounded-r-full text-[#FF00A2] font-['Space_Grotesk'] text-[10px] md:text-sm uppercase hover:bg-pink-600 hover:text-white transition">
                             VIEW ALL
                           </button>
                         </Link>
