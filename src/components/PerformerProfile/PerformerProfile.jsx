@@ -209,7 +209,7 @@ const PerformerProfile = () => {
                     performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"
                   }
-                  className="w-[377px] h-[389px] max-w-full mx-auto lg:w-[377px] lg:h-[389px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-contain"
+                  className="w-[377px] h-[380px] max-w-full mx-auto lg:w-[377px] lg:h-[380px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-contain"
                 />
 
                 {/* Social Media Links */}
@@ -298,6 +298,7 @@ const PerformerProfile = () => {
               </div>
 
               {/* Crown and Anniversary Section */}
+              <div className="mt-8 md:mt-0">
               <div className="relative mt-[-20px] lg:mt-[-15px]">
                 <div className="flex items-center w-full justify-center">
                   <img
@@ -320,6 +321,7 @@ const PerformerProfile = () => {
                     </span>
                   </h2>
                 </div>
+              </div>
               </div>
 
               {/* Tagline */}
