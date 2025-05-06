@@ -20,7 +20,7 @@ export default function Navbar({ onSearch }) {
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
   const registerTimeoutRef = useRef(null);
   const loginTimeoutRef = useRef(null);
-  const registerRef = useRef(null);
+  // const registerRef = useRef(null);
   const loginRef = useRef(null);
 
   useEffect(() => {
@@ -36,18 +36,18 @@ export default function Navbar({ onSearch }) {
     setShowLoginDropdown(false);
   };
 
-  const handleRegisterMouseEnter = () => {
-    if (registerTimeoutRef.current) clearTimeout(registerTimeoutRef.current);
-    setShowRegisterDropdown(true);
-  };
+  // const handleRegisterMouseEnter = () => {
+  //   if (registerTimeoutRef.current) clearTimeout(registerTimeoutRef.current);
+  //   setShowRegisterDropdown(true);
+  // };
 
-  const handleRegisterMouseLeave = () => {
-    registerTimeoutRef.current = setTimeout(() => {
-      if (!registerRef.current?.contains(document.activeElement)) {
-        setShowRegisterDropdown(false);
-      }
-    }, 200);
-  };
+  // const handleRegisterMouseLeave = () => {
+  //   registerTimeoutRef.current = setTimeout(() => {
+  //     if (!registerRef.current?.contains(document.activeElement)) {
+  //       setShowRegisterDropdown(false);
+  //     }
+  //   }, 200);
+  // };
 
   const handleLoginMouseEnter = () => {
     if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
@@ -188,7 +188,7 @@ export default function Navbar({ onSearch }) {
       {/* Right Links with Dropdowns */}
       <div className="hidden md:flex items-center space-x-6">
         {/* Registration Dropdown */}
-        <div 
+        {/* <div 
           className="relative"
           ref={registerRef}
           onMouseEnter={handleRegisterMouseEnter}
@@ -225,7 +225,7 @@ export default function Navbar({ onSearch }) {
               </a>
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Login Dropdown */}
         <div 

@@ -515,7 +515,7 @@ const PerformerProfile = () => {
           <div className="bg-[#1A1A1A] rounded-xl overflow-hidden flex mb-6">
             <button
               className={`flex-1 py-3 lg:py-4 px-4 lg:px-6 text-[16px] lg:text-[20px] font-space-grotesk
-                ${!isMonthView ? "bg-[#2A2A2A] text-white" : "text-white/60"}`}
+                ${!isMonthView ? "bg-[#FF00A2] text-white" : "text-white/60"}`}
               onClick={() => setIsMonthView(false)}
             >
               Week
