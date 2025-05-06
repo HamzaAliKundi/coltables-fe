@@ -67,7 +67,7 @@ const EventDetail = () => {
               getEventsByVenuesById?.event?.image || "/events/event-1.jpg.svg"
             }
             alt="event"
-            className="w-full max-w-[750px] h-auto object-cover rounded-lg"
+            className="w-[500px] h-[500px] object-cover rounded-lg"
           />
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
@@ -152,10 +152,12 @@ const EventDetail = () => {
                       className="w-5 h-5"
                     />
                     <span className="truncate">
+                      Starts:{" "}
+                      {extractTime(getEventsByVenuesById?.event?.startTime)}
+                      {/* ,{" "}
                       {formatDate(
                         getEventsByVenuesById?.event?.startDate
-                      )?.slice(0, 12)}
-                      , {extractTime(getEventsByVenuesById?.event?.startTime)}
+                      )?.slice(0, 12)} */}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
