@@ -299,7 +299,7 @@ const VenuesProfile = () => {
               <div className="space-y-6 lg:space-y-8">
                 {/* Performers Section */}
                 <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
+                  <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize border-b-[3px] border-[#FF00A2] pb-1">
                     Which Performers May You Find Here?
                   </h3>
                   <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
@@ -313,62 +313,75 @@ const VenuesProfile = () => {
 
                 {/* Location & Hours Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
-                  <div>
-                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
-                      Location / Address
-                    </h3>
-                    <p className="text-white/90 leading-6">
-                      <a
-                        href="https://goo.gl/maps/XYZ"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline hover:text-[#FF00A2]"
-                      >
-                        {venueDetail?.venue?.location}
-                      </a>
-                      <br />
-                      <a
-                        href="tel:17136369615"
-                        className="underline hover:text-[#FF00A2]"
-                      >
-                        {venueDetail?.venue?.phone}
-                      </a>
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
-                      Hours Of Operation
-                    </h3>
-                    <ul className="text-white/90 leading-6">
-                      <li>
-                        {formatTimeRange(venueDetail?.venue?.hoursOfOperation)}
-                      </li>
-                    </ul>
-                  </div>
+                  {venueDetail?.venue?.location && (
+                    <div>
+                      <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Location / Address
+                      </h3>
+                      <div className="flex items-start gap-2 text-white/90 leading-6">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full mt-2"></span>
+                        <div>
+                          <a
+                            href={`https://maps.google.com/?q=${encodeURIComponent(venueDetail.venue.location)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-[#FF00A2]"
+                          >
+                            {venueDetail.venue.location}
+                          </a>
+                          {venueDetail?.venue?.phone && (
+                            <>
+                              <br />
+                              <a
+                                href={`tel:${venueDetail.venue.phone.replace(/\D/g,'')}`}
+                                className="underline hover:text-[#FF00A2]"
+                              >
+                                {venueDetail.venue.phone}
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {venueDetail?.venue?.hoursOfOperation && (
+                    <div>
+                      <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Hours Of Operation
+                      </h3>
+                      <div className="flex items-center gap-2 text-white/90 leading-6">
+                        <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                        <span>{formatTimeRange(venueDetail.venue.hoursOfOperation)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Venue Type */}
-                <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
-                    Type Of Venue
-                  </h3>
-                  <ul className="list-disc list-inside text-white/90">
-                    <li>{venueDetail?.venue?.venueType}</li>
-                  </ul>
-                </div>
+                {venueDetail?.venue?.venueType && (
+                  <div>
+                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                      Type Of Venue
+                    </h3>
+                    <div className="flex items-center gap-2 text-white/90">
+                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                      <span>{venueDetail.venue.venueType}</span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Facilities Section */}
                 {venueDetail?.venue?.facilities?.length > 0 && (
                   <div>
-                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-lg">
+                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
                       Facilities & Features
                     </h3>
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
                       {venueDetail.venue.facilities.map((facility, index) => (
-                        <div key={index} className="list-disc list-inside">
-                          <li className="text-white/90">
-                            {formatFacility(facility)}
-                          </li>
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                          <span>{formatFacility(facility)}</span>
                         </div>
                       ))}
                     </div>

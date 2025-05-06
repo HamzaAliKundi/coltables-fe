@@ -345,145 +345,163 @@ const PerformerProfile = () => {
               <div className="space-y-6 lg:space-y-8">
                 {/* Drag Mothers Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
-                  <div>
-                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                      Drag Mother(s)
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2 text-white/90">
-                      {performerDetail?.performer?.dragMotherName?.map(
-                        (mother, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{mother}</span>
-                          </div>
-                        )
-                      )}
+                  {performerDetail?.performer?.dragMotherName?.length > 0 && performerDetail?.performer?.dragMotherName[0] !== "" && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Drag Mother(s)
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-white/90">
+                        {performerDetail?.performer?.dragMotherName?.map(
+                          (mother, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span>{mother}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Drag Family Section */}
-                  <div>
-                    <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                      Drag Family Associations
-                    </h3>
-                    <div className="grid grid-cols-2 gap-2 text-white/90">
-                      {performerDetail?.performer?.dragFamilyAssociation?.map(
-                        (family, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{family}</span>
-                          </div>
-                        )
-                      )}
+                  {performerDetail?.performer?.dragFamilyAssociation?.length > 0 && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Drag Family Associations
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-white/90">
+                        {performerDetail?.performer?.dragFamilyAssociation?.map(
+                          (family, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span>{family}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Other Sections */}
-
-                <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                    Competitions / Awards
-                  </h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                    {performerDetail?.performer?.awards?.map((award, index) => (
-                      <ul key={index} className="list-disc list-inside">
-                        <li>{award}</li>
-                      </ul>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Performance Types Grid */}
-                <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                    Drag Performances
-                  </h3>
+                {performerDetail?.performer?.awards?.length > 0 && performerDetail?.performer?.awards[0] !== "" && (
                   <div>
-                    <ul className="list-disc list-inside grid grid-cols-2 lg:grid-cols-3 text-white/90">
-                      {performerDetail?.performer?.dragPerformances?.map(
-                        (item, index) => (
-                          <li key={index} className="capitalize">
-                            {item}
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Illusions/Impersonations Section */}
-                <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                    Illusions/Impersonations
-                  </h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
-                    {performerDetail?.performer?.illusions?.map(
-                      (illusion, index) => (
-                        <ul key={index} className="list-disc list-inside">
-                          <li>{illusion}</li>
-                        </ul>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Music Genre's Performed Section */}
-                <div>
-                  <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-2 text-lg">
-                    Music Genre's Performed
-                  </h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 text-white/90">
-                    {performerDetail?.performer?.genres?.map((genre, index) => {
-                      const formattedGenre = (() => {
-                        switch (genre) {
-                          case "the80s":
-                            return "The 80's";
-                          case "rnb":
-                            return "R&B";
-                          case "jazzBlues":
-                            return "Jazz/Blues";
-                          default:
-                            return (
-                              genre.charAt(0).toUpperCase() + genre.slice(1)
-                            );
-                        }
-                      })();
-
-                      return (
-                        <ul
-                          key={index}
-                          className="list-disc list-inside capitalize"
-                        >
-                          <li>{formattedGenre}</li>
-                        </ul>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Venues Section */}
-                <div>
-                  <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-md lg:text-xl">
-                    Where Can You Catch{" "}
-                    {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
-                      "Performer"}{" "}
-                    Performing?
-                  </h2>
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 text-white/90">
-                    {performerDetail?.performer?.venues?.map((venue, index) => {
-                      const venueLabel = venueOptions.find(
-                        (option) => option.value === venue
-                      )?.label;
-                      return (
+                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                      Competitions / Awards
+                    </h3>
+                    <div className="h-[3px] bg-[#FF00A2]"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                      {performerDetail?.performer?.awards?.map((award, index) => (
                         <div key={index} className="flex items-center">
                           <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                          <span>{venueLabel ? venueLabel : venue}</span>
+                          <span>{award}</span>
                         </div>
-                      );
-                    })}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Performance Types Grid */}
+                {performerDetail?.performer?.dragPerformances?.length > 0 && performerDetail?.performer?.dragPerformances[0] !== "" && (
+                  <div>
+                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                      Drag Performances
+                    </h3>
+                    <div className="h-[3px] bg-[#FF00A2]"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                      {performerDetail?.performer?.dragPerformances?.map(
+                        (item, index) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span className="capitalize">{item}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Illusions/Impersonations Section */}
+                {performerDetail?.performer?.illusions?.length > 0 && performerDetail?.performer?.illusions[0] !== "" && (
+                  <div>
+                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                      Illusions/Impersonations
+                    </h3>
+                    <div className="h-[3px] bg-[#FF00A2]"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                      {performerDetail?.performer?.illusions?.map(
+                        (illusion, index) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{illusion}</span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Music Genre's Performed Section */}
+                {performerDetail?.performer?.genres?.length > 0 && performerDetail?.performer?.genres[0] !== "" && (
+                  <div>
+                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                      Music Genre's Performed
+                    </h3>
+                    <div className="h-[3px] bg-[#FF00A2]"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                      {performerDetail?.performer?.genres?.map((genre, index) => {
+                        const formattedGenre = (() => {
+                          switch (genre) {
+                            case "the80s":
+                              return "The 80's";
+                            case "rnb":
+                              return "R&B";
+                            case "jazzBlues":
+                              return "Jazz/Blues";
+                            default:
+                              return (
+                                genre.charAt(0).toUpperCase() + genre.slice(1)
+                              );
+                          }
+                        })();
+
+                        return (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{formattedGenre}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Venues Section */}
+                {performerDetail?.performer?.venues?.length > 0 && performerDetail?.performer?.venues[0] !== "" && (
+                  <div>
+                    <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
+                      Where Can You Catch{" "}
+                      {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
+                        "Performer"}{" "}
+                      Performing?
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
+                      {performerDetail?.performer?.venues?.map((venue, index) => {
+                        const venueLabel = venueOptions.find(
+                          (option) => option.value === venue
+                        )?.label;
+                        return (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{venueLabel ? venueLabel : venue}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
