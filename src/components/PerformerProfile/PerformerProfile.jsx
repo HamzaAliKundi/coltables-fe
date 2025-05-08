@@ -345,7 +345,7 @@ const PerformerProfile = () => {
 
               {/* About Section */}
               <div className="mb-6 lg:mb-8">
-                <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-lg lg:text-xl text-center">
+                <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
                   About{" "}
                   {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"}
