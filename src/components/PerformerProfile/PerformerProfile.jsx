@@ -1,51 +1,50 @@
 import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  useGetEventsByDateQuery,
   useGetSinglePerformerByIdQuery,
   useGetUpcomingEventsQuery,
 } from "../../apis/performers";
 import { Youtube } from "lucide-react";
-import {
-  useGetCalendarEventsQuery,
-  useGetSingleEventByIdQuery,
-} from "../../apis/events";
+import { useGetCalendarEventsQuery } from "../../apis/events";
 
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
+  const [isDayView, setIsDayView] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedWeekStart, setSelectedWeekStart] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const {
     data: performerDetail,
     isLoading: performerDetailLoading,
     error: performerError,
   } = useGetSinglePerformerByIdQuery(id);
-  const { data: events } = useGetEventsByDateQuery({
-    userId: id,
-    userType: "performer",
-    month: `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`,
-  });
+
   const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
+
   const { data: calendarEvents } = useGetCalendarEventsQuery({
-    view: isMonthView ? "month" : "week",
-    fromDate: "2025-05",
+    view: isDayView ? "day" : isMonthView ? "month" : "week",
+    fromDate: isDayView
+      ? `${selectedDay.getFullYear()}-${String(
+          selectedDay.getMonth() + 1
+        ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
+      : isMonthView
+      ? `${currentDate.getFullYear()}-${String(
+          currentDate.getMonth() + 1
+        ).padStart(2, "0")}`
+      : `${selectedWeekStart.getFullYear()}-${String(
+          selectedWeekStart.getMonth() + 1
+        ).padStart(2, "0")}-${String(selectedWeekStart.getDate()).padStart(
+          2,
+          "0"
+        )}`,
   });
 
-  // const { data: getSingleEvent, isLoading: singleEventLoading } =
-  //   useGetSingleEventByIdQuery(evendId);
-
-  // const [singleEventsData, setSingleEventsData] = useState([]);
-
-  console.log(upcomingEvents);
-
-  // Use API response for event dates
-  const eventDates = events?.eventDates || {};
-
+  // Helper functions
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -54,20 +53,17 @@ const PerformerProfile = () => {
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
 
-    // Get previous month's days
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     const prevMonthDays = Array.from(
       { length: startingDay },
       (_, i) => prevMonthLastDay - startingDay + i + 1
     );
 
-    // Get current month's days
     const currentMonthDays = Array.from(
       { length: daysInMonth },
       (_, i) => i + 1
     );
 
-    // Get next month's days
     const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
     const nextMonthDays = Array.from(
       { length: remainingDays },
@@ -89,52 +85,6 @@ const PerformerProfile = () => {
     );
   };
 
-  const formatMonthYear = (date) => {
-    return date.toLocaleString("default", { month: "long", year: "numeric" });
-  };
-
-  const getEventDots = (day, isWeekView = false) => {
-    const monthKey = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`;
-    const events = eventDates[monthKey]?.[day]?.events;
-
-    if (!events) return null;
-
-    // Check if this day is in the current week
-    const date = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
-    const isInCurrentWeek =
-      date >=
-        new Date(
-          selectedWeekStart.getFullYear(),
-          selectedWeekStart.getMonth(),
-          selectedWeekStart.getDate() - selectedWeekStart.getDay()
-        ) &&
-      date <=
-        new Date(
-          selectedWeekStart.getFullYear(),
-          selectedWeekStart.getMonth(),
-          selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6
-        );
-
-    return (
-      <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
-        {Array.from({ length: events }, (_, i) => (
-          <div
-            key={i}
-            className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full ${
-              isWeekView && isInCurrentWeek ? "bg-white" : "bg-[#FF00A2]"
-            }`}
-          ></div>
-        ))}
-      </div>
-    );
-  };
-
   const handlePrevWeek = () => {
     const newDate = new Date(selectedWeekStart);
     newDate.setDate(newDate.getDate() - 7);
@@ -145,6 +95,26 @@ const PerformerProfile = () => {
     const newDate = new Date(selectedWeekStart);
     newDate.setDate(newDate.getDate() + 7);
     setSelectedWeekStart(newDate);
+  };
+
+  const handleDayClick = (day) => {
+    const clickedDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    setSelectedDay(clickedDate);
+    setIsDayView(true);
+    setIsMonthView(false);
+  };
+
+  const handleBackToMonthOrWeek = () => {
+    setIsDayView(false);
+    setIsMonthView(true); // Default back to month view
+  };
+
+  const formatMonthYear = (date) => {
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
   const formatWeekRange = (date) => {
@@ -161,6 +131,33 @@ const PerformerProfile = () => {
     })}`;
   };
 
+  const formatDay = (date) => {
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const formatEventTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const formatEventDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   const formatDragAnniversary = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -168,6 +165,68 @@ const PerformerProfile = () => {
     const year = date.getFullYear();
     return `${month} '${year.toString().slice(-2)}`;
   };
+
+  const getEventsForDay = (day) => {
+    if (!calendarEvents?.events) return [];
+    const dateKey = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    return calendarEvents.events[dateKey] || [];
+  };
+
+  const renderEventDots = (day, isCurrentWeek = false) => {
+    const events = getEventsForDay(day);
+    if (!events || events.length === 0) return null;
+
+    return (
+      <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
+        {events.slice(0, 3).map((_, i) => (
+          <div
+            key={i}
+            className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full ${
+              isCurrentWeek ? "bg-white" : "bg-[#FF00A2]"
+            }`}
+          ></div>
+        ))}
+        {events.length > 3 && (
+          <div className="text-[8px] text-white">+{events.length - 3}</div>
+        )}
+      </div>
+    );
+  };
+
+  const getEventsForDisplay = () => {
+    if (!calendarEvents?.events) return [];
+
+    if (isDayView) {
+      const dateKey = `${selectedDay.getFullYear()}-${String(
+        selectedDay.getMonth() + 1
+      ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
+      return calendarEvents.events[dateKey] || [];
+    } else if (isMonthView) {
+      return Object.values(calendarEvents.events).flat();
+    } else {
+      const weekEvents = [];
+      const startOfWeek = new Date(selectedWeekStart);
+      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(startOfWeek);
+        day.setDate(startOfWeek.getDate() + i);
+
+        const dateKey = `${day.getFullYear()}-${String(
+          day.getMonth() + 1
+        ).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
+        if (calendarEvents.events[dateKey]) {
+          weekEvents.push(...calendarEvents.events[dateKey]);
+        }
+      }
+
+      return weekEvents;
+    }
+  };
+
+  console.log("Events for display:", getEventsForDisplay());
 
   const venueOptions = [
     { value: "jps-bar", label: "JP's Bar And Grill, Eagle" },
@@ -198,7 +257,6 @@ const PerformerProfile = () => {
 
   return (
     <div className="min-h-screen text-white p-4 lg:p-8">
-      {/* Main Container */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
         {/* Left Section - Profile Info */}
         <div className="col-span-1 lg:col-span-8">
@@ -560,159 +618,279 @@ const PerformerProfile = () => {
 
           {/* Calendar Component */}
           <div className="bg-[#1A1A1A] rounded-xl p-4 lg:p-6">
-            {/* Month/Week Navigation */}
+            {/* Navigation Header */}
             <div className="flex justify-between items-center mb-6 lg:mb-8">
-              <button
-                onClick={isMonthView ? handlePrevMonth : handlePrevWeek}
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="lg:w-6 lg:h-6"
+              {isDayView ? (
+                <button
+                  onClick={handleBackToMonthOrWeek}
+                  className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
                 >
-                  <path
-                    d="M15 18L9 12L15 6"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="lg:w-6 lg:h-6"
+                  >
+                    <path
+                      d="M15 18L9 12L15 6"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  onClick={isMonthView ? handlePrevMonth : handlePrevWeek}
+                  className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="lg:w-6 lg:h-6"
+                  >
+                    <path
+                      d="M15 18L9 12L15 6"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
+
               <span className="text-white text-[20px] lg:text-[24px] font-space-grotesk">
-                {isMonthView
+                {isDayView
+                  ? formatDay(selectedDay)
+                  : isMonthView
                   ? formatMonthYear(currentDate)
                   : formatWeekRange(selectedWeekStart)}
               </span>
-              <button
-                onClick={isMonthView ? handleNextMonth : handleNextWeek}
-                className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="lg:w-6 lg:h-6"
+
+              {isDayView ? (
+                <div className="w-10 h-10 lg:w-12 lg:h-12" />
+              ) : (
+                <button
+                  onClick={isMonthView ? handleNextMonth : handleNextWeek}
+                  className="w-10 h-10 lg:w-12 lg:h-12 bg-[#2A2A2A] rounded-lg flex items-center justify-center"
                 >
-                  <path
-                    d="M9 6L15 12L9 18"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="lg:w-6 lg:h-6"
+                  >
+                    <path
+                      d="M9 6L15 12L9 18"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1 lg:gap-2">
-              {/* Days Header */}
-              {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-                <div
-                  key={day}
-                  className="text-center text-[#FF00A2] text-[14px] lg:text-[16px] font-space-grotesk mb-2"
-                >
-                  {day}
-                </div>
-              ))}
-
-              {/* Calendar Days */}
-              {getDaysInMonth(currentDate).map((day, index) => {
-                const date = new Date(
-                  currentDate.getFullYear(),
-                  currentDate.getMonth(),
-                  day
-                );
-                const isToday =
-                  date.toDateString() === new Date().toDateString();
-                const isInCurrentWeek = isMonthView
-                  ? false
-                  : date >=
-                      new Date(
-                        selectedWeekStart.getFullYear(),
-                        selectedWeekStart.getMonth(),
-                        selectedWeekStart.getDate() - selectedWeekStart.getDay()
-                      ) &&
-                    date <=
-                      new Date(
-                        selectedWeekStart.getFullYear(),
-                        selectedWeekStart.getMonth(),
-                        selectedWeekStart.getDate() -
-                          selectedWeekStart.getDay() +
-                          6
-                      );
-
-                return (
+            {/* Calendar Grid - Only show if not in day view */}
+            {!isDayView && (
+              <div className="grid grid-cols-7 gap-1 lg:gap-2">
+                {/* Days Header */}
+                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
                   <div
-                    key={index}
-                    className={`relative h-8 lg:h-12 flex items-center justify-center
-                      ${
-                        isToday
-                          ? "bg-[#FF00A2] text-white"
-                          : isInCurrentWeek
-                          ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
-                          : "bg-[#2A2A2A] text-white/60"
-                      }
-                      rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                      transition-colors duration-200
-                      ${
-                        isInCurrentWeek
-                          ? "hover:bg-[#2A1E2A]"
-                          : "hover:bg-[#3A3A3A]"
-                      }`}
+                    key={day}
+                    className="text-center text-[#FF00A2] text-[14px] lg:text-[16px] font-space-grotesk mb-2"
                   >
                     {day}
-                    {getEventDots(day, !isMonthView && isInCurrentWeek)}
                   </div>
-                );
-              })}
-            </div>
+                ))}
+
+                {/* Calendar Days */}
+                {getDaysInMonth(currentDate).map((day, index) => {
+                  const date = new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    day
+                  );
+                  const isToday =
+                    date.toDateString() === new Date().toDateString();
+                  const isInCurrentWeek = isMonthView
+                    ? false
+                    : date >=
+                        new Date(
+                          selectedWeekStart.getFullYear(),
+                          selectedWeekStart.getMonth(),
+                          selectedWeekStart.getDate() -
+                            selectedWeekStart.getDay()
+                        ) &&
+                      date <=
+                        new Date(
+                          selectedWeekStart.getFullYear(),
+                          selectedWeekStart.getMonth(),
+                          selectedWeekStart.getDate() -
+                            selectedWeekStart.getDay() +
+                            6
+                        );
+
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => handleDayClick(day)}
+                      className={`relative h-8 lg:h-12 flex items-center justify-center cursor-pointer
+                ${
+                  isToday
+                    ? "bg-[#FF00A2] text-white"
+                    : isInCurrentWeek
+                    ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
+                    : "bg-[#2A2A2A] text-white/60"
+                }
+                rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                transition-colors duration-200
+                ${
+                  isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"
+                }`}
+                    >
+                      {day}
+                      {renderEventDots(day, !isMonthView && isInCurrentWeek)}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Events Section */}
+          {/* Events Display Section */}
+          <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
+                {isDayView
+                  ? "DAY EVENTS"
+                  : isMonthView
+                  ? "THIS MONTH EVENTS"
+                  : "THIS WEEK EVENTS"}
+              </h3>
+              {isDayView && (
+                <span className="text-white/60 text-[14px] lg:text-[16px]">
+                  {selectedDay.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
+            </div>
+
+            {getEventsForDisplay().length > 0 ? (
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                <div className="space-y-2">
+                  {getEventsForDisplay().map((event, i) => (
+                    <div
+                      key={event._id}
+                      onClick={() => navigate(`/event-detail/${event._id}`)}
+                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
+                        i === 0
+                          ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
+                          : isDayView
+                          ? "bg-[#721345] hover:bg-[#822455]"
+                          : "bg-[#FF00A2] hover:bg-[#721345]"
+                      }`}
+                    >
+                      <div>
+                        <h4 className="text-white font-medium">
+                          {event.title}
+                        </h4>
+                        <p className="text-white/80 text-sm">
+                          {formatEventDate(event.startDate)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-white text-sm font-medium block">
+                          {formatEventTime(event.startTime)}
+                        </span>
+                        <span className="text-white/70 text-xs block">
+                          {event.host}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <p className="text-white/60 mb-2">
+                  {isDayView
+                    ? "No events scheduled for this day"
+                    : isMonthView
+                    ? "No monthly events scheduled"
+                    : "No weekly events scheduled"}
+                </p>
+                <p className="text-white/40 text-sm">
+                  {isDayView
+                    ? "Check another day"
+                    : isMonthView
+                    ? "Check back next month"
+                    : "Check back next week"}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Upcoming Events Section - Only show if not in day view */}
           {upcomingEvents?.events?.length ? (
             <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                  {upcomingEvents?.events?.[0]?.startTime
-                    ? new Date(upcomingEvents.events[0].startTime)
-                        .toLocaleDateString("en-US", { weekday: "long" })
-                        .toUpperCase()
-                    : "FRIDAY"}
+                  UPCOMING EVENTS
                 </h3>
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
                   {upcomingEvents?.events?.[0]?.startTime
                     ? new Date(
                         upcomingEvents.events[0].startTime
                       ).toLocaleDateString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
+                        month: "short",
+                        day: "numeric",
                         year: "numeric",
                       })
-                    : "03/05/2024"}
+                    : "COMING SOON"}
                 </span>
               </div>
-              <div className="space-y-2">
-                {upcomingEvents?.events?.map((event, i) => (
-                  <div
-                    key={event._id}
-                    className={`p-2 lg:p-3 rounded-lg text-white text-[14px] lg:text-base ${
-                      i === 0 ? "bg-[#FF00A2]" : "bg-[#721345]"
-                    }`}
-                  >
-                    {new Date(event.startTime).toLocaleTimeString("en-US", {
-                      hour: "numeric",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}{" "}
-                    - {event.host}
-                  </div>
-                ))}
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                <div className="space-y-2">
+                  {upcomingEvents.events.map((event, i) => (
+                    <div
+                      key={event._id}
+                      onClick={() => navigate(`/event-detail/${event._id}`)}
+                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
+                        i === 0
+                          ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
+                          : "bg-[#721345] hover:bg-[#822455]"
+                      }`}
+                    >
+                      <div>
+                        <h4 className="text-white font-medium">
+                          {event.title}
+                        </h4>
+                        <p className="text-white/80 text-sm">
+                          {formatEventDate(event.startDate)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-white text-sm font-medium block">
+                          {formatEventTime(event.startTime)}
+                        </span>
+                        <span className="text-white/70 text-xs block">
+                          {event.host}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ) : null}
