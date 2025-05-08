@@ -71,5 +71,6 @@ export const {
   useGetAllReviewsQuery,
   useAddReviewMutation,
   useGetEventsByDateQuery,
-  useGetUpcomingEventsQuery
+  useGetUpcomingEventsQuery,
+  
 } = performersApi;

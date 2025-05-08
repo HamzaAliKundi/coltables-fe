@@ -35,11 +35,18 @@ export const eventsApi = createApi({
         return `/api/user/event/get-all-events?${params.toString()}`;
       },
     }),
+
+    getCalendarEvents: builder.query({
+      query: ({ view, fromDate }) => `/api/user/event/get-calendar-events?view=${view}&fromDate=${fromDate}`,
+    }),
+
   }),
 });
 
 export const { 
   useGetAllEventsQuery, 
   useGetSingleEventByIdQuery,
-  useGetUpcomingEventsQuery 
+  useGetUpcomingEventsQuery,
+  useLazyGetSingleEventByIdQuery, 
+  useGetCalendarEventsQuery,
 } = eventsApi;
