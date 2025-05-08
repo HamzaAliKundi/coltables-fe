@@ -8,6 +8,10 @@ import {
   useGetUpcomingEventsQuery,
 } from "../../apis/performers";
 import { Youtube } from "lucide-react";
+import {
+  useGetCalendarEventsQuery,
+  useGetSingleEventByIdQuery,
+} from "../../apis/events";
 
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
@@ -27,6 +31,16 @@ const PerformerProfile = () => {
     ).padStart(2, "0")}`,
   });
   const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
+  const { data: calendarEvents } = useGetCalendarEventsQuery({
+    view: isMonthView ? "month" : "week",
+    fromDate: "2025-05",
+  });
+
+  // const { data: getSingleEvent, isLoading: singleEventLoading } =
+  //   useGetSingleEventByIdQuery(evendId);
+
+  // const [singleEventsData, setSingleEventsData] = useState([]);
+
   console.log(upcomingEvents);
 
   // Use API response for event dates
@@ -299,29 +313,29 @@ const PerformerProfile = () => {
 
               {/* Crown and Anniversary Section */}
               <div className="mt-8 md:mt-0">
-              <div className="relative mt-[-20px] lg:mt-[-15px]">
-                <div className="flex items-center w-full justify-center">
-                  <img
-                    src="/home/performer/image-tag.png"
-                    alt="Crown"
-                    className="w-[70px] h-[70px] text-[#FF00A2]"
-                  />
-                  <div className="w-1/2">
-                    <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
+                <div className="relative mt-[-20px] lg:mt-[-15px]">
+                  <div className="flex items-center w-full justify-center">
+                    <img
+                      src="/home/performer/image-tag.png"
+                      alt="Crown"
+                      className="w-[70px] h-[70px] text-[#FF00A2]"
+                    />
+                    <div className="w-1/2">
+                      <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
+                    </div>
+                  </div>
+                  <div className="absolute left-20 top-10 right-0 text-center">
+                    <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
+                      Drag Anniversary:
+                      <span className="font-medium">
+                        {" "}
+                        {formatDragAnniversary(
+                          performerDetail?.performer?.dragAnniversary
+                        )}
+                      </span>
+                    </h2>
                   </div>
                 </div>
-                <div className="absolute left-20 top-10 right-0 text-center">
-                  <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
-                    Drag Anniversary:
-                    <span className="font-medium">
-                      {" "}
-                      {formatDragAnniversary(
-                        performerDetail?.performer?.dragAnniversary
-                      )}
-                    </span>
-                  </h2>
-                </div>
-              </div>
               </div>
 
               {/* Tagline */}
@@ -347,27 +361,29 @@ const PerformerProfile = () => {
               <div className="space-y-6 lg:space-y-8">
                 {/* Drag Mothers Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
-                  {performerDetail?.performer?.dragMotherName?.length > 0 && performerDetail?.performer?.dragMotherName[0] !== "" && (
-                    <div>
-                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
-                        Drag Mother(s)
-                      </h3>
-                      <div className="h-[3px] bg-[#FF00A2]"></div>
-                      <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-white/90">
-                        {performerDetail?.performer?.dragMotherName?.map(
-                          (mother, index) => (
-                            <div key={index} className="flex items-center">
-                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                              <span>{mother}</span>
-                            </div>
-                          )
-                        )}
+                  {performerDetail?.performer?.dragMotherName?.length > 0 &&
+                    performerDetail?.performer?.dragMotherName[0] !== "" && (
+                      <div>
+                        <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                          Drag Mother(s)
+                        </h3>
+                        <div className="h-[3px] bg-[#FF00A2]"></div>
+                        <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-white/90">
+                          {performerDetail?.performer?.dragMotherName?.map(
+                            (mother, index) => (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{mother}</span>
+                              </div>
+                            )
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Drag Family Section */}
-                  {performerDetail?.performer?.dragFamilyAssociation?.length > 0 && (
+                  {performerDetail?.performer?.dragFamilyAssociation?.length >
+                    0 && (
                     <div>
                       <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
                         Drag Family Associations
@@ -388,122 +404,135 @@ const PerformerProfile = () => {
                 </div>
 
                 {/* Other Sections */}
-                {performerDetail?.performer?.awards?.length > 0 && performerDetail?.performer?.awards[0] !== "" && (
-                  <div>
-                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
-                      Competitions / Awards
-                    </h3>
-                    <div className="h-[3px] bg-[#FF00A2]"></div>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
-                      {performerDetail?.performer?.awards?.map((award, index) => (
-                        <div key={index} className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                          <span>{award}</span>
-                        </div>
-                      ))}
+                {performerDetail?.performer?.awards?.length > 0 &&
+                  performerDetail?.performer?.awards[0] !== "" && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Competitions / Awards
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                        {performerDetail?.performer?.awards?.map(
+                          (award, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span>{award}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Performance Types Grid */}
-                {performerDetail?.performer?.dragPerformances?.length > 0 && performerDetail?.performer?.dragPerformances[0] !== "" && (
-                  <div>
-                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
-                      Drag Performances
-                    </h3>
-                    <div className="h-[3px] bg-[#FF00A2]"></div>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
-                      {performerDetail?.performer?.dragPerformances?.map(
-                        (item, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span className="capitalize">{item}</span>
-                          </div>
-                        )
-                      )}
+                {performerDetail?.performer?.dragPerformances?.length > 0 &&
+                  performerDetail?.performer?.dragPerformances[0] !== "" && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Drag Performances
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                        {performerDetail?.performer?.dragPerformances?.map(
+                          (item, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span className="capitalize">{item}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Illusions/Impersonations Section */}
-                {performerDetail?.performer?.illusions?.length > 0 && performerDetail?.performer?.illusions[0] !== "" && (
-                  <div>
-                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
-                      Illusions/Impersonations
-                    </h3>
-                    <div className="h-[3px] bg-[#FF00A2]"></div>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
-                      {performerDetail?.performer?.illusions?.map(
-                        (illusion, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{illusion}</span>
-                          </div>
-                        )
-                      )}
+                {performerDetail?.performer?.illusions?.length > 0 &&
+                  performerDetail?.performer?.illusions[0] !== "" && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Illusions/Impersonations
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                        {performerDetail?.performer?.illusions?.map(
+                          (illusion, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span>{illusion}</span>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Music Genre's Performed Section */}
-                {performerDetail?.performer?.genres?.length > 0 && performerDetail?.performer?.genres[0] !== "" && (
-                  <div>
-                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
-                      Music Genre's Performed
-                    </h3>
-                    <div className="h-[3px] bg-[#FF00A2]"></div>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
-                      {performerDetail?.performer?.genres?.map((genre, index) => {
-                        const formattedGenre = (() => {
-                          switch (genre) {
-                            case "the80s":
-                              return "The 80's";
-                            case "rnb":
-                              return "R&B";
-                            case "jazzBlues":
-                              return "Jazz/Blues";
-                            default:
-                              return (
-                                genre.charAt(0).toUpperCase() + genre.slice(1)
-                              );
-                          }
-                        })();
+                {performerDetail?.performer?.genres?.length > 0 &&
+                  performerDetail?.performer?.genres[0] !== "" && (
+                    <div>
+                      <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize">
+                        Music Genre's Performed
+                      </h3>
+                      <div className="h-[3px] bg-[#FF00A2]"></div>
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
+                        {performerDetail?.performer?.genres?.map(
+                          (genre, index) => {
+                            const formattedGenre = (() => {
+                              switch (genre) {
+                                case "the80s":
+                                  return "The 80's";
+                                case "rnb":
+                                  return "R&B";
+                                case "jazzBlues":
+                                  return "Jazz/Blues";
+                                default:
+                                  return (
+                                    genre.charAt(0).toUpperCase() +
+                                    genre.slice(1)
+                                  );
+                              }
+                            })();
 
-                        return (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{formattedGenre}</span>
-                          </div>
-                        );
-                      })}
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{formattedGenre}</span>
+                              </div>
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Venues Section */}
-                {performerDetail?.performer?.venues?.length > 0 && performerDetail?.performer?.venues[0] !== "" && (
-                  <div>
-                    <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
-                      Where Can You Catch{" "}
-                      {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
-                        "Performer"}{" "}
-                      Performing?
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
-                      {performerDetail?.performer?.venues?.map((venue, index) => {
-                        const venueLabel = venueOptions.find(
-                          (option) => option.value === venue
-                        )?.label;
-                        return (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{venueLabel ? venueLabel : venue}</span>
-                          </div>
-                        );
-                      })}
+                {performerDetail?.performer?.venues?.length > 0 &&
+                  performerDetail?.performer?.venues[0] !== "" && (
+                    <div>
+                      <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
+                        Where Can You Catch{" "}
+                        {performerDetail?.performer?.fullDragName?.split(
+                          " "
+                        )[0] || "Performer"}{" "}
+                        Performing?
+                      </h2>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
+                        {performerDetail?.performer?.venues?.map(
+                          (venue, index) => {
+                            const venueLabel = venueOptions.find(
+                              (option) => option.value === venue
+                            )?.label;
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{venueLabel ? venueLabel : venue}</span>
+                              </div>
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </>
           )}

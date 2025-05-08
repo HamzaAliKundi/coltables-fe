@@ -1,5 +1,5 @@
 export const cityOptions = [
-  { value: "all", label: "All" },
+  { value: "", label: "All" },
   { value: "new-york-ny", label: "New York, NY" },
   { value: "los-angeles-ca", label: "Los Angeles, CA" },
   { value: "chicago-il", label: "Chicago, IL" },

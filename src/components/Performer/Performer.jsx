@@ -21,15 +21,18 @@ const Performer = ({ isPerformer, searchQuery }) => {
     data: allPerformersData,
     isLoading: allPerformersLoading,
     isFetching,
-  } = useGetAllPerformersQuery({
-    page: currentPage,
-    limit: performersPerPage,
-    search: searchQuery || "",
-    address: selectedOption.value || undefined,
-    pronoun: activeTab === "all" ? undefined : activeTab
-  }, {
-    refetchOnMountOrArgChange: true
-  });
+  } = useGetAllPerformersQuery(
+    {
+      page: currentPage,
+      limit: performersPerPage,
+      search: searchQuery || "",
+      address: selectedOption.value || undefined,
+      pronoun: activeTab === "all" ? undefined : activeTab,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   useEffect(() => {
     setCurrentPage(1);
@@ -76,7 +79,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
   const filteredOptions = cityOptions.filter(
     (option) =>
       searchTerm === "" ||
-      option.value === "all" ||
+      option.value === "" ||
       option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -229,7 +232,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
 
         {/* Performer cards grid */}
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {(allPerformersLoading || isTabLoading) ? (
+          {allPerformersLoading || isTabLoading ? (
             <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
               <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -263,7 +266,10 @@ const Performer = ({ isPerformer, searchQuery }) => {
                       {performer?.fullDragName}
                     </h3>
                   </div>
-                  <Link to={`/performer-profile/${performer?._id}`} onClick={() => window.scrollTo(0, 0)}>
+                  <Link
+                    to={`/performer-profile/${performer?._id}`}
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
                     <button className="w-[120px] sm:w-[198px] h-[40px] sm:h-[62px] bg-[#FF00A2] rounded-[82px] border-[2px] md:border-[3px] border-[#FF00A2] font-['Space_Grotesk'] font-normal text-[14px] sm:text-[20px] leading-[100%] text-white uppercase hover:bg-pink-600 transition flex items-center justify-center">
                       View Profile
                     </button>
