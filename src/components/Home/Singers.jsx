@@ -2,7 +2,7 @@ import React from "react";
 
 const Singers = () => {
   return (
-    <div className="overflow-hidden whitespace-nowrap relative w-full">
+    <div className="overflow-hidden whitespace-nowrap relative w-full max-w-[1280px] mx-auto">
       <div className="inline-flex animate-marquee">
         {/* First set of images */}
         <div className="flex min-w-max">

@@ -5,7 +5,10 @@ import Footer from '../Footer';
 const Venues = () => {
   return (
     <>
+    <div className='bg-black'>
+
       <Banner />
+    </div>
       <div
          className="min-h-screen w-full"
          style={{

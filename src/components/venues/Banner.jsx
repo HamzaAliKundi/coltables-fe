@@ -40,7 +40,7 @@ const Banner = () => {
   };
 
   return (
-    <div className="relative bg-black text-white min-h-[500px] md:min-h-[700px] overflow-hidden">
+    <div className="relative bg-black max-w-[1400px] mx-auto text-white min-h-[500px] md:min-h-[700px] overflow-hidden">
       {/* Left Banner Image - Only visible on desktop */}
       {!isMobile && (
         <div className="absolute left-0 md:left-16 top-0 w-full md:w-auto">
