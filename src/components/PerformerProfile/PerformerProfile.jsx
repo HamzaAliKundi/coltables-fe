@@ -4,7 +4,6 @@ import Reviews from "./Reviews";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetSinglePerformerByIdQuery,
-  useGetUpcomingEventsQuery,
 } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
@@ -23,8 +22,6 @@ const PerformerProfile = () => {
     isLoading: performerDetailLoading,
     error: performerError,
   } = useGetSinglePerformerByIdQuery(id);
-
-  const { data: upcomingEvents } = useGetUpcomingEventsQuery(id);
 
   const { data: calendarEvents } = useGetCalendarEventsQuery({
     view: isDayView ? "day" : isMonthView ? "month" : "week",
@@ -104,8 +101,6 @@ const PerformerProfile = () => {
       day
     );
     setSelectedDay(clickedDate);
-    setIsDayView(true);
-    setIsMonthView(false);
   };
 
   const handleBackToMonthOrWeek = () => {
@@ -204,6 +199,12 @@ const PerformerProfile = () => {
       ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
       return calendarEvents.events[dateKey] || [];
     } else if (isMonthView) {
+      if (selectedDay) {
+        const dateKey = `${selectedDay.getFullYear()}-${String(
+          selectedDay.getMonth() + 1
+        ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
+        return calendarEvents.events[dateKey] || [];
+      }
       return Object.values(calendarEvents.events).flat();
     } else {
       const weekEvents = [];
@@ -224,6 +225,12 @@ const PerformerProfile = () => {
 
       return weekEvents;
     }
+  };
+
+  const handleViewChange = (isMonth) => {
+    setIsMonthView(isMonth);
+    setIsDayView(false);
+    setSelectedDay(null);
   };
 
   console.log("Events for display:", getEventsForDisplay());
@@ -603,14 +610,14 @@ const PerformerProfile = () => {
             <button
               className={`flex-1 py-3 lg:py-4 px-4 lg:px-6 text-[16px] lg:text-[20px] font-space-grotesk
                 ${!isMonthView ? "bg-[#FF00A2] text-white" : "text-white/60"}`}
-              onClick={() => setIsMonthView(false)}
+              onClick={() => handleViewChange(false)}
             >
               Week
             </button>
             <button
               className={`flex-1 py-3 lg:py-4 px-4 lg:px-6 text-[16px] lg:text-[20px] font-space-grotesk
                 ${isMonthView ? "bg-[#FF00A2] text-white" : "text-white/60"}`}
-              onClick={() => setIsMonthView(true)}
+              onClick={() => handleViewChange(true)}
             >
               Month
             </button>
@@ -840,60 +847,6 @@ const PerformerProfile = () => {
               </div>
             )}
           </div>
-
-          {/* Upcoming Events Section - Only show if not in day view */}
-          {upcomingEvents?.events?.length ? (
-            <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                  UPCOMING EVENTS
-                </h3>
-                <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {upcomingEvents?.events?.[0]?.startTime
-                    ? new Date(
-                        upcomingEvents.events[0].startTime
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })
-                    : "COMING SOON"}
-                </span>
-              </div>
-              <div className="max-h-[300px] overflow-y-auto pr-2">
-                <div className="space-y-2">
-                  {upcomingEvents.events.map((event, i) => (
-                    <div
-                      key={event._id}
-                      onClick={() => navigate(`/event-detail/${event._id}`)}
-                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
-                        i === 0
-                          ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
-                          : "bg-[#721345] hover:bg-[#822455]"
-                      }`}
-                    >
-                      <div>
-                        <h4 className="text-white font-medium">
-                          {event.title}
-                        </h4>
-                        <p className="text-white/80 text-sm">
-                          {formatEventDate(event.startDate)}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-white text-sm font-medium block">
-                          {formatEventTime(event.startTime)}
-                        </span>
-                        <span className="text-white/70 text-xs block">
-                          {event.host}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : null}
 
           {/* Ad Image */}
           <div className="mt-5">
