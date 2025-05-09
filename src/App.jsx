@@ -23,7 +23,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar onSearch={handleSearch} />
+      <div className="bg-black">
+        <Navbar onSearch={handleSearch} />
+      </div>
       <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />

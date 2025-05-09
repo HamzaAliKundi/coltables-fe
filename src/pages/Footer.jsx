@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = ({ isHome }) => {
   return (
-    <footer className="bg-[#1D1D1D] text-white py-10 px-8 md:px-20">
+    <footer className="bg-[#1D1D1D] max-w-[1400px] mx-auto text-white py-10 px-8 md:px-20">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Logo & Address Section */}
         <div className="">

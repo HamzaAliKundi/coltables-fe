@@ -79,7 +79,7 @@ export default function Navbar({ onSearch }) {
   };
 
   return (
-    <nav className="bg-black text-white h-[100px] w-full flex items-center z-30 px-8 md:px-20 justify-between relative">
+    <nav className="bg-black text-white h-[100px] max-w-[1400px] mx-auto w-full flex items-center z-30 px-8 md:px-20 justify-between relative">
       {/* Left Logo */}
       <div className="flex items-center space-x-2">
         <Link to="/">
