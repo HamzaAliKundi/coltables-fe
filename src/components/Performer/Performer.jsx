@@ -27,7 +27,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
       limit: performersPerPage,
       search: searchQuery || "",
       address: selectedOption.value || undefined,
-      pronoun: activeTab === "all" ? undefined : activeTab,
+      performerType: activeTab === "all" ? undefined : activeTab,
     },
     {
       refetchOnMountOrArgChange: true,
@@ -41,7 +41,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
   const tabs = [
     { label: "Drag Queens", value: "drag-queen" },
     { label: "Drag Kings", value: "drag-king" },
-    { label: "Other Performers", value: "other-performer" },
+    { label: "Other Performers", value: "other" },
     { label: "All Performers", value: "all" },
   ];
 
