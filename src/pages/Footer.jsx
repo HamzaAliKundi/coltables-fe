@@ -150,9 +150,9 @@ const Footer = ({ isHome }) => {
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2">
             <span className="text-sm">DragSpace, LLC</span>
             <span className="text-sm">|</span>
-            <Link to="/privacy" className="text-sm hover:text-[#FF00A2] underline">Privacy Policy</Link>
+            <Link to="/privacy" className="text-sm hover:text-[#FF00A2] underline" onClick={() => window.scrollTo(0, 0)}>Privacy Policy</Link>
             <span className="text-sm">|</span>
-            <Link to="/terms" className="text-sm hover:text-[#FF00A2] underline">Terms And Conditions</Link>
+            <Link to="/terms" className="text-sm hover:text-[#FF00A2] underline" onClick={() => window.scrollTo(0, 0)}>Terms And Conditions</Link>
           </div>
         </div>
         }
