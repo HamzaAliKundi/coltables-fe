@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
+import { cityOptions } from "../../utils/citiesList";
 
 const EventListing = ({ isEvent }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -9,13 +10,28 @@ const EventListing = ({ isEvent }) => {
   const [activeTab, setActiveTab] = useState("drag-show");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
-  const { data: allEventsData, isLoading: allEventsLoading, isFetching } = useGetAllEventsQuery({
-    page: currentPage,
-    limit: eventsPerPage,
-    type: activeTab === "other" ? "other" : activeTab
-  }, {
-    refetchOnMountOrArgChange: true
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOption, setSelectedOption] = useState({
+    label: "Filter by",
+    value: "",
   });
+  const dropdownRef = useRef(null);
+
+  const {
+    data: allEventsData,
+    isLoading: allEventsLoading,
+    isFetching,
+  } = useGetAllEventsQuery(
+    {
+      page: currentPage,
+      limit: eventsPerPage,
+      type: activeTab === "other" ? "other" : activeTab,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const tabs = [
     { value: "drag-show", label: "Drag Show" },
@@ -43,16 +59,49 @@ const EventListing = ({ isEvent }) => {
     }
   }, [isFetching]);
 
-  const formatDate = (dateString) => {
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  const filteredOptions = cityOptions.filter(
+    (option) =>
+      searchTerm === "" ||
+      option.value === "" ||
+      option.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Reset loading state when data is fetched
+  useEffect(() => {
+    if (!isFetching) {
+      setIsTabLoading(false);
+    }
+  }, [isFetching]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
     };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    setSearchTerm("");
   };
+
+  // const formatDate = (dateString) => {
+  //   const options = {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric",
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   };
+  //   return new Date(dateString).toLocaleDateString("en-US", options);
+  // };
 
   const extractTime = (dateString) => {
     const date = new Date(dateString);
@@ -99,69 +148,136 @@ const EventListing = ({ isEvent }) => {
       </div>
 
       {/* Category Tabs */}
-      <div className="max-w-7xl mx-auto mb-8 overflow-x-auto">
-        <div className="flex justify-center space-x-6 min-w-max">
-          {tabs.map((tab) => (
-            <div
-              key={tab.value}
-              className="relative cursor-pointer flex flex-col items-center"
-              onClick={() => handleTabChange(tab.value)}
-            >
-              <div className="flex items-center mb-2">
-                {tab.value === "drag-show" && (
-                  <img
-                    src="/home/eventlisting/drag-show.png"
-                    alt="Drag Show"
-                    className="w-6 h-6 mr-2"
-                  />
-                )}
-                {tab.value === "drag-brunch" && (
-                  <img
-                    src="/home/eventlisting/drag-brunch.png"
-                    alt="Drag Brunch"
-                    className="w-6 h-6 mr-2"
-                  />
-                )}
-                {tab.value === "drag-bingo" && (
-                  <img
-                    src="/home/eventlisting/drag-bingo.png"
-                    alt="Drag Bingo"
-                    className="w-6 h-6 mr-2"
-                  />
-                )}
-                {tab.value === "drag-trivia" && (
-                  <img
-                    src="/home/eventlisting/drag-trive.png"
-                    alt="Drag Trivia"
-                    className="w-6 h-6 mr-2"
-                  />
-                )}
-                {tab.value === "other" && (
-                  <img
-                    src="/home/eventlisting/other-event.png"
-                    alt="Other Event"
-                    className="w-6 h-6 mr-2"
-                  />
-                )}
-                <span
-                  className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
-                    activeTab === tab.value ? "text-[#FF00A2]" : "text-white"
-                  }`}
+      <div className="max-w-7xl mx-auto mb-8 px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          {/* Tabs Container */}
+          <div className="w-full md:flex-grow overflow-x-auto scrollbar-hide pb-2">
+            <div className="flex space-x-4 sm:space-x-6 min-w-max md:min-w-0 md:justify-center">
+              {tabs.map((tab) => (
+                <div
+                  key={tab.value}
+                  className="relative cursor-pointer flex flex-col items-center px-1"
+                  onClick={() => handleTabChange(tab.value)}
                 >
-                  {tab.label}
-                </span>
-              </div>
-              {activeTab === tab.value && (
-                <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
-              )}
+                  <div className="flex items-center mb-2">
+                    {tab.value === "drag-show" && (
+                      <img
+                        src="/home/eventlisting/drag-show.png"
+                        alt="Drag Show"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )}
+                    {tab.value === "drag-brunch" && (
+                      <img
+                        src="/home/eventlisting/drag-brunch.png"
+                        alt="Drag Brunch"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )}
+                    {tab.value === "drag-bingo" && (
+                      <img
+                        src="/home/eventlisting/drag-bingo.png"
+                        alt="Drag Bingo"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )}
+                    {tab.value === "drag-trivia" && (
+                      <img
+                        src="/home/eventlisting/drag-trive.png"
+                        alt="Drag Trivia"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )}
+                    {tab.value === "other" && (
+                      <img
+                        src="/home/eventlisting/other-event.png"
+                        alt="Other Event"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )}
+                    <span
+                      className={`font-['Space_Grotesk'] font-normal text-sm sm:text-[18px] capitalize ${
+                        activeTab === tab.value
+                          ? "text-[#FF00A2]"
+                          : "text-white"
+                      } truncate max-w-[100px] sm:max-w-none`}
+                    >
+                      {tab.label}
+                    </span>
+                  </div>
+                  {activeTab === tab.value && (
+                    <div className="w-full h-[3px] bg-[#FF00A2] rounded-[5px] max-w-[117px]"></div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Dropdown Container */}
+          <div className="flex justify-end relative" ref={dropdownRef}>
+            <div
+              className="min-w-[121px] h-[35px] rounded-[8px] border border-[#FF00A2] p-2 flex items-center justify-between cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <span className="font-['Space_Grotesk'] font-normal text-sm sm:text-[16px] leading-[100%] text-white truncate max-w-[80px] sm:max-w-[100px]">
+                {selectedOption.label}
+              </span>
+              <svg
+                width="10"
+                height="6"
+                viewBox="0 0 10 6"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+              >
+                <path
+                  d="M1 1L5 5L9 1"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+
+            {isOpen && (
+              <div className="absolute top-full right-0 mt-1 w-full sm:w-[200px] bg-[#1E1E1E] rounded-[8px] border border-[#FF00A2] shadow-lg z-10">
+                <div className="p-2 border-b border-[#FF00A2]">
+                  <input
+                    type="text"
+                    placeholder="Search cities..."
+                    className="w-full bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#FF00A2] scrollbar-track-[#1E1E1E]">
+                  {filteredOptions.length > 0 ? (
+                    filteredOptions.map((option) => (
+                      <div
+                        key={option.value}
+                        className="px-3 py-2 hover:bg-[#FF00A2] hover:bg-opacity-20 cursor-pointer font-['Space_Grotesk'] text-white"
+                        onClick={() => handleOptionClick(option)}
+                      >
+                        {option.label}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-white font-['Space_Grotesk'] text-center">
+                      No cities found
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Event Cards Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {(allEventsLoading || isTabLoading) ? (
+        {allEventsLoading || isTabLoading ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>

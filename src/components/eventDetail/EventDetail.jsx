@@ -186,6 +186,16 @@ const EventDetail = () => {
                   </span>
                 </div>
               </div>
+
+              <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-0 text-base md:text-lg lg:text-xl text-center">
+                About Event
+              </h2>
+              <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
+                <p className="text-white">
+                  {getEventsByVenuesById?.event?.description ||
+                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem repudiandae ratione, officiis id, enim pariatur exercitationem reprehenderit dignissimos dolor, sit ullam natus commodi odio quia doloremque quasi hic itaque beatae."}
+                </p>
+              </div>
             </div>
           </div>
         </div>
