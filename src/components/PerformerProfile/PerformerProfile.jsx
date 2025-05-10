@@ -288,7 +288,7 @@ const PerformerProfile = () => {
                     performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"
                   }
-                  className="w-[377px] h-[380px] max-w-full mx-auto lg:w-[360px] lg:h-[380px] md:w-[300px] md:h-[310px] sm:w-[250px] sm:h-[260px] object-contain"
+                  className="w-[150px] h-[200px] md:w-[300px] md:h-[300px] ml-8 md:ml-0 object-cover rounded-lg"
                 />
 
                 {/* Social Media Links */}
