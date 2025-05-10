@@ -27,6 +27,7 @@ const EventListing = ({ isEvent }) => {
       page: currentPage,
       limit: eventsPerPage,
       type: activeTab === "other" ? "other" : activeTab,
+      address: selectedOption.value || undefined,
     },
     {
       refetchOnMountOrArgChange: true,
@@ -326,7 +327,7 @@ const EventListing = ({ isEvent }) => {
                     className="mr-2 w-4 h-4"
                   />
                   <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                    {event?.host || "N/A"}
+                    {event?.address || "N/A"}
                   </span>
                 </div>
 
