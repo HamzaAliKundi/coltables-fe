@@ -167,7 +167,7 @@ const EventDetail = () => {
                       className="w-5 h-5"
                     />
                     <span className="truncate">
-                      {getEventsByVenuesById?.event?.location || "N/A"}
+                      {getEventsByVenuesById?.event?.address || "N/A"}
                     </span>
                   </div>
                 </div>
