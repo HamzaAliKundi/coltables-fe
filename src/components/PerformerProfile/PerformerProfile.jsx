@@ -24,28 +24,25 @@ const PerformerProfile = () => {
   } = useGetSinglePerformerByIdQuery(id);
 
   const { data: calendarEvents } = useGetCalendarEventsQuery({
-    view: isDayView ? "day" : isMonthView ? "month" : "week",
+    view: isMonthView ? "month" : "day",
     fromDate: isDayView
       ? `${selectedDay.getFullYear()}-${String(
           selectedDay.getMonth() + 1
         ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
-      : isMonthView
-      ? `${currentDate.getFullYear()}-${String(
+      : `${currentDate.getFullYear()}-${String(
           currentDate.getMonth() + 1
-        ).padStart(2, "0")}`
-      : `${selectedWeekStart.getFullYear()}-${String(
-          selectedWeekStart.getMonth() + 1
-        ).padStart(2, "0")}-${String(selectedWeekStart.getDate()).padStart(
-          2,
-          "0"
-        )}`,
+        ).padStart(2, "0")}`,
+    userId: id,
+    userType: 'performer'
+  }, {
+    skip: !isMonthView && !isDayView // Skip API call for week view
   });
 
   // Helper functions
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
+    const firstDay = new Date(year, month, 1);  
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
@@ -162,11 +159,13 @@ const PerformerProfile = () => {
   };
 
   const getEventsForDay = (day) => {
-    if (!calendarEvents?.events) return [];
-    const dateKey = `${currentDate.getFullYear()}-${String(
+    if (!calendarEvents?.eventDates) return [];
+    const monthKey = `${currentDate.getFullYear()}-${String(
       currentDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return calendarEvents.events[dateKey] || [];
+    ).padStart(2, "0")}`;
+    const dayStr = String(day).padStart(2, "0");
+    
+    return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
   };
 
   const renderEventDots = (day, isCurrentWeek = false) => {
@@ -179,7 +178,7 @@ const PerformerProfile = () => {
           <div
             key={i}
             className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full ${
-              isCurrentWeek ? "bg-white" : "bg-[#FF00A2]"
+              !isMonthView || isCurrentWeek ? "bg-white" : "bg-[#FF00A2]"
             }`}
           ></div>
         ))}
@@ -191,38 +190,42 @@ const PerformerProfile = () => {
   };
 
   const getEventsForDisplay = () => {
-    if (!calendarEvents?.events) return [];
+    if (!calendarEvents?.eventDates) return [];
 
-    if (isDayView) {
-      const dateKey = `${selectedDay.getFullYear()}-${String(
+    if (selectedDay) {
+      // When a day is selected, show only that day's events
+      const monthKey = `${selectedDay.getFullYear()}-${String(
         selectedDay.getMonth() + 1
-      ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
-      return calendarEvents.events[dateKey] || [];
+      ).padStart(2, "0")}`;
+      const dayStr = String(selectedDay.getDate()).padStart(2, "0");
+      return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
     } else if (isMonthView) {
-      if (selectedDay) {
-        const dateKey = `${selectedDay.getFullYear()}-${String(
-          selectedDay.getMonth() + 1
-        ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
-        return calendarEvents.events[dateKey] || [];
-      }
-      return Object.values(calendarEvents.events).flat();
+      // In month view, show all events for the current month
+      const monthKey = `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+      const monthEvents = calendarEvents.eventDates[monthKey] || {};
+      return Object.values(monthEvents).flatMap(day => day.eventDetails || []);
     } else {
+      // In week view, filter events for the selected week from month data
+      const monthKey = `${selectedWeekStart.getFullYear()}-${String(
+        selectedWeekStart.getMonth() + 1
+      ).padStart(2, "0")}`;
+      const monthEvents = calendarEvents.eventDates[monthKey] || {};
+      
+      // Get the week range
+      const weekStart = selectedWeekStart.getDate() - selectedWeekStart.getDay();
+      const weekEnd = weekStart + 6;
+      
+      // Filter events for days in the week range
       const weekEvents = [];
-      const startOfWeek = new Date(selectedWeekStart);
-      startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(startOfWeek);
-        day.setDate(startOfWeek.getDate() + i);
-
-        const dateKey = `${day.getFullYear()}-${String(
-          day.getMonth() + 1
-        ).padStart(2, "0")}-${String(day.getDate()).padStart(2, "0")}`;
-        if (calendarEvents.events[dateKey]) {
-          weekEvents.push(...calendarEvents.events[dateKey]);
+      Object.entries(monthEvents).forEach(([day, data]) => {
+        const dayNum = parseInt(day);
+        if (dayNum >= weekStart && dayNum <= weekEnd) {
+          weekEvents.push(...(data.eventDetails || []));
         }
-      }
-
+      });
+      
       return weekEvents;
     }
   };

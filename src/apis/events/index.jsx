@@ -37,7 +37,23 @@ export const eventsApi = createApi({
     }),
 
     getCalendarEvents: builder.query({
-      query: ({ view, fromDate }) => `/api/user/event/get-calendar-events?view=${view}&fromDate=${fromDate}`,
+      query: ({ view, fromDate, userId, userType }) => {
+        const params = new URLSearchParams();
+        params.append('userId', userId);
+        params.append('userType', userType);
+        
+        if (view === 'month') {
+          const [year, month] = fromDate.split('-');
+          params.append('month', `${year}-${month}`);
+        } else if (view === 'day') {
+          params.append('date', fromDate);
+        } else {
+          // For week view, we'll use the start date
+          params.append('date', fromDate);
+        }
+        
+        return `/api/user/event/get-events-by-date?${params.toString()}`;
+      },
     }),
 
   }),
