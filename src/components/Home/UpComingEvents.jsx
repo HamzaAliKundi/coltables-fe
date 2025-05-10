@@ -68,6 +68,9 @@ const UpComingEvents = () => {
             >
               VIEW ALL
             </Link>
+            <Link to="/calendar">
+              <img src="/home/eventlisting/calendar.png" alt="calendar" />
+            </Link>
           </div>
         </div>
 

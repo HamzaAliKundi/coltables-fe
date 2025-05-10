@@ -56,6 +56,44 @@ export const eventsApi = createApi({
       },
     }),
 
+    getBigCalendarEvents: builder.query({
+      query: ({ view, fromDate }) => {
+        const params = new URLSearchParams();
+        params.append('view', view);
+        params.append('fromDate', fromDate);
+        return `/api/user/event/get-calendar-events?${params.toString()}`;
+      },
+      transformResponse: (response) => {
+        if (!response?.events) return [];
+        
+        const transformedEvents = [];
+        Object.entries(response.events).forEach(([date, events]) => {
+          events.forEach(event => {
+            transformedEvents.push({
+              id: event._id,
+              title: event.title,
+              start: event.startTime,
+              end: event.endTime,
+              desc: event.description,
+              host: event.host,
+              type: event.type,
+              image: event.image,
+              isPrivate: event.isPrivate,
+              status: event.status,
+              user: event.user,
+              userType: event.userType,
+              performersList: event.performersList,
+              venuesList: event.venuesList,
+              audienceType: event.audienceType,
+              eventCategory: event.eventCategory,
+              specialRequirements: event.specialRequirements
+            });
+          });
+        });
+        return transformedEvents;
+      }
+    }),
+
   }),
 });
 
@@ -65,4 +103,5 @@ export const {
   useGetUpcomingEventsQuery,
   useLazyGetSingleEventByIdQuery, 
   useGetCalendarEventsQuery,
+  useGetBigCalendarEventsQuery,
 } = eventsApi;
