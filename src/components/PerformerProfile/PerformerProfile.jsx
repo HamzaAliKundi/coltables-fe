@@ -727,6 +727,7 @@ const PerformerProfile = () => {
                   );
                   const isToday =
                     date.toDateString() === new Date().toDateString();
+                  const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
                   const isInCurrentWeek = isMonthView
                     ? false
                     : date >=
@@ -753,6 +754,8 @@ const PerformerProfile = () => {
                 ${
                   isToday
                     ? "bg-[#FF00A2] text-white"
+                    : isSelected
+                    ? "bg-[#FF00A2] text-white"
                     : isInCurrentWeek
                     ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
                     : "bg-[#2A2A2A] text-white/60"
@@ -776,13 +779,13 @@ const PerformerProfile = () => {
           <div className="mt-6 rounded-xl p-4 lg:p-6 bg-[#111111] shadow-lg">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-[#FF00A2] text-[20px] lg:text-[24px] font-space-grotesk">
-                {isDayView
+                {selectedDay
                   ? "DAY EVENTS"
                   : isMonthView
                   ? "THIS MONTH EVENTS"
                   : "THIS WEEK EVENTS"}
               </h3>
-              {isDayView && (
+              {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
                   {selectedDay.toLocaleDateString("en-US", {
                     month: "short",
