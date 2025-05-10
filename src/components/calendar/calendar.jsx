@@ -4,12 +4,14 @@ import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './calendar.css'
 import { useGetBigCalendarEventsQuery } from '../../apis/events'
+import { useNavigate } from 'react-router-dom'
 
 // Set up moment locale and localizer
 moment.locale('en-GB')
 const localizer = momentLocalizer(moment)
 
 const Calendar = () => {
+  const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [currentView, setCurrentView] = useState(Views.MONTH)
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -194,7 +196,7 @@ const Calendar = () => {
             views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
             popup={true}
             onShowMore={(events, date) => setShowModal(true)}
-            onSelectEvent={event => console.log(event)}
+            onSelectEvent={event => navigate(`/event-detail/${event.id}`)}
             components={{
               toolbar: CustomToolbar
             }}
