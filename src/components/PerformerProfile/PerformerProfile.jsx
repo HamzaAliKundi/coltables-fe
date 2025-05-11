@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useGetSinglePerformerByIdQuery,
-} from "../../apis/performers";
+import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 
@@ -23,26 +21,29 @@ const PerformerProfile = () => {
     error: performerError,
   } = useGetSinglePerformerByIdQuery(id);
 
-  const { data: calendarEvents } = useGetCalendarEventsQuery({
-    view: isMonthView ? "month" : "day",
-    fromDate: isDayView
-      ? `${selectedDay.getFullYear()}-${String(
-          selectedDay.getMonth() + 1
-        ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
-      : `${currentDate.getFullYear()}-${String(
-          currentDate.getMonth() + 1
-        ).padStart(2, "0")}`,
-    userId: id,
-    userType: 'performer'
-  }, {
-    skip: !isMonthView && !isDayView // Skip API call for week view
-  });
+  const { data: calendarEvents } = useGetCalendarEventsQuery(
+    {
+      view: isMonthView ? "month" : "day",
+      fromDate: isDayView
+        ? `${selectedDay.getFullYear()}-${String(
+            selectedDay.getMonth() + 1
+          ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
+        : `${currentDate.getFullYear()}-${String(
+            currentDate.getMonth() + 1
+          ).padStart(2, "0")}`,
+      userId: id,
+      userType: "performer",
+    },
+    {
+      skip: !isMonthView && !isDayView, // Skip API call for week view
+    }
+  );
 
   // Helper functions
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);  
+    const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDay = firstDay.getDay();
@@ -164,7 +165,7 @@ const PerformerProfile = () => {
       currentDate.getMonth() + 1
     ).padStart(2, "0")}`;
     const dayStr = String(day).padStart(2, "0");
-    
+
     return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
   };
 
@@ -205,18 +206,21 @@ const PerformerProfile = () => {
         currentDate.getMonth() + 1
       ).padStart(2, "0")}`;
       const monthEvents = calendarEvents.eventDates[monthKey] || {};
-      return Object.values(monthEvents).flatMap(day => day.eventDetails || []);
+      return Object.values(monthEvents).flatMap(
+        (day) => day.eventDetails || []
+      );
     } else {
       // In week view, filter events for the selected week from month data
       const monthKey = `${selectedWeekStart.getFullYear()}-${String(
         selectedWeekStart.getMonth() + 1
       ).padStart(2, "0")}`;
       const monthEvents = calendarEvents.eventDates[monthKey] || {};
-      
+
       // Get the week range
-      const weekStart = selectedWeekStart.getDate() - selectedWeekStart.getDay();
+      const weekStart =
+        selectedWeekStart.getDate() - selectedWeekStart.getDay();
       const weekEnd = weekStart + 6;
-      
+
       // Filter events for days in the week range
       const weekEvents = [];
       Object.entries(monthEvents).forEach(([day, data]) => {
@@ -225,7 +229,7 @@ const PerformerProfile = () => {
           weekEvents.push(...(data.eventDetails || []));
         }
       });
-      
+
       return weekEvents;
     }
   };
@@ -730,7 +734,9 @@ const PerformerProfile = () => {
                   );
                   const isToday =
                     date.toDateString() === new Date().toDateString();
-                  const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
+                  const isSelected =
+                    selectedDay &&
+                    date.toDateString() === selectedDay.toDateString();
                   const isInCurrentWeek = isMonthView
                     ? false
                     : date >=
@@ -864,7 +870,10 @@ const PerformerProfile = () => {
           </div>
         </div>
       </div>
-      <Gallery images={performerDetail?.performer?.images || []} />
+      <Gallery
+        images={performerDetail?.performer?.images || []}
+        videos={performerDetail?.performer?.videos || []}
+      />
       <Reviews />
     </div>
   );

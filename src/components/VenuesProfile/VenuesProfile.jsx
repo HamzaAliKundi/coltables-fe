@@ -322,7 +322,9 @@ const VenuesProfile = () => {
                         <span className="w-1.5 h-1.5 bg-white rounded-full mt-2"></span>
                         <div>
                           <a
-                            href={`https://maps.google.com/?q=${encodeURIComponent(venueDetail.venue.location)}`}
+                            href={`https://maps.google.com/?q=${encodeURIComponent(
+                              venueDetail.venue.location
+                            )}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="underline hover:text-[#FF00A2]"
@@ -333,7 +335,10 @@ const VenuesProfile = () => {
                             <>
                               <br />
                               <a
-                                href={`tel:${venueDetail.venue.phone.replace(/\D/g,'')}`}
+                                href={`tel:${venueDetail.venue.phone.replace(
+                                  /\D/g,
+                                  ""
+                                )}`}
                                 className="underline hover:text-[#FF00A2]"
                               >
                                 {venueDetail.venue.phone}
@@ -352,7 +357,9 @@ const VenuesProfile = () => {
                       </h3>
                       <div className="flex items-center gap-2 text-white/90 leading-6">
                         <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                        <span>{formatTimeRange(venueDetail.venue.hoursOfOperation)}</span>
+                        <span>
+                          {formatTimeRange(venueDetail.venue.hoursOfOperation)}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -588,7 +595,10 @@ const VenuesProfile = () => {
           </div>
         </div>
       </div>
-      <Gallery images={venueDetail?.venue?.images || []} />
+      <Gallery
+        images={venueDetail?.venue?.images || []}
+        videos={venueDetail?.venue?.videos || []}
+      />
       <Reviews />
     </div>
   );
