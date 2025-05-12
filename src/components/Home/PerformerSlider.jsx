@@ -128,11 +128,14 @@ const PerformerSlider = () => {
                 >
                   {/* Main Image */}
                   <div className="relative">
+                  <div className="w-full md:w-[295px] h-[200px] overflow-hidden">
                     <img
-                      src={performer?.profilePhoto}
-                      alt={performer?.fullDragName?.split(" ")[0]}
-                      className="w-full md:w-[295px] h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                      src={performer?.profilePhoto ? performer?.profilePhoto : "/default-profile.png"}
+                      alt={performer?.fullDragName?.split(" ")[0] ? performer?.fullDragName?.split(" ")[0] : "Performer"}
+                      className="rounded-[8px] h-[100%] w-[100%] object-cover"
+                      style={{ objectPosition: "0px 0px" }}
                     />
+                  </div>
                     <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
                     {/* Logo/Icon Image */}
                     <div className="absolute bottom-[-40px] left-[35px]">
@@ -144,7 +147,7 @@ const PerformerSlider = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 pb-6 mt-[-8px] h-[250px] flex flex-col">
+                  <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 mt-[-8px] h-[250px] flex flex-col">
                     <div className="flex-grow">
                       <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer">
                         {performer?.fullDragName?.length > 16 ? (

@@ -75,15 +75,18 @@ const Calendar = () => {
       <p>Loading events...</p>
     </div>
   );
-
+  
   // Custom toolbar component
   const CustomToolbar = ({ onNavigate, onView, view, label }) => {
     const goToBack = () => {
+      if (view === Views.MONTH) {
+        const newDate = moment(currentDate).subtract(1, 'month')
+        setCurrentDate(newDate.toDate())
+        onNavigate('PREV')
+        return
+      }
       let newDate
       switch(view) {
-        case Views.MONTH:
-          newDate = moment(currentDate).subtract(1, 'month')
-          break
         case Views.WEEK:
           newDate = moment(currentDate).subtract(1, 'week')
           break
@@ -101,11 +104,14 @@ const Calendar = () => {
     }
 
     const goToNext = () => {
+      if (view === Views.MONTH) {
+        const newDate = moment(currentDate).add(1, 'month')
+        setCurrentDate(newDate.toDate())
+        onNavigate('NEXT')
+        return
+      }
       let newDate
       switch(view) {
-        case Views.MONTH:
-          newDate = moment(currentDate).add(1, 'month')
-          break
         case Views.WEEK:
           newDate = moment(currentDate).add(1, 'week')
           break
@@ -181,46 +187,46 @@ const Calendar = () => {
         {isLoading && currentView === Views.MONTH ? (
           <LoadingComponent />
         ) : (
-          <BigCalendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            step={30}
-            timeslots={2}
-            defaultView={Views.MONTH}
-            view={currentView}
-            onView={setCurrentView}
-            date={currentDate}
-            onNavigate={date => setCurrentDate(date)}
-            views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
-            popup={true}
-            onShowMore={(events, date) => setShowModal(true)}
+        <BigCalendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          step={30}
+          timeslots={2}
+          defaultView={Views.MONTH}
+          view={currentView}
+          onView={setCurrentView}
+          date={currentDate}
+          onNavigate={date => setCurrentDate(date)}
+          views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+          popup={true}
+          onShowMore={(events, date) => setShowModal(true)}
             onSelectEvent={event => navigate(`/event-detail/${event.id}`)}
-            components={{
-              toolbar: CustomToolbar
-            }}
-            style={{
-              margin: '20px',
-              padding: '20px',
-            }}
-            min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
-            max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
-            tooltipAccessor={event => event.desc}
-            formats={{
-              monthHeaderFormat: 'MMMM YYYY',
-              weekHeaderFormat: 'MMMM D YYYY',
-              dayHeaderFormat: 'dddd • MMMM D, YYYY',
-              dayRangeHeaderFormat: ({ start, end }) => 
-                `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
-              agendaHeaderFormat: ({ start, end }) =>
-                `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
-              agendaDateFormat: 'ddd D MMM',
-              agendaTimeFormat: 'HH:mm',
-              agendaTimeRangeFormat: ({ start, end }) =>
-                `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
-            }}
-          />
+          components={{
+            toolbar: CustomToolbar
+          }}
+          style={{
+            margin: '20px',
+            padding: '20px',
+          }}
+          min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
+          max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
+          tooltipAccessor={event => event.desc}
+          formats={{
+            monthHeaderFormat: 'MMMM YYYY',
+            weekHeaderFormat: 'MMMM D YYYY',
+            dayHeaderFormat: 'dddd • MMMM D, YYYY',
+            dayRangeHeaderFormat: ({ start, end }) => 
+              `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
+            agendaHeaderFormat: ({ start, end }) =>
+              `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
+            agendaDateFormat: 'ddd D MMM',
+            agendaTimeFormat: 'HH:mm',
+            agendaTimeRangeFormat: ({ start, end }) =>
+              `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
+          }}
+        />
         )}
       </div>
     </div>

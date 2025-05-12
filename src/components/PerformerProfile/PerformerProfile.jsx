@@ -278,7 +278,7 @@ const PerformerProfile = () => {
             <>
               <h1 className="font-tangerine text-5xl py-6 md:py-0 md:text-[64px] font-bold mb-4 lg:mb-8 text-center">
                 {performerDetail?.performer?.fullDragName || "Performer Name"}
-              </h1>
+              </h1> 
 
               {/* Profile Image and Social Links */}
               <div className="relative flex justify-center">
@@ -291,7 +291,7 @@ const PerformerProfile = () => {
                     performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"
                   }
-                  className="w-[150px] h-[200px] md:w-[300px] md:h-[300px] ml-8 md:ml-0 object-cover rounded-lg"
+                  className="w-[350px] h-[350px] sm:w-[377px] sm:h-[398px] md:ml-0 object-cover rounded-lg" style={{ objectPosition: "0px -42px" }}
                 />
 
                 {/* Social Media Links */}
@@ -388,7 +388,7 @@ const PerformerProfile = () => {
                       alt="Crown"
                       className="w-[70px] h-[70px] text-[#FF00A2]"
                     />
-                    <div className="w-1/2">
+                    <div className="w-[77%] md:w-[60%]">
                       <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
                     </div>
                   </div>
