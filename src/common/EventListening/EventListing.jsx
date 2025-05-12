@@ -139,13 +139,13 @@ const EventListing = ({ isEvent }) => {
         </div>
 
         {/* Calendar Icon */}
-        {/* <Link to="/create-event">
+        <Link to="/calendar">
           <img
             src="/home/eventlisting/calendar.png"
             alt="calendar"
             className="w-[51px] h-[51px]"
           />
-        </Link> */}
+        </Link>
       </div>
 
       {/* Category Tabs */}
