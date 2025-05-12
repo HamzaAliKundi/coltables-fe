@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 
-const Gallery = ({ images = [] }) => {
-  const [selectedImage, setSelectedImage] = useState(null);
+const Gallery = ({ images = [], videos = [] }) => {
+  const media = [
+    ...videos.map((video) => ({ url: video, type: "video" })),
+    ...images.map((img) => ({ url: img, type: "image" })),
+  ];
+
+  const [selectedMedia, setSelectedMedia] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = (image) => {
-    setSelectedImage(image);
+  const openModal = (media) => {
+    setSelectedMedia(media);
     setIsModalOpen(true);
   };
 
@@ -13,25 +18,68 @@ const Gallery = ({ images = [] }) => {
     setIsModalOpen(false);
   };
 
-  // Calculate image distribution based on count
-  const getImageDistribution = () => {
-    const count = images.length;
-    
-    if (count === 0) return { left: [], center: null, right: [] };
-    if (count === 1) return { left: [], center: images[0], right: [] };
-    
-    // For 2-10 images
-    const leftCount = Math.min(4, Math.ceil((count - 1) / 2));
-    const rightCount = Math.min(4, Math.floor((count - 1) / 2));
-    
+  const getMediaDistribution = () => {
+    const count = media.length;
+
+    if (count === 0) return { left: [], center: [], right: [] };
+    if (count === 1) return { left: [], center: [media[0]], right: [] };
+    if (count === 2) return { left: [media[1]], center: [media[0]], right: [] };
+    if (count === 3)
+      return { left: [media[1]], center: [media[0]], right: [media[2]] };
+    if (count === 4)
+      return {
+        left: [media[1], media[3]],
+        center: [media[0]],
+        right: [media[2]],
+      };
+    if (count === 5)
+      return {
+        left: [media[1], media[3]],
+        center: [media[0]],
+        right: [media[2], media[4]],
+      };
+    if (count === 6)
+      return {
+        left: [media[1], media[3], media[5]],
+        center: [media[0]],
+        right: [media[2], media[4]],
+      };
+    if (count === 7)
+      return {
+        left: [media[1], media[3], media[5]],
+        center: [media[0]],
+        right: [media[2], media[4], media[6]],
+      };
+    if (count === 8)
+      return {
+        left: [media[1], media[3], media[5]],
+        center: [media[0], media[7]],
+        right: [media[2], media[4], media[6]],
+      };
+    if (count === 9)
+      return {
+        left: [media[1], media[3], media[5], media[8]],
+        center: [media[0], media[7]],
+        right: [media[2], media[4], media[6]],
+      };
+    if (count === 10)
+      return {
+        left: [media[1], media[3], media[5], media[8]],
+        center: [media[0], media[7]],
+        right: [media[2], media[4], media[6], media[9]],
+      };
+
+    const leftCount = Math.min(4, Math.ceil((count - 2) / 2));
+    const rightCount = Math.min(4, Math.floor((count - 2) / 2));
+
     return {
-      left: images.slice(0, leftCount),
-      center: count >= 2 ? images[leftCount] : null,
-      right: images.slice(leftCount + 1, leftCount + 1 + rightCount)
+      left: media.slice(0, leftCount),
+      center: [media[leftCount], media[leftCount + rightCount + 1]],
+      right: media.slice(leftCount + 1, leftCount + 1 + rightCount),
     };
   };
 
-  const { left, center, right } = getImageDistribution();
+  const { left, center, right } = getMediaDistribution();
 
   return (
     <div className="mt-20 max-w-7xl mx-auto px-4 lg:px-8 relative">
@@ -41,56 +89,68 @@ const Gallery = ({ images = [] }) => {
         <div className="w-20 h-1 bg-[#FF00A2]"></div>
       </div>
 
-      {images.length > 0 ? (
+      {media.length > 0 ? (
         <div className="grid grid-cols-12 gap-4 max-h-[600px] overflow-y-auto pr-4">
           {/* Left Column */}
           <div className="col-span-3 flex flex-col gap-4">
-            {left.map((image, index) => (
-              <ImageTile 
+            {left.map((media, index) => (
+              <MediaTile
                 key={`left-${index}`}
-                image={image}
+                media={media}
                 index={index}
                 openModal={openModal}
               />
             ))}
           </div>
 
-          {/* Center Column */}
-          <div className="col-span-6">
-            {center && (
-              <div className="rounded-2xl overflow-hidden h-full max-h-[585px] relative group">
-                <img
-                  src={center}
-                  alt="Main Gallery Image"
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <PreviewButton openModal={() => openModal(center)} />
+          {/* Center Column - Now with two items */}
+          <div className="col-span-6 flex flex-col gap-4">
+            {center.map((media, index) => (
+              <div
+                key={`center-${index}`}
+                className="rounded-2xl overflow-hidden h-full relative group"
+              >
+                {media.type === "video" ? (
+                  <video
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                  >
+                    <source src={media.url} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img
+                    src={media.url}
+                    alt={`Center Gallery ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
+                <PreviewButton openModal={() => openModal(media)} />
               </div>
-            )}
+            ))}
           </div>
 
           {/* Right Column */}
           <div className="col-span-3 flex flex-col gap-4">
-            {right.map((image, index) => (
-              <ImageTile 
+            {right.map((media, index) => (
+              <MediaTile
                 key={`right-${index}`}
-                image={image}
-                index={index + left.length + (center ? 1 : 0)}
+                media={media}
+                index={index + left.length + center.length}
                 openModal={openModal}
               />
             ))}
           </div>
         </div>
       ) : (
-        <h1 className="text-center text-white">No images to show!</h1>
+        <h1 className="text-center text-white">No media to show!</h1>
       )}
 
       {/* Preview Modal */}
       {isModalOpen && (
-        <ModalPreview 
-          image={selectedImage} 
-          closeModal={closeModal} 
-        />
+        <ModalPreview media={selectedMedia} closeModal={closeModal} />
       )}
 
       {/* Custom Scrollbar Styles */}
@@ -99,15 +159,27 @@ const Gallery = ({ images = [] }) => {
   );
 };
 
-// Subcomponents for better organization
-const ImageTile = ({ image, index, openModal }) => (
+// MediaTile component to handle both images and videos
+const MediaTile = ({ media, index, openModal }) => (
   <div className="aspect-square rounded-2xl overflow-hidden relative group">
-    <img
-      src={image}
-      alt={`Gallery Image ${index + 1}`}
-      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-    />
-    <PreviewButton openModal={() => openModal(image)} />
+    {media.type === "video" ? (
+      <video
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        muted
+        loop
+        autoPlay
+        playsInline
+      >
+        <source src={media.url} type="video/mp4" />
+      </video>
+    ) : (
+      <img
+        src={media.url}
+        alt={`Gallery item ${index + 1}`}
+        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    )}
+    <PreviewButton openModal={() => openModal(media)} />
   </div>
 );
 
@@ -133,17 +205,28 @@ const PreviewButton = ({ openModal }) => (
   </button>
 );
 
-const ModalPreview = ({ image, closeModal }) => (
+const ModalPreview = ({ media, closeModal }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4">
-    <div className="relative max-w-4xl w-full max-h-[90vh]">
-      <img
-        src={image}
-        alt="Preview"
-        className="w-full h-full object-contain max-h-[80vh]"
-      />
+    <div className="relative max-w-4xl w-full max-h-[90vh] flex justify-center">
+      {media.type === "video" ? (
+        <video
+          className="w-full h-full object-contain max-h-[80vh]"
+          controls
+          autoPlay
+          playsInline
+        >
+          <source src={media.url} type="video/mp4" />
+        </video>
+      ) : (
+        <img
+          src={media.url}
+          alt="Preview"
+          className="w-full h-full object-contain max-h-[80vh]"
+        />
+      )}
       <button
         onClick={closeModal}
-        className="absolute top-4 right-4 bg-black bg-opacity-50 rounded-full p-2 text-white hover:bg-opacity-75 transition-colors"
+        className="absolute top-2 right-2 md:top-4 md:right-4 bg-black bg-opacity-50 rounded-full p-2 text-white hover:bg-opacity-75 transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
