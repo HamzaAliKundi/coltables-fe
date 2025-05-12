@@ -183,7 +183,7 @@ const Calendar = () => {
 
   return (
     <div className="p-12 bg-black">
-      <div style={{ height: 700, position: 'relative' }}>
+      <div className="calendar-container overflow-x-auto" style={{ height: 700, position: 'relative', minWidth: '100%' }}>
         {isLoading && currentView === Views.MONTH ? (
           <LoadingComponent />
         ) : (
@@ -202,13 +202,14 @@ const Calendar = () => {
           views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
           popup={true}
           onShowMore={(events, date) => setShowModal(true)}
-            onSelectEvent={event => navigate(`/event-detail/${event.id}`)}
+          onSelectEvent={event => navigate(`/event-detail/${event.id}`)}
           components={{
             toolbar: CustomToolbar
           }}
           style={{
             margin: '20px',
             padding: '20px',
+            minWidth: currentView === Views.MONTH ? '768px' : '100%'
           }}
           min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
           max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
@@ -229,6 +230,20 @@ const Calendar = () => {
         />
         )}
       </div>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .calendar-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .rbc-toolbar {
+            flex-direction: column;
+          }
+          .rbc-toolbar .rbc-btn-group {
+            margin-bottom: 10px;
+          }
+        }
+      `}</style>
     </div>
   )
 }
