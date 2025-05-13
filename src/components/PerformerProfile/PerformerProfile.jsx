@@ -256,6 +256,12 @@ const PerformerProfile = () => {
     { value: "woodlawn", label: "Woodlawn Pointe (San Antonio, TX)" },
   ];
 
+  const formatVenue = (text) =>
+    text
+      .split(/[\s\-_/]+/) // Split on space, dash, underscore, slash
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
   if (performerError) {
     return (
       <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">
@@ -282,7 +288,7 @@ const PerformerProfile = () => {
             <>
               <h1 className="font-tangerine text-5xl py-6 md:py-0 md:text-[64px] font-bold mb-4 lg:mb-8 text-center">
                 {performerDetail?.performer?.fullDragName || "Performer Name"}
-              </h1> 
+              </h1>
 
               {/* Profile Image and Social Links */}
               <div className="relative flex justify-center">
@@ -295,7 +301,8 @@ const PerformerProfile = () => {
                     performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"
                   }
-                  className="w-[350px] h-[350px] sm:w-[377px] sm:h-[398px] md:ml-0 object-cover rounded-lg" style={{ objectPosition: "0px -42px" }}
+                  className="w-[350px] h-[350px] sm:w-[377px] sm:h-[398px] md:ml-0 object-cover rounded-lg"
+                  style={{ objectPosition: "0px -42px" }}
                 />
 
                 {/* Social Media Links */}
@@ -597,7 +604,9 @@ const PerformerProfile = () => {
                             return (
                               <div key={index} className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{venueLabel ? venueLabel : venue}</span>
+                                <span>
+                                  {venueLabel ? venueLabel : formatVenue(venue)}
+                                </span>
                               </div>
                             );
                           }
