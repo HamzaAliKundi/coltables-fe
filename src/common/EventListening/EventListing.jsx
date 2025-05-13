@@ -12,6 +12,8 @@ const EventListing = ({ isEvent }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
   const [selectedOption, setSelectedOption] = useState({
     label: "Filter by",
     value: "",
@@ -27,12 +29,22 @@ const EventListing = ({ isEvent }) => {
       page: currentPage,
       limit: eventsPerPage,
       type: activeTab === "other" ? "other" : activeTab,
-      address: selectedOption.value || undefined,
+      address: debouncedSearchTerm,
     },
     {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
   const tabs = [
     { value: "drag-show", label: "Drag Show" },
@@ -216,7 +228,17 @@ const EventListing = ({ isEvent }) => {
 
           {/* Dropdown Container */}
           <div className="flex justify-end relative" ref={dropdownRef}>
-            <div
+            <div className="p-2 border rounded-lg border-[#FF00A2]">
+              <input
+                type="text"
+                placeholder="Search cities..."
+                className="w-[130px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+              />
+            </div>
+            {/* <div
               className="min-w-[121px] h-[35px] rounded-[8px] border border-[#FF00A2] p-2 flex items-center justify-between cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}
             >
@@ -271,7 +293,7 @@ const EventListing = ({ isEvent }) => {
                   )}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
