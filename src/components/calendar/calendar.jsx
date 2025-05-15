@@ -29,11 +29,25 @@ const Calendar = () => {
     if (!monthEvents.length) return [];
 
     // Convert date strings to Date objects for Big Calendar
-    const eventsWithDates = monthEvents.map(event => ({
-      ...event,
-      start: new Date(event.start),
-      end: new Date(event.end)
-    }));
+    const eventsWithDates = monthEvents.map(event => {
+      const eventTime = moment(event.start).format('HH:mm')
+      const title = event.title
+      
+      // For month view, add time in a unique way
+      let displayTitle = title
+      if (currentView === Views.MONTH) {
+        // If title is too long, show clock emoji, otherwise show time
+        displayTitle = title.length > 15 ? `${title.substring(0, 15)}...` : `${title} ${eventTime}`
+      }
+
+      return {
+        ...event,
+        start: new Date(event.start),
+        end: new Date(event.end),
+        title: displayTitle,
+        tooltipContent: `${title}\n${eventTime}` // Full info in tooltip
+      }
+    });
 
     switch (currentView) {
       case Views.MONTH:
@@ -183,7 +197,7 @@ const Calendar = () => {
 
   return (
     <div className="p-4 md:p-12">
-      <div className="calendar-container overflow-x-auto" style={{ height: 700, position: 'relative', minWidth: '100%' }}>
+      <div className="calendar-container overflow-x-auto" style={{ height: 700, position: 'relative' }}>
         {isLoading && currentView === Views.MONTH ? (
           <LoadingComponent />
         ) : (
@@ -209,14 +223,11 @@ const Calendar = () => {
           style={{
             margin: '20px',
             padding: '20px',
-            minWidth: currentView === Views.MONTH ? '768px' : 
-                     currentView === Views.WEEK ? '1024px' : '100%',
-            maxWidth: currentView === Views.WEEK ? '1200px' : 'none',
             backgroundColor: 'transparent'
           }}
           min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
           max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
-          tooltipAccessor={event => event.desc}
+          tooltipAccessor={event => event.tooltipContent}
           formats={{
             monthHeaderFormat: 'MMMM YYYY',
             weekHeaderFormat: 'MMMM D YYYY',
@@ -255,6 +266,9 @@ const Calendar = () => {
             margin: 0 !important;
             padding: 8px 16px;
             min-width: 80px;
+          }
+          .rbc-calendar {
+            width: 800px !important;
           }
         }
         .rbc-calendar {
