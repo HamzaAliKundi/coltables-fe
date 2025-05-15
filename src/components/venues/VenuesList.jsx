@@ -6,7 +6,7 @@ import { useGetAllVenuesQuery } from "../../apis/venues";
 const VenuesList = ({ isVenue }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const venuesPerPage = 12;
-  const [activeTab, setActiveTab] = useState("Restaurants/Dining");
+  const [activeTab, setActiveTab] = useState("restaurant/dining");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
   const { data: allVenuesData, isLoading: allVenuesLoading, isFetching } = useGetAllVenuesQuery({
@@ -17,7 +17,7 @@ const VenuesList = ({ isVenue }) => {
     refetchOnMountOrArgChange: true
   });
 
-  const tabs = ["Bar/Club", "Restaurants/Dining", "Other"];
+  const tabs = ["bar/club", "restaurant/dining", "other"];
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -73,21 +73,21 @@ const VenuesList = ({ isVenue }) => {
                   onClick={() => handleTabChange(tab)}
                 >
                   <div className="flex items-center mb-2">
-                    {tab === "Bar/Club" && (
+                    {tab === "bar/club" && (
                       <img
                         src="/venues/venues-list/bar.svg"
                         alt="Bar"
                         className="w-6 h-6 mr-2"
                       />
                     )}
-                    {tab === "Restaurants/Dining" && (
+                    {tab === "restaurants/dining" && (
                       <img
                         src="/venues/venues-list/dining.svg"
                         alt="Restaurants/Dining"
                         className="w-6 h-6 mr-2"
                       />
                     )}
-                    {tab === "Other" && (
+                    {tab === "other" && (
                       <img
                         src="/venues/venues-list/other.svg"
                         alt="Drag Bingo"
