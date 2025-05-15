@@ -151,14 +151,6 @@ const PerformerProfile = () => {
     });
   };
 
-  const formatDragAnniversary = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const month = date.toLocaleString("default", { month: "long" });
-    const year = date.getFullYear();
-    return `${month} '${year.toString().slice(-2)}`;
-  };
-
   const getEventsForDay = (day) => {
     if (!calendarEvents?.eventDates) return [];
     const monthKey = `${currentDate.getFullYear()}-${String(
@@ -240,7 +232,6 @@ const PerformerProfile = () => {
     setSelectedDay(null);
   };
 
-  console.log("Events for display:", getEventsForDisplay());
 
   const venueOptions = [
     { value: "jps-bar", label: "JP's Bar And Grill, Eagle" },
@@ -408,9 +399,18 @@ const PerformerProfile = () => {
                       Drag Anniversary:
                       <span className="font-medium">
                         {" "}
-                        {formatDragAnniversary(
-                          performerDetail?.performer?.dragAnniversary
-                        )}
+                        {performerDetail?.performer?.dragAnniversary
+                          ? new Intl.DateTimeFormat("en-US", {
+                              month: "long",
+                              day: "2-digit",
+                            })
+                              .format(
+                                new Date(
+                                  performerDetail.performer.dragAnniversary
+                                )
+                              )
+                              .replace(/(\w+) (\d+)/, "$1, $2")
+                          : "N/A"}
                       </span>
                     </h2>
                   </div>
