@@ -135,44 +135,44 @@ const Calendar = () => {
     }
 
     return (
-      <div className="rbc-toolbar">
+      <div className="rbc-toolbar flex-col md:flex-row">
         {/* Left section - Navigation */}
-        <div className="rbc-btn-group">
-          <button type="button" onClick={goToBack}>Back</button>
-          <button type="button" onClick={goToCurrent}>Today</button>
-          <button type="button" onClick={goToNext}>Next</button>
+        <div className="rbc-btn-group w-full md:w-auto flex justify-start mb-4 md:mb-0">
+          <button type="button" onClick={goToBack} className="px-4 py-2">Back</button>
+          <button type="button" onClick={goToCurrent} className="px-4 py-2">Today</button>
+          <button type="button" onClick={goToNext} className="px-4 py-2">Next</button>
         </div>
 
         {/* Center section - Current Date Range */}
-        <span className="rbc-toolbar-label">{label}</span>
+        <span className="rbc-toolbar-label text-left md:text-center mb-4 md:mb-0">{label}</span>
 
         {/* Right section - View Options */}
-        <div className="rbc-btn-group view-buttons">
+        <div className="rbc-btn-group view-buttons w-full md:w-auto flex justify-start md:justify-center flex-wrap">
           <button
             type="button"
             onClick={() => onView(Views.MONTH)}
-            className={view === Views.MONTH ? 'rbc-active' : ''}
+            className={`px-4 py-2 m-1 ${view === Views.MONTH ? 'rbc-active' : ''}`}
           >
             Month
           </button>
           <button
             type="button"
             onClick={() => onView(Views.WEEK)}
-            className={view === Views.WEEK ? 'rbc-active' : ''}
+            className={`px-4 py-2 m-1 ${view === Views.WEEK ? 'rbc-active' : ''}`}
           >
             Week
           </button>
           <button
             type="button"
             onClick={() => onView(Views.DAY)}
-            className={view === Views.DAY ? 'rbc-active' : ''}
+            className={`px-4 py-2 m-1 ${view === Views.DAY ? 'rbc-active' : ''}`}
           >
             Day
           </button>
           <button
             type="button"
             onClick={() => onView(Views.AGENDA)}
-            className={view === Views.AGENDA ? 'rbc-active' : ''}
+            className={`px-4 py-2 m-1 ${view === Views.AGENDA ? 'rbc-active' : ''}`}
           >
             List
           </button>
@@ -182,7 +182,7 @@ const Calendar = () => {
   }
 
   return (
-    <div className="p-12 bg-black">
+    <div className="p-4 md:p-12">
       <div className="calendar-container overflow-x-auto" style={{ height: 700, position: 'relative', minWidth: '100%' }}>
         {isLoading && currentView === Views.MONTH ? (
           <LoadingComponent />
@@ -209,7 +209,8 @@ const Calendar = () => {
           style={{
             margin: '20px',
             padding: '20px',
-            minWidth: currentView === Views.MONTH ? '768px' : '100%'
+            minWidth: currentView === Views.MONTH ? '768px' : '100%',
+            backgroundColor: 'transparent'
           }}
           min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
           max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
@@ -238,10 +239,42 @@ const Calendar = () => {
           }
           .rbc-toolbar {
             flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
           }
           .rbc-toolbar .rbc-btn-group {
             margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 0.5rem;
           }
+          .rbc-toolbar button {
+            margin: 0 !important;
+            padding: 8px 16px;
+            min-width: 80px;
+          }
+        }
+        .rbc-calendar {
+          background-color: transparent !important;
+        }
+        .rbc-toolbar {
+          background-color: transparent !important;
+        }
+        .rbc-month-view, .rbc-time-view, .rbc-agenda-view {
+          background-color: transparent !important;
+        }
+        .rbc-header {
+          background-color: transparent !important;
+        }
+        .rbc-day-bg {
+          background-color: transparent !important;
+        }
+        .rbc-off-range-bg {
+          background-color: rgba(0, 0, 0, 0.1) !important;
+        }
+        .rbc-today {
+          background-color: rgba(255, 0, 162, 0.1) !important;
         }
       `}</style>
     </div>

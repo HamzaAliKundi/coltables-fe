@@ -6,7 +6,7 @@ import { cityOptions } from "../../utils/citiesList";
 
 const EventListing = ({ isEvent }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = isEvent ? 10 : 8;
+  const eventsPerPage = isEvent ? 10 : 12;
   const [activeTab, setActiveTab] = useState("drag-show");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
