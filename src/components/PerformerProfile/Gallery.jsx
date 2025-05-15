@@ -1,9 +1,12 @@
 import { useState } from "react";
 
 const Gallery = ({ images = [], videos = [] }) => {
+  const filteredImages = images ? images.filter(img => img !== null) : [];
+  const filteredVideos = videos ? videos.filter(vid => vid !== null) : [];
+
   const media = [
-    ...videos.map((video) => ({ url: video, type: "video" })),
-    ...images.map((img) => ({ url: img, type: "image" })),
+    ...filteredVideos.map((video) => ({ url: video, type: "video" })),
+    ...filteredImages.map((img) => ({ url: img, type: "image" })),
   ];
 
   const [selectedMedia, setSelectedMedia] = useState(null);

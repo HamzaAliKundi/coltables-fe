@@ -73,21 +73,21 @@ const VenuesList = ({ isVenue }) => {
                   onClick={() => handleTabChange(tab)}
                 >
                   <div className="flex items-center mb-2">
-                    {tab === "Bar/Club" && (
+                    {tab === "bar/club" && (
                       <img
                         src="/venues/venues-list/bar.svg"
                         alt="Bar"
                         className="w-6 h-6 mr-2"
                       />
                     )}
-                    {tab === "Restaurants/Dining" && (
+                    {tab === "restaurants/dining" && (
                       <img
                         src="/venues/venues-list/dining.svg"
                         alt="Restaurants/Dining"
                         className="w-6 h-6 mr-2"
                       />
                     )}
-                    {tab === "Other" && (
+                    {tab === "other" && (
                       <img
                         src="/venues/venues-list/other.svg"
                         alt="Drag Bingo"

@@ -105,16 +105,16 @@ const EventListing = ({ isEvent }) => {
     setSearchTerm("");
   };
 
-  // const formatDate = (dateString) => {
-  //   const options = {
-  //     year: "numeric",
-  //     month: "short",
-  //     day: "numeric",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   };
-  //   return new Date(dateString).toLocaleDateString("en-US", options);
-  // };
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
 
   const extractTime = (dateString) => {
     const date = new Date(dateString);
@@ -316,14 +316,14 @@ const EventListing = ({ isEvent }) => {
                   alt="Event"
                   className="w-full h-[220px] rounded-[8px] object-cover"
                 />
-                {/* <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
+                <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
                   <span className="text-2xl font-bold text-[#e3d4de] leading-none">
                   {formatDate(event.startDate)?.replace(',', '').slice(3, 6)}
                   </span>
                   <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
                     {formatDate(event.startDate)?.slice(0, 3)}
                   </span>
-                </div> */}
+                </div>
               </div>
 
               {/* Event Details */}
