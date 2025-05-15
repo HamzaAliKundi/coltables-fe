@@ -209,7 +209,9 @@ const Calendar = () => {
           style={{
             margin: '20px',
             padding: '20px',
-            minWidth: currentView === Views.MONTH ? '768px' : '100%',
+            minWidth: currentView === Views.MONTH ? '768px' : 
+                     currentView === Views.WEEK ? '1024px' : '100%',
+            maxWidth: currentView === Views.WEEK ? '1200px' : 'none',
             backgroundColor: 'transparent'
           }}
           min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
@@ -275,6 +277,16 @@ const Calendar = () => {
         }
         .rbc-today {
           background-color: rgba(255, 0, 162, 0.1) !important;
+        }
+        .rbc-time-view {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        .rbc-time-content {
+          border-radius: 8px;
+        }
+        .rbc-timeslot-group {
+          min-height: 60px !important;
         }
       `}</style>
     </div>
