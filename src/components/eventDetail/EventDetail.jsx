@@ -10,6 +10,7 @@ const EventDetail = () => {
   const [showMore, setShowMore] = useState(false);
 
   const performers = getEventsByVenuesById?.event?.performersList || [];
+  const performer = getEventsByVenuesById?.event?.user || null;
 
   const formatDate = (dateString) => {
     const options = {
@@ -71,8 +72,9 @@ const EventDetail = () => {
           />
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
-              {/* {formatDate(getEventsByVenuesById?.event?.startDate)?.slice(4, 6)} */}
-              {String(new Date(getEventsByVenuesById?.event?.startDate).getDate()).padStart(2, '0')}
+              {String(
+                new Date(getEventsByVenuesById?.event?.startDate).getDate()
+              ).padStart(2, "0")}
             </span>
             <span className="text-base md:text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
               {formatDate(getEventsByVenuesById?.event?.startDate)?.slice(0, 3)}
@@ -125,6 +127,15 @@ const EventDetail = () => {
                               {performer?.fullDragName}
                             </Link>
                           ))
+                        ) : performer?.userType === "performer" ? (
+                          <Link
+                            key={performer?._id}
+                            to={`/performer-profile/${performer?._id}`}
+                            onClick={() => window.scrollTo(0, 0)}
+                            className="border-b border-gray-400"
+                          >
+                            {performer?.fullDragName}
+                          </Link>
                         ) : (
                           <span>N/A</span>
                         )}
@@ -155,10 +166,6 @@ const EventDetail = () => {
                     <span className="truncate">
                       Starts:{" "}
                       {extractTime(getEventsByVenuesById?.event?.startTime)}
-                      {/* ,{" "}
-                      {formatDate(
-                        getEventsByVenuesById?.event?.startDate
-                      )?.slice(0, 12)} */}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

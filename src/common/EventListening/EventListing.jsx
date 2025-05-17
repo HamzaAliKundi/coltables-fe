@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
@@ -13,7 +13,7 @@ const EventListing = ({ isEvent }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-
+  const location = useLocation();
   const [selectedOption, setSelectedOption] = useState({
     label: "Filter by",
     value: "",
@@ -227,18 +227,19 @@ const EventListing = ({ isEvent }) => {
           </div>
 
           {/* Dropdown Container */}
-          <div className="flex justify-end relative" ref={dropdownRef}>
-            <div className="p-2 border rounded-lg border-[#FF00A2]">
-              <input
-                type="text"
-                placeholder="Search cities..."
-                className="w-[130px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                autoFocus
-              />
-            </div>
-            {/* <div
+          {location.pathname === "/events" && (
+            <div className="flex justify-end relative" ref={dropdownRef}>
+              <div className="p-2 border rounded-lg border-[#FF00A2]">
+                <input
+                  type="text"
+                  placeholder="Search cities..."
+                  className="w-[130px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              {/* <div
               className="min-w-[121px] h-[35px] rounded-[8px] border border-[#FF00A2] p-2 flex items-center justify-between cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}
             >
@@ -294,7 +295,8 @@ const EventListing = ({ isEvent }) => {
                 </div>
               </div>
             )} */}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -318,7 +320,7 @@ const EventListing = ({ isEvent }) => {
                 />
                 <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
                   <span className="text-2xl font-bold text-[#e3d4de] leading-none">
-                  {formatDate(event.startDate)?.replace(',', '').slice(3, 6)}
+                    {formatDate(event.startDate)?.replace(",", "").slice(3, 6)}
                   </span>
                   <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
                     {formatDate(event.startDate)?.slice(0, 3)}

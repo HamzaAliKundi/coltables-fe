@@ -6,6 +6,43 @@ import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 
+const performancesOptions = [
+  { value: "dance", label: "Dance" },
+  { value: "burlesque", label: "Burlesque" },
+  { value: "campy", label: "Campy" },
+  { value: "comedy", label: "Comedy" },
+  { value: "dance-twirl", label: "Dance/Twirl" },
+  { value: "drag-bingo", label: "Drag Bingo" },
+  { value: "drag-karaoke", label: "Drag Karaoke" },
+  { value: "drag-trivia", label: "Drag Trivia" },
+  { value: "hosting", label: "Hosting" },
+  { value: "lip-sync", label: "Lip Sync" },
+  { value: "live-singing", label: "Live Singing" },
+  { value: "other", label: "Other" },
+];
+
+const genreOptions = [
+  { value: "the80s", label: "The 80's" },
+  { value: "tejano", label: "Tejano" },
+  { value: "rnb", label: "R&B" },
+  { value: "country", label: "Country" },
+  { value: "comedy", label: "Comedy" },
+  { value: "rock", label: "Rock" },
+  { value: "pop", label: "Pop" },
+  { value: "jazzBlues", label: "Jazz/Blues" },
+  { value: "disney", label: "Disney" },
+  { value: "other", label: "Other's" },
+  {
+    value: "alternative",
+    label: "Alternative (Emo, Goth, etc.)",
+  },
+  { value: "comedy-mix", label: "Comedy Mix" },
+  { value: "musical-theater", label: "Musical Theater" },
+  { value: "the-70s", label: "The 70's" },
+  { value: "the-90s", label: "The 90's" },
+  { value: "the-2000s", label: "The 2000's" },
+];
+
 const PerformerProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
   const [isDayView, setIsDayView] = useState(false);
@@ -232,7 +269,6 @@ const PerformerProfile = () => {
     setSelectedDay(null);
   };
 
-
   const venueOptions = [
     { value: "jps-bar", label: "JP's Bar And Grill, Eagle" },
     { value: "eagle", label: "Eagle" },
@@ -282,7 +318,7 @@ const PerformerProfile = () => {
               </h1>
 
               {/* Profile Image and Social Links */}
-              <div className="relative flex justify-center">
+              <div className="relative flex justify-center rounded-lg">
                 <img
                   src={
                     performerDetail?.performer?.profilePhoto ||
@@ -292,8 +328,8 @@ const PerformerProfile = () => {
                     performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"
                   }
-                  className="w-[350px] h-[350px] sm:w-[377px] sm:h-[398px] md:ml-0 object-cover rounded-lg"
-                  style={{ objectPosition: "0px -42px" }}
+                  className="md:w-[350px] w-[377px] h-[420px] md:ml-0 object-cover rounded-lg"
+                  // style={{ objectPosition: "0px -42px" }}
                 />
 
                 {/* Social Media Links */}
@@ -513,12 +549,21 @@ const PerformerProfile = () => {
                       <div className="h-[3px] bg-[#FF00A2]"></div>
                       <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
                         {performerDetail?.performer?.dragPerformances?.map(
-                          (item, index) => (
-                            <div key={index} className="flex items-center">
-                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                              <span className="capitalize">{item}</span>
-                            </div>
-                          )
+                          (item, index) => {
+                            const matchedPerformance = performancesOptions.find(
+                              (option) => option.value === item
+                            );
+                            const displayLabel = matchedPerformance
+                              ? matchedPerformance.label
+                              : item;
+
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{displayLabel}</span>
+                              </div>
+                            );
+                          }
                         )}
                       </div>
                     </div>
@@ -556,26 +601,17 @@ const PerformerProfile = () => {
                       <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
                         {performerDetail?.performer?.genres?.map(
                           (genre, index) => {
-                            const formattedGenre = (() => {
-                              switch (genre) {
-                                case "the80s":
-                                  return "The 80's";
-                                case "rnb":
-                                  return "R&B";
-                                case "jazzBlues":
-                                  return "Jazz/Blues";
-                                default:
-                                  return (
-                                    genre.charAt(0).toUpperCase() +
-                                    genre.slice(1)
-                                  );
-                              }
-                            })();
+                            const matchedGenre = genreOptions.find(
+                              (option) => option.value === genre
+                            );
+                            const displayLabel = matchedGenre
+                              ? matchedGenre.label
+                              : genre;
 
                             return (
                               <div key={index} className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{formattedGenre}</span>
+                                <span>{displayLabel}</span>
                               </div>
                             );
                           }

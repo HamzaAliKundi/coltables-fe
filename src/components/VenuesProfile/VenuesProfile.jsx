@@ -466,7 +466,7 @@ const VenuesProfile = () => {
                     <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
                       Facilities & Features
                     </h3>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-white/90">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 items-start gap-4 text-white/90">
                       {venueDetail.venue.facilities.map((facility, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
