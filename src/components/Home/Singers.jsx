@@ -1,5 +1,3 @@
-import React from "react";
-
 const Singers = () => {
   return (
     <div className="overflow-hidden whitespace-nowrap relative w-full max-w-[1280px] mx-auto">
@@ -7,66 +5,96 @@ const Singers = () => {
         {/* First set of images */}
         <div className="flex min-w-max">
           <img
-            src="/home/singers/singer1.svg"
+            src="/singers/alexyeus.png"
             alt="Singer 1"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer2.svg"
+            src="/singers/casper.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer3.svg"
+            src="/singers/chloe.png"
             alt="Singer 3"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer4.svg"
+            src="/singers/dessie.png"
             alt="Singer 4"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer5.svg"
+            src="/singers/dina.png"
             alt="Singer 5"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer6.svg"
+            src="/singers/iris.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4"
+          />
+          <img
+            src="/singers/kofi.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4 object-contain"
+          />
+          <img
+            src="/singers/rachel.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4"
+          />
+          <img
+            src="/singers/tommie.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4"
           />
         </div>
-        
+
         {/* Duplicate set for seamless loop */}
         <div className="flex min-w-max">
           <img
-            src="/home/singers/singer1.svg"
+            src="/singers/alexyeus.png"
             alt="Singer 1"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer2.svg"
+            src="/singers/casper.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer3.svg"
+            src="/singers/chloe.png"
             alt="Singer 3"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer4.svg"
+            src="/singers/dessie.png"
             alt="Singer 4"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer5.svg"
+            src="/singers/dina.png"
             alt="Singer 5"
             className="w-[204px] h-[296px] mx-4"
           />
           <img
-            src="/home/singers/singer6.svg"
+            src="/singers/iris.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4"
+          />
+          <img
+            src="/singers/kofi.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4 object-contain"
+          />
+          <img
+            src="/singers/rachel.png"
+            alt="Singer 6"
+            className="w-[204px] h-[296px] mx-4"
+          />
+          <img
+            src="/singers/tommie.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4"
           />

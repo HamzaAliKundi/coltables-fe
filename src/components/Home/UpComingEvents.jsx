@@ -19,7 +19,7 @@ const UpComingEvents = () => {
     title: event.title,
     host: `Hosted By ${event.host}`,
     time: `Start ${new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-    location: event.venuesList?.length > 0 ? event.venuesList[0].name : 'TBA',
+    location: event.address ?? 'N/A',
     featured: event.type === 'drag-show'
   })) || [];
 

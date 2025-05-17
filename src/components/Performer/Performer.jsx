@@ -244,11 +244,11 @@ const Performer = ({ isPerformer, searchQuery }) => {
               >
                 {/* Main Image */}
                 <div className="relative">
-                <div className="w-full md:w-[295px] h-[150px] md:h-[200px] overflow-hidden">
+                <div className="w-full md:w-[300px] h-[150px] md:h-[300px] overflow-hidden">
                     <img
                       src={performer?.profilePhoto ? performer?.profilePhoto : "/default-profile.png"}
                       alt={performer?.fullDragName?.split(" ")[0] ? performer?.fullDragName?.split(" ")[0] : "Performer"}
-                      className="rounded-[8px] h-[100%] w-[100%] object-cover"
+                      className="rounded-[8px] h-[100%] w-[100%] object-cover "
                       style={{ objectPosition: "0px 0px" }}
                     />
                 </div>
