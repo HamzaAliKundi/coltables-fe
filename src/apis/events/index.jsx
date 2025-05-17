@@ -70,11 +70,19 @@ export const eventsApi = createApi({
         const transformedEvents = [];
         Object.entries(response.events).forEach(([date, events]) => {
           events.forEach(event => {
+            // Combine startDate with startTime
+            const startDate = new Date(event.startDate);
+            const startTime = new Date(event.startTime);
+            // Set the time from startTime to startDate
+            startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+            // Use the same for end (single point event)
+            const endDate = new Date(startDate);
+            
             transformedEvents.push({
               id: event._id,
               title: event.title,
-              start: event.startTime,
-              end: event.endTime,
+              start: startDate,
+              end: endDate,
               desc: event.description,
               host: event.host,
               type: event.type,

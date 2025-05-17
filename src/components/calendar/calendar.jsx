@@ -30,14 +30,15 @@ const Calendar = () => {
 
     // Convert date strings to Date objects for Big Calendar
     const eventsWithDates = monthEvents.map(event => {
-      const eventTime = moment(event.start).format('HH:mm')
+      const eventTime = moment(event.start).format('hh:mm A');
       const title = event.title
       
       // For month view, add time in a unique way
       let displayTitle = title
       if (currentView === Views.MONTH) {
-        // If title is too long, show clock emoji, otherwise show time
-        displayTitle = title.length > 15 ? `${title.substring(0, 15)}...` : `${title} ${eventTime}`
+        displayTitle = title.length > 15
+          ? `${title.substring(0, 15)}... ${eventTime}`
+          : `${title} ${eventTime}`;
       }
 
       return {
@@ -216,7 +217,10 @@ const Calendar = () => {
           views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
           popup={true}
           onShowMore={(events, date) => setShowModal(true)}
-          onSelectEvent={event => navigate(`/event-detail/${event.id}`)}
+          onSelectEvent={event => {
+            window.scrollTo(0, 0);
+            navigate(`/event-detail/${event.id}`);
+          }}
           components={{
             toolbar: CustomToolbar
           }}
