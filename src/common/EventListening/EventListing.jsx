@@ -236,7 +236,7 @@ const EventListing = ({ isEvent }) => {
                   className="w-[130px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  autoFocus
+                  // autoFocus
                 />
               </div>
               {/* <div
