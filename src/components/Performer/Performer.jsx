@@ -6,7 +6,7 @@ import { cityOptions } from "../../utils/citiesList";
 
 const Performer = ({ isPerformer, searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const performersPerPage = 8;
+  const performersPerPage = 12;
   const [activeTab, setActiveTab] = useState("all");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
