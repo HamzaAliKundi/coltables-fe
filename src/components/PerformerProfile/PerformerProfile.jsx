@@ -329,7 +329,7 @@ const PerformerProfile = () => {
                       performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                       "Performer"
                     }
-                    className="md:w-[350px] w-[377px] max-h-[550px] object-cover rounded-lg"
+                    className="md:w-[350px] w-[377px] h-[550px] object-cover rounded-lg"
                     // style={{ objectPosition: "0px -42px" }}
                   />
                 </div>
@@ -420,7 +420,7 @@ const PerformerProfile = () => {
               </div>
 
               {/* Crown and Anniversary Section */}
-              <div className="mt-8 md:mt-0">
+              <div className="mt-5 md:mt-0">
                 <div className="relative mt-[-20px] lg:mt-[-15px]">
                   <div className="flex items-center w-full justify-center">
                     <img
