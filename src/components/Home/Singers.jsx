@@ -7,32 +7,32 @@ const Singers = () => {
           <img
             src="/singers/alexyeus.png"
             alt="Singer 1"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/casper.png"
             alt="Singer 2"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/chloe.png"
             alt="Singer 3"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/dessie.png"
             alt="Singer 4"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/dina.png"
             alt="Singer 5"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/iris.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/kofi.png"
@@ -42,12 +42,12 @@ const Singers = () => {
           <img
             src="/singers/rachel.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/tommie.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
         </div>
 
@@ -56,32 +56,32 @@ const Singers = () => {
           <img
             src="/singers/alexyeus.png"
             alt="Singer 1"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/casper.png"
             alt="Singer 2"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/chloe.png"
             alt="Singer 3"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/dessie.png"
             alt="Singer 4"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/dina.png"
             alt="Singer 5"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/iris.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/kofi.png"
@@ -91,12 +91,12 @@ const Singers = () => {
           <img
             src="/singers/rachel.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
             src="/singers/tommie.png"
             alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4"
+            className="w-[204px] h-[296px] mx-4 object-contain"
           />
         </div>
       </div>
