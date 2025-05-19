@@ -447,8 +447,9 @@ const PerformerProfile = () => {
                                   performerDetail.performer.dragAnniversary
                                 )
                               )
-                              .replace(/(\w+) (\d+)/, "$1, $2")
+                              .replace(/(\w+) (\d+)/, "$1 ‘$2")
                           : "N/A"}
+                          
                       </span>
                     </h2>
                   </div>
