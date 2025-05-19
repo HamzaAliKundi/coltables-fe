@@ -235,12 +235,12 @@ export default function Navbar({ onSearch }) {
           onMouseLeave={handleLoginMouseLeave}
         >
           <button
-            className="text-sm text-white hover:text-[#FF00A2] transition-colors flex items-center gap-2"
+            className="text-lg text-white hover:text-[#FF00A2] transition-colors flex items-center gap-2"
           >
             <img
               src="/home/navbar/login-icon.svg"
               alt="Login"
-              className="w-[19px] h-[20px]"
+              className="w-[25px] h-[26px]"
             />
             <span>Login</span>
           </button>
