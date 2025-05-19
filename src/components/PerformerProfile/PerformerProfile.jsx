@@ -318,19 +318,21 @@ const PerformerProfile = () => {
               </h1>
 
               {/* Profile Image and Social Links */}
-              <div className="relative flex justify-center rounded-lg">
-                <img
-                  src={
-                    performerDetail?.performer?.profilePhoto ||
-                    performerDetail?.performer?.images?.[0]
-                  }
-                  alt={
-                    performerDetail?.performer?.fullDragName?.split(" ")[0] ||
-                    "Performer"
-                  }
-                  className="md:w-[350px] w-[377px] h-[420px] md:ml-0 object-cover rounded-lg"
-                  // style={{ objectPosition: "0px -42px" }}
-                />
+              <div className="relative flex justify-center">
+                <div className="md:w-[350px] w-[377px] rounded-lg ">
+                  <img
+                    src={
+                      performerDetail?.performer?.profilePhoto ||
+                      performerDetail?.performer?.images?.[0]
+                    }
+                    alt={
+                      performerDetail?.performer?.fullDragName?.split(" ")[0] ||
+                      "Performer"
+                    }
+                    className="md:w-[350px] w-[377px] max-h-[550px] object-cover rounded-lg"
+                    // style={{ objectPosition: "0px -42px" }}
+                  />
+                </div>
 
                 {/* Social Media Links */}
                 <div className="flex flex-col gap-3 lg:gap-4 absolute lg:top-0 right-0 top-1">
