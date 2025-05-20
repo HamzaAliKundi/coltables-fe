@@ -7,7 +7,7 @@ import { cityOptions } from "../../utils/citiesList";
 const EventListing = ({ isEvent }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 12;
-  const [activeTab, setActiveTab] = useState("drag-show");
+  const [activeTab, setActiveTab] = useState("all");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +28,7 @@ const EventListing = ({ isEvent }) => {
     {
       page: currentPage,
       limit: eventsPerPage,
-      type: activeTab === "other" ? "other" : activeTab,
+      ...(activeTab !== "all" && { type: activeTab === "other" ? "other" : activeTab }),
       address: debouncedSearchTerm,
     },
     {
@@ -47,6 +47,7 @@ const EventListing = ({ isEvent }) => {
   }, [searchTerm]);
 
   const tabs = [
+    { value: "all", label: "All Events" },
     { value: "drag-show", label: "Drag Show" },
     { value: "drag-brunch", label: "Drag Brunch" },
     { value: "drag-bingo", label: "Drag Bingo" },
@@ -173,6 +174,13 @@ const EventListing = ({ isEvent }) => {
                   onClick={() => handleTabChange(tab.value)}
                 >
                   <div className="flex items-center mb-2">
+                    {/* {tab.value === "all" && (
+                      <img
+                        src="/home/eventlisting/all-events.png"
+                        alt="All Events"
+                        className="w-6 h-6 mr-2"
+                      />
+                    )} */}
                     {tab.value === "drag-show" && (
                       <img
                         src="/home/eventlisting/drag-show.png"

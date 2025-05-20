@@ -167,6 +167,7 @@ const Calendar = () => {
             type="button"
             onClick={() => onView(Views.MONTH)}
             className={`px-4 py-2 m-1 ${view === Views.MONTH ? 'rbc-active' : ''}`}
+            aria-pressed={view === Views.MONTH}
           >
             Month
           </button>
@@ -174,6 +175,7 @@ const Calendar = () => {
             type="button"
             onClick={() => onView(Views.WEEK)}
             className={`px-4 py-2 m-1 ${view === Views.WEEK ? 'rbc-active' : ''}`}
+            aria-pressed={view === Views.WEEK}
           >
             Week
           </button>
@@ -181,6 +183,7 @@ const Calendar = () => {
             type="button"
             onClick={() => onView(Views.DAY)}
             className={`px-4 py-2 m-1 ${view === Views.DAY ? 'rbc-active' : ''}`}
+            aria-pressed={view === Views.DAY}
           >
             Day
           </button>
@@ -188,6 +191,7 @@ const Calendar = () => {
             type="button"
             onClick={() => onView(Views.AGENDA)}
             className={`px-4 py-2 m-1 ${view === Views.AGENDA ? 'rbc-active' : ''}`}
+            aria-pressed={view === Views.AGENDA}
           >
             List
           </button>
@@ -197,8 +201,8 @@ const Calendar = () => {
   }
 
   return (
-    <div className="p-4 md:p-12">
-      <div className="calendar-container overflow-x-auto" style={{ height: 700, position: 'relative' }}>
+    <div className="p-4 md:p-8">
+      <div className="calendar-container" style={{ height: 700, position: 'relative' }}>
         {isLoading && currentView === Views.MONTH ? (
           <LoadingComponent />
         ) : (
@@ -225,12 +229,11 @@ const Calendar = () => {
             toolbar: CustomToolbar
           }}
           style={{
-            margin: '20px',
-            padding: '20px',
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            minWidth: '800px'
           }}
-          min={new Date(0, 0, 0, 6, 0, 0)} // Start at 6 AM
-          max={new Date(0, 0, 0, 20, 0, 0)} // End at 8 PM
+          min={new Date(0, 0, 0, 6, 0, 0)}
+          max={new Date(0, 0, 0, 20, 0, 0)}
           tooltipAccessor={event => event.tooltipContent}
           formats={{
             monthHeaderFormat: 'MMMM YYYY',
