@@ -15,6 +15,7 @@ export default function Navbar({ onSearch }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const location = useLocation();
   const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
@@ -22,6 +23,7 @@ export default function Navbar({ onSearch }) {
   const loginTimeoutRef = useRef(null);
   // const registerRef = useRef(null);
   const loginRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -69,13 +71,23 @@ export default function Navbar({ onSearch }) {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      console.log("Searching for:", searchQuery);
-      onSearch(searchQuery);
-      setShowSearch(false); 
-    }
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    
+    // Clear previous timeout
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    
+    // Set new timeout for API call
+    searchTimeoutRef.current = setTimeout(() => {
+      if (value.trim()) onSearch(value);
+    }, 300); // 300ms debounce
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    onSearch("");
+    setShowSearch(false);
   };
 
   return (
@@ -89,7 +101,7 @@ export default function Navbar({ onSearch }) {
 
       {/* Middle Navigation - Desktop */}
       <div
-        className="hidden md:flex items-center w-[425px] h-[66px] p-2 rounded-full shadow-lg backdrop-blur-sm"
+        className="hidden md:flex items-center w-[450px] h-[66px] p-2 rounded-full shadow-lg backdrop-blur-sm"
         style={{
           background:
             "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(24, 24, 24, 0.9) 50%, rgba(255, 255, 255, 0.1) 100%)",
@@ -141,48 +153,51 @@ export default function Navbar({ onSearch }) {
             </div> */}
           </div>
         ) : (
-          <form
-            onSubmit={handleSearch}
-            className="w-full px-4 flex items-center"
-          >
-            <div className="relative w-full flex items-center">
+          <div className="w-full px-4">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <FiSearch className="w-5 h-5 text-[#FF00A2]" />
+              </div>
               <input
                 type="text"
-                placeholder="Search performers, venues, events..."
-                className="w-full bg-transparent border-b border-[#FF00A2] text-white focus:outline-none py-2 pr-16"
+                placeholder="Search performers ..."
+                className="w-full bg-transparent border-2 border-[#FF00A2] rounded-full text-white focus:outline-none py-3 pl-10 pr-12 transition-all duration-300"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
                 autoFocus
               />
-              <div className="absolute right-0 bottom-2 flex space-x-2">
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-2"
-                  disabled={!searchQuery.trim()}
-                >
-                  <SearchCheck size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={toggleSearch}
-                  className="text-white p-2"
-                >
-                  <FiX className="w-4 h-4" />
-                </button>
-              </div>
+              <button
+                onClick={handleClearSearch}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#FF00A2] hover:text-white transition-colors"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
             </div>
-          </form>
+            {isSearchFocused && searchQuery && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[#1E1E1E] rounded-lg shadow-lg p-4 z-50">
+                <div className="flex items-center gap-2 text-[#FF00A2] mb-2">
+                  <FiSearch className="w-4 h-4" />
+                  <span>Searching for: {searchQuery}</span>
+                </div>
+                <div className="text-sm text-gray-400">
+                  Press Enter to search or wait for results...
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Search Icon - Only shows when search is closed */}
-        {/* {!showSearch && (
+        {!showSearch && (
           <div
-            className="ml-auto bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 cursor-pointer"
-            onClick={toggleSearch}
+            className="ml-auto bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setShowSearch(true)}
           >
             <FiSearch className="text-white w-6 h-6" />
           </div>
-        )} */}
+        )}
       </div>
 
       {/* Right Links with Dropdowns */}

@@ -15,6 +15,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
     value: "",
   });
   const [isTabLoading, setIsTabLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const dropdownRef = useRef(null);
 
   const {
@@ -37,6 +38,14 @@ const Performer = ({ isPerformer, searchQuery }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, activeTab, selectedOption]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setIsSearching(true);
+      const timer = setTimeout(() => setIsSearching(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery]);
 
   const tabs = [
     { label: "Drag Queens", value: "drag-queen" },
@@ -232,7 +241,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
 
         {/* Performer cards grid */}
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {allPerformersLoading || isTabLoading ? (
+          {allPerformersLoading || isTabLoading || isSearching ? (
             <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
               <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
             </div>
@@ -282,9 +291,15 @@ const Performer = ({ isPerformer, searchQuery }) => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <p className="text-white text-xl">
-                No performers found in this category.
-              </p>
+              <div className="flex flex-col items-center gap-4">
+                
+                <p className="text-white text-xl">
+                  {searchQuery 
+                    ? `No performers found for "${searchQuery}"`
+                    : "No performers found in this category."}
+                </p>
+                
+              </div>
             </div>
           )}
         </div>
