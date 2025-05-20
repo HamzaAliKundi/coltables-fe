@@ -329,7 +329,7 @@ const PerformerProfile = () => {
                       performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                       "Performer"
                     }
-                    className="md:w-[350px] w-[377px] h-[550px] object-cover rounded-lg"
+                    className="md:w-[350px] w-[377px] h-[450px] object-fit rounded-lg"
                     // style={{ objectPosition: "0px -42px" }}
                   />
                 </div>
@@ -447,8 +447,9 @@ const PerformerProfile = () => {
                                   performerDetail.performer.dragAnniversary
                                 )
                               )
-                              .replace(/(\w+) (\d+)/, "$1, $2")
+                              .replace(/(\w+) (\d+)/, "$1 ‘$2")
                           : "N/A"}
+                          
                       </span>
                     </h2>
                   </div>
