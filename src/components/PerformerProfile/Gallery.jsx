@@ -93,7 +93,7 @@ const Gallery = ({ images = [], videos = [] }) => {
       </div>
 
       {media.length > 0 ? (
-        <div className="grid grid-cols-12 gap-4 max-h-[600px] overflow-y-auto pr-4">
+        <div className="grid grid-cols-12 gap-4 max-h-[500px] overflow-y-auto pr-4">
           {/* Left Column */}
           <div className="col-span-3 flex flex-col gap-4">
             {left.map((media, index) => (
@@ -115,7 +115,7 @@ const Gallery = ({ images = [], videos = [] }) => {
               >
                 {media.type === "video" ? (
                   <video
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-[550px] object-cover transition-transform duration-300 group-hover:scale-105"
                     muted
                     loop
                     autoPlay
@@ -127,7 +127,7 @@ const Gallery = ({ images = [], videos = [] }) => {
                   <img
                     src={media.url}
                     alt={`Center Gallery ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-[550px] object-fit transition-transform duration-300 group-hover:scale-105"
                   />
                 )}
                 <PreviewButton openModal={() => openModal(media)} />
@@ -179,7 +179,7 @@ const MediaTile = ({ media, index, openModal }) => (
       <img
         src={media.url}
         alt={`Gallery item ${index + 1}`}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className="w-full h-full object-fit transition-transform duration-300 group-hover:scale-105"
       />
     )}
     <PreviewButton openModal={() => openModal(media)} />
