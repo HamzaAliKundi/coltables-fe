@@ -43,16 +43,6 @@ const Footer = ({ isHome }) => {
                 className="w-[18.61px] h-[27px] cursor-pointer"
               />
             </a>
-            {/* <img
-              src="/footer/chat.png"
-              alt="Twitter"
-              className="w-[16.36px] h-[27px] cursor-pointer"
-            /> */}
-            {/* <img
-              src="/footer/google-plus.png"
-              alt="Google"
-              className="w-[23.11px] h-[27px] cursor-pointer"
-            /> */}
             <a href="https://www.instagram.com/officialdragspace" target="_blank" rel="noopener noreferrer">
               <img
                 src="/footer/instagram.png"
