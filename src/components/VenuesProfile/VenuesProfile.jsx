@@ -5,6 +5,7 @@ import { useGetSingleVenueByIdQuery } from "../../apis/venues";
 import { Youtube } from "lucide-react";
 import Gallery from "../PerformerProfile/Gallery";
 import { useGetCalendarEventsQuery } from "../../apis/events";
+import { useGetAllAdsQuery } from "../../apis/adsBanner";
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
@@ -13,6 +14,9 @@ const VenuesProfile = () => {
   const [selectedWeekStart, setSelectedWeekStart] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
   const navigate = useNavigate();
+
+  const { data: ad } = useGetAllAdsQuery("venue");
+
 
   const { id } = useParams();
   const { data: venueDetail, isLoading: venueDetailLoading } =
@@ -741,7 +745,7 @@ const VenuesProfile = () => {
           {/* Ad Image */}
           <div className="mt-5">
             <img
-              src="/performer-profile/ad.svg"
+              src={ad?.[0]?.images[0]}
               alt="ad"
               className="w-full max-w-[500px] mx-auto lg:max-w-none"
             />

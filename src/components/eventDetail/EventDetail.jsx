@@ -174,9 +174,17 @@ const EventDetail = () => {
                       alt="bullet"
                       className="w-5 h-5"
                     />
-                    <span className="truncate">
-                      {getEventsByVenuesById?.event?.address || "N/A"}
-                    </span>
+                    {getEventsByVenuesById?.event?.userType !== "venue" && (
+                      <span className="truncate">
+                        {getEventsByVenuesById?.event?.address || "N/A"}
+                      </span>
+                    )}
+
+                    {getEventsByVenuesById?.event?.userType === "venue" && (
+                      <span className="truncate">
+                        {getEventsByVenuesById?.event?.user?.name || "N/A"}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
