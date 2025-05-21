@@ -3,7 +3,7 @@ import EventListing from '../../common/EventListening/EventListing';
 import Advertisment from '../../common/Ad/Advertisment';
 import Footer from '../Footer';
 
-const EventListingPage = () => {
+const EventListingPage = ({ searchQuery }) => {
   return (
     <div  className="min-h-screen w-full"
     style={{
@@ -12,7 +12,7 @@ const EventListingPage = () => {
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
     }}>
-        <EventListing isEvent={true} />
+        <EventListing isEvent={true} searchQuery={searchQuery} />
         <Advertisment />
         <Footer />
       </div>

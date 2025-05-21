@@ -21,9 +21,10 @@ export default function Navbar({ onSearch }) {
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
   const registerTimeoutRef = useRef(null);
   const loginTimeoutRef = useRef(null);
-  // const registerRef = useRef(null);
   const loginRef = useRef(null);
   const searchTimeoutRef = useRef(null);
+
+  const shouldShowSearch = location.pathname === "/performers" || location.pathname === "/venues" || location.pathname === "/events";
 
   useEffect(() => {
     return () => {
@@ -37,19 +38,6 @@ export default function Navbar({ onSearch }) {
     setShowRegisterDropdown(false);
     setShowLoginDropdown(false);
   };
-
-  // const handleRegisterMouseEnter = () => {
-  //   if (registerTimeoutRef.current) clearTimeout(registerTimeoutRef.current);
-  //   setShowRegisterDropdown(true);
-  // };
-
-  // const handleRegisterMouseLeave = () => {
-  //   registerTimeoutRef.current = setTimeout(() => {
-  //     if (!registerRef.current?.contains(document.activeElement)) {
-  //       setShowRegisterDropdown(false);
-  //     }
-  //   }, 200);
-  // };
 
   const handleLoginMouseEnter = () => {
     if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
@@ -75,13 +63,11 @@ export default function Navbar({ onSearch }) {
     const value = e.target.value;
     setSearchQuery(value);
     
-    // Clear previous timeout
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     
-    // Set new timeout for API call
     searchTimeoutRef.current = setTimeout(() => {
       if (value.trim()) onSearch(value);
-    }, 300); // 300ms debounce
+    }, 300);
   };
 
   const handleClearSearch = () => {
@@ -143,14 +129,6 @@ export default function Navbar({ onSearch }) {
                 <div className="w-full h-[3px] bg-[#FF00A2] rounded-[5px] mt-2"></div>
               )}
             </div>
-            {/* <div className="flex flex-col items-center">
-              <Link to="/more" className="flex items-center gap-2">
-                <FaTh className="w-4 h-4" /> More
-              </Link>
-              {location.pathname === "/more" && (
-                <div className="w-full h-[3px] bg-[#FF00A2] rounded-[5px] mt-2"></div>
-              )}
-            </div> */}
           </div>
         ) : (
           <div className="w-full px-4">
@@ -160,7 +138,7 @@ export default function Navbar({ onSearch }) {
               </div>
               <input
                 type="text"
-                placeholder="Search performers ..."
+                placeholder={`Search ${location.pathname === "/venues" ? "venues" : location.pathname === "/events" ? "events" : "performers"} ...`}
                 className="w-full bg-transparent border-2 border-[#FF00A2] rounded-full text-white focus:outline-none py-3 pl-10 pr-12 transition-all duration-300"
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -189,8 +167,8 @@ export default function Navbar({ onSearch }) {
           </div>
         )}
 
-        {/* Search Icon - Only shows when search is closed */}
-        {!showSearch && (
+        {/* Search Icon - Only shows when search is closed and on performers/venues/events page */}
+        {!showSearch && shouldShowSearch && (
           <div
             className="ml-auto bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setShowSearch(true)}

@@ -12,13 +12,14 @@ export const eventsApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllEvents: builder.query({
-      query: ({ page = 1, limit = 10, type, sort = -1, address, isUpcoming = 1 }) => {
+      query: ({ page = 1, limit = 10, search, type, sort = -1, address, isUpcoming = 1 }) => {
         const params = new URLSearchParams();
         params.append('limit', limit);
         params.append('page', page);
         params.append('sort', sort);
         if (address) params.append('address', address);
         if (type) params.append('type', type);
+        if (search) params.append('search', search);
         return `/api/user/event/get-all-events?${params.toString()}`;
       },
     }),

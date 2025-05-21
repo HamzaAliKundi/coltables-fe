@@ -29,12 +29,12 @@ function App() {
       <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/venues" element={<Venues />} />
+        <Route path="/venues" element={<Venues searchQuery={searchQuery} />} />
         <Route
           path="/performers"
           element={<Performers searchQuery={searchQuery} />}
         />
-        <Route path="/events" element={<EventListingPage />} />
+        <Route path="/events" element={<EventListingPage searchQuery={searchQuery} />} />
         <Route path="/create-event" element={<CreateEventPage />} />
         <Route path="/event-detail/:id" element={<EventDetailPage />} />
 

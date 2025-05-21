@@ -4,11 +4,12 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-const EventListing = ({ isEvent }) => {
+const EventListing = ({ isEvent, searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 12;
   const [activeTab, setActiveTab] = useState("all");
   const [isTabLoading, setIsTabLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,11 +31,24 @@ const EventListing = ({ isEvent }) => {
       limit: eventsPerPage,
       ...(activeTab !== "all" && { type: activeTab === "other" ? "other" : activeTab }),
       address: debouncedSearchTerm,
+      search: searchQuery || ""
     },
     {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTab]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setIsSearching(true);
+      const timer = setTimeout(() => setIsSearching(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -60,13 +74,12 @@ const EventListing = ({ isEvent }) => {
   };
 
   const handleTabChange = (tabValue) => {
-    if (tabValue === activeTab) return; // Don't do anything if clicking the same tab
+    if (tabValue === activeTab) return;
     setIsTabLoading(true);
     setActiveTab(tabValue);
     setCurrentPage(1);
   };
 
-  // Reset loading state when data is fetched
   useEffect(() => {
     if (!isFetching) {
       setIsTabLoading(false);
@@ -79,13 +92,6 @@ const EventListing = ({ isEvent }) => {
       option.value === "" ||
       option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Reset loading state when data is fetched
-  useEffect(() => {
-    if (!isFetching) {
-      setIsTabLoading(false);
-    }
-  }, [isFetching]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -244,7 +250,6 @@ const EventListing = ({ isEvent }) => {
                   className="w-[130px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  // autoFocus
                 />
               </div>
               {/* <div
@@ -310,7 +315,7 @@ const EventListing = ({ isEvent }) => {
 
       {/* Event Cards Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {allEventsLoading || isTabLoading ? (
+        {allEventsLoading || isTabLoading || isSearching ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
@@ -380,7 +385,9 @@ const EventListing = ({ isEvent }) => {
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
-              No events found in this category
+              {searchQuery 
+                ? `No events found for "${searchQuery}"`
+                : "No events found in this category"}
             </p>
           </div>
         )}

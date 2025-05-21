@@ -3,19 +3,34 @@ import { Link } from "react-router-dom";
 import Pagination from "../../common/EventListening/Pagination";
 import { useGetAllVenuesQuery } from "../../apis/venues";
 
-const VenuesList = ({ isVenue }) => {
+const VenuesList = ({ isVenue, searchQuery }) => {
+  console.log("searchQuery", searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const venuesPerPage = 12;
   const [activeTab, setActiveTab] = useState("restaurant/dining");
   const [isTabLoading, setIsTabLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const { data: allVenuesData, isLoading: allVenuesLoading, isFetching } = useGetAllVenuesQuery({
     page: currentPage,
     limit: venuesPerPage,
-    venueType: activeTab
+    venueType: activeTab,
+    search: searchQuery || ""
   }, {
     refetchOnMountOrArgChange: true
   });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeTab]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setIsSearching(true);
+      const timer = setTimeout(() => setIsSearching(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery]);
 
   const tabs = ["bar/club", "restaurant/dining", "other"];
 
@@ -24,13 +39,12 @@ const VenuesList = ({ isVenue }) => {
   };
 
   const handleTabChange = (tabValue) => {
-    if (tabValue === activeTab) return; // Don't do anything if clicking the same tab
+    if (tabValue === activeTab) return;
     setIsTabLoading(true);
     setActiveTab(tabValue);
     setCurrentPage(1);
   };
 
-  // Reset loading state when data is fetched
   useEffect(() => {
     if (!isFetching) {
       setIsTabLoading(false);
@@ -110,9 +124,9 @@ const VenuesList = ({ isVenue }) => {
         </div>
       </div>
 
-      {/* Performer cards grid */}
+      {/* Venue cards grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6">
-        {(allVenuesLoading || isTabLoading) ? (
+        {(allVenuesLoading || isTabLoading || isSearching) ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
@@ -148,7 +162,9 @@ const VenuesList = ({ isVenue }) => {
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
-              No venues found in this category
+              {searchQuery 
+                ? `No venues found for "${searchQuery}"`
+                : "No venues found in this category"}
             </p>
           </div>
         )}
