@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
+import { useGetAllAdsQuery } from "../../apis/adsBanner";
 
 const performancesOptions = [
   { value: "dance", label: "Dance" },
@@ -51,6 +52,7 @@ const PerformerProfile = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: ad } = useGetAllAdsQuery("performer");
 
   const {
     data: performerDetail,
@@ -449,7 +451,6 @@ const PerformerProfile = () => {
                               )
                               .replace(/(\w+) (\d+)/, "$1 ‘$2")
                           : "N/A"}
-                          
                       </span>
                     </h2>
                   </div>
@@ -911,7 +912,7 @@ const PerformerProfile = () => {
           {/* Ad Image */}
           <div className="mt-5">
             <img
-              src="/performer-profile/ad.svg"
+              src={ad?.[0]?.images[0]}
               alt="ad"
               className="w-full max-w-[500px] mx-auto lg:max-w-none"
             />
