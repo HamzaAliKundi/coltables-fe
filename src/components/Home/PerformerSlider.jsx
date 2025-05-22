@@ -32,7 +32,7 @@ const PerformerSlider = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b text-white pt-12 px-4 md:px-8">
+    <div className="bg-gradient-to-b text-white pt-12 px-4 md:px-16">
       {/* Header with pink line and VIEW ALL */}
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
