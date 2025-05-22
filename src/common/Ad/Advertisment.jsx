@@ -19,11 +19,7 @@ const Advertisment = () => {
   );
 
   const { data: performerBanner } = useGetAllBannersQuery(
-    isPerformerPage ? "performer" : skipToken
-  );
-
-  const { data: eventBanner } = useGetAllBannersQuery(
-    isEventPage ? "event" : skipToken
+    isPerformerPage || isEventPage ? "performer" : skipToken
   );
 
   return (
@@ -55,7 +51,7 @@ const Advertisment = () => {
 
         {isEventPage && (
           <img
-            src={eventBanner?.[0]?.images[0]}
+            src={performerBanner?.[0]?.images[0]}
             alt="banner"
             className="w-[1200px] h-[300px] text-white object-contain"
           />
