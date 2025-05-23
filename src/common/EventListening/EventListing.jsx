@@ -29,9 +29,11 @@ const EventListing = ({ isEvent, searchQuery }) => {
     {
       page: currentPage,
       limit: eventsPerPage,
-      ...(activeTab !== "all" && { type: activeTab === "other" ? "other" : activeTab }),
+      ...(activeTab !== "all" && {
+        type: activeTab === "other" ? "other" : activeTab,
+      }),
       address: debouncedSearchTerm,
-      search: searchQuery || ""
+      search: searchQuery || "",
     },
     {
       refetchOnMountOrArgChange: true,
@@ -364,7 +366,17 @@ const EventListing = ({ isEvent, searchQuery }) => {
                     className="mr-2 w-4 h-4"
                   />
                   <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                    {event?.address || "N/A"}
+                    {event?.userType !== "venue" && (
+                      <span className="truncate">
+                        {event?.address || "N/A"}
+                      </span>
+                    )}
+
+                    {event?.userType === "venue" && (
+                      <span className="truncate">
+                        {event?.user?.name || "N/A"}
+                      </span>
+                    )}
                   </span>
                 </div>
 
@@ -385,7 +397,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-white text-xl">
-              {searchQuery 
+              {searchQuery
                 ? `No events found for "${searchQuery}"`
                 : "No events found in this category"}
             </p>
