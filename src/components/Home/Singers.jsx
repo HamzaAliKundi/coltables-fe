@@ -44,16 +44,6 @@ const Singers = () => {
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
-          <img
-            src="/singers/tommie.png"
-            alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4 object-contain"
-          />
-          <img
-            src="/singers/alexyeus.png"
-            alt="Singer 1"
-            className="w-[204px] h-[296px] mx-4 object-contain"
-          />
           <img src="/singers/image-9.png"
            alt="Singer 9"
            className="w-[204px] h-[296px] mx-4 object-contain" />
