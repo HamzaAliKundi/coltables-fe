@@ -208,8 +208,14 @@ const EventDetail = () => {
               </h2>
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <p className="text-white">
-                  {getEventsByVenuesById?.event?.description ||
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem repudiandae ratione, officiis id, enim pariatur exercitationem reprehenderit dignissimos dolor, sit ullam natus commodi odio quia doloremque quasi hic itaque beatae."}
+                  {getEventsByVenuesById?.event?.description ? (
+                    getEventsByVenuesById.event.description.split('\n').map((line, index) => (
+                      <span key={index}>
+                        {line}
+                        {index < getEventsByVenuesById.event.description.split('\n').length - 1 && <br />}
+                      </span>
+                    ))
+                  ) : ""}
                 </p>
               </div>
             </div>
