@@ -137,7 +137,7 @@ const EventDetail = () => {
                             {performer?.fullDragName}
                           </Link>
                         ) : (
-                          ""
+                          <span>N/A</span>
                         )}
                       </div>
 
