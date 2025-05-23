@@ -384,18 +384,20 @@ const VenuesProfile = () => {
               {/* Sections Grid */}
               <div className="space-y-6 lg:space-y-8">
                 {/* Performers Section */}
-                <div>
-                  <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize border-b-[3px] border-[#FF00A2] pb-1">
-                    Which Performers May You Find Here?
-                  </h3>
-                  <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
-                    {venueDetail?.venue?.topDragPerformers?.map(
-                      (performer, index) => (
-                        <li key={index}>{performer}</li>
-                      )
-                    )}
-                  </ul>
-                </div>
+                {venueDetail?.venue?.topDragPerformers?.[0] && (
+                  <div>
+                    <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize border-b-[3px] border-[#FF00A2] pb-1">
+                      Which Performers May You Find Here?
+                    </h3>
+                    <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
+                      {venueDetail?.venue?.topDragPerformers?.map(
+                        (performer, index) => (
+                          <li key={index}>{performer}</li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Location & Hours Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8">
