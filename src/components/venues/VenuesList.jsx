@@ -4,17 +4,16 @@ import Pagination from "../../common/EventListening/Pagination";
 import { useGetAllVenuesQuery } from "../../apis/venues";
 
 const VenuesList = ({ isVenue, searchQuery }) => {
-  console.log("searchQuery", searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const venuesPerPage = 12;
-  const [activeTab, setActiveTab] = useState("restaurant/dining");
+  const [activeTab, setActiveTab] = useState("all");
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
   const { data: allVenuesData, isLoading: allVenuesLoading, isFetching } = useGetAllVenuesQuery({
     page: currentPage,
     limit: venuesPerPage,
-    venueType: activeTab,
+    venueType: activeTab === "all" ? "" : activeTab, // Send empty string for "all"
     search: searchQuery || ""
   }, {
     refetchOnMountOrArgChange: true
@@ -32,7 +31,7 @@ const VenuesList = ({ isVenue, searchQuery }) => {
     }
   }, [searchQuery]);
 
-  const tabs = ["bar/club", "restaurant/dining", "other"];
+  const tabs = ["all", "bar/club", "restaurant/dining", "other"]; // Add "all" as first option
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -82,42 +81,46 @@ const VenuesList = ({ isVenue, searchQuery }) => {
             <div className="flex justify-center space-x-6 min-w-max">
               {tabs.map((tab) => (
                 <div
-                  key={tab}
-                  className="relative cursor-pointer flex flex-col items-center"
-                  onClick={() => handleTabChange(tab)}
-                >
-                  <div className="flex items-center mb-2">
-                    {tab === "bar/club" && (
-                      <img
-                        src="/venues/venues-list/bar.svg"
-                        alt="Bar"
-                        className="w-6 h-6 mr-2"
-                      />
-                    )}
-                    {tab === "restaurants/dining" && (
-                      <img
-                        src="/venues/venues-list/dining.svg"
-                        alt="Restaurants/Dining"
-                        className="w-6 h-6 mr-2"
-                      />
-                    )}
-                    {tab === "other" && (
-                      <img
-                        src="/venues/venues-list/other.svg"
-                        alt="Drag Bingo"
-                        className="w-6 h-6 mr-2"
-                      />
-                    )}
-                    <span className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
-                      activeTab === tab ? "text-[#FF00A2]" : "text-white"
-                    }`}>
-                      {tab}
-                    </span>
-                  </div>
-                  {activeTab === tab && (
-                    <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
+                key={tab}
+                className="relative cursor-pointer flex flex-col items-center"
+                onClick={() => handleTabChange(tab)}
+              >
+                <div className="flex items-center mb-2">
+                  {tab !== "all" && (
+                    <>
+                      {tab === "bar/club" && (
+                        <img
+                          src="/venues/venues-list/bar.svg"
+                          alt="Bar"
+                          className="w-6 h-6 mr-2"
+                        />
+                      )}
+                      {tab === "restaurant/dining" && (
+                        <img
+                          src="/venues/venues-list/dining.svg"
+                          alt="Restaurants/Dining"
+                          className="w-6 h-6 mr-2"
+                        />
+                      )}
+                      {tab === "other" && (
+                        <img
+                          src="/venues/venues-list/other.svg"
+                          alt="Other"
+                          className="w-6 h-6 mr-2"
+                        />
+                      )}
+                    </>
                   )}
+                  <span className={`font-['Space_Grotesk'] font-normal text-[18px] capitalize ${
+                    activeTab === tab ? "text-[#FF00A2]" : "text-white"
+                  }`}>
+                    {tab === "all" ? "All Venues" : tab}
+                  </span>
                 </div>
+                {activeTab === tab && (
+                  <div className="w-[117px] h-[3px] bg-[#FF00A2] rounded-[5px]"></div>
+                )}
+              </div>
               ))}
             </div>
           </div>
@@ -141,7 +144,7 @@ const VenuesList = ({ isVenue, searchQuery }) => {
                 <img
                   src={venue?.logo}
                   alt={venue?.name}
-                  className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover"
+                  className="w-full h-[230px] md:h-[250px] rounded-[8px] object-cover object-top"
                 />
               </div>
 
