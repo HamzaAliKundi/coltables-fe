@@ -37,8 +37,8 @@ const Calendar = () => {
       let displayTitle = title
       if (currentView === Views.MONTH) {
         displayTitle = title.length > 15
-          ? `${title.substring(0, 15)}... ${eventTime}`
-          : `${title} ${eventTime}`;
+          ? `${eventTime} ${title.substring(0, 15)}... `
+          : `${eventTime} ${title} `;
       }
 
       return {
