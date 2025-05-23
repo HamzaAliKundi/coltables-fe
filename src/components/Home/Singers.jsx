@@ -5,11 +5,6 @@ const Singers = () => {
         {/* First set of images */}
         <div className="flex min-w-max">
           <img
-            src="/singers/alexyeus.png"
-            alt="Singer 1"
-            className="w-[204px] h-[296px] mx-4 object-contain"
-          />
-          <img
             src="/singers/casper.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4 object-contain"
@@ -41,11 +36,6 @@ const Singers = () => {
           />
           <img
             src="/singers/rachel.png"
-            alt="Singer 6"
-            className="w-[204px] h-[296px] mx-4 object-contain"
-          />
-          <img
-            src="/singers/tommie.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
@@ -61,11 +51,6 @@ const Singers = () => {
         {/* Duplicate set for seamless loop */}
         <div className="flex min-w-max">
           <img
-            src="/singers/alexyeus.png"
-            alt="Singer 1"
-            className="w-[204px] h-[296px] mx-4 object-contain"
-          />
-          <img
             src="/singers/casper.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4 object-contain"
@@ -100,6 +85,13 @@ const Singers = () => {
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
+          <img src="/singers/image-9.png"
+           alt="Singer 9"
+           className="w-[204px] h-[296px] mx-4 object-contain" />
+
+          <img src="/singers/image-10.png"
+           alt="Singer 10"
+           className="w-[204px] h-[296px] mx-4 object-contain" />
         </div>
       </div>
 
