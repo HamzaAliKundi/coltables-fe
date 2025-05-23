@@ -42,13 +42,9 @@ const EventDetail = () => {
       "drag-brunch": "Drag Brunch",
       "drag-bingo": "Drag Bingo",
       "drag-trivia": "Drag Trivia",
-      "comedy-show": "Comedy Show",
-      "music-concert": "Music Concert",
-      "dance-performance": "Dance Performance",
-      "theater-show": "Theater Show",
       other: "Other",
     };
-    return types[type] || type;
+    return types[type] || "Other";
   };
 
   if (getEventLoading) {
