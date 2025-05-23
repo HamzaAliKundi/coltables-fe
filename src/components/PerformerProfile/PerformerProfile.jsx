@@ -882,7 +882,9 @@ const PerformerProfile = () => {
                           {formatEventTime(event.startTime)}
                         </span>
                         <span className="text-white/70 text-xs block">
-                          {event.host}
+                          {event?.userType === "performer"
+                            ? event?.address
+                            : null}
                         </span>
                       </div>
                     </div>
