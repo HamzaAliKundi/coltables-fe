@@ -5,45 +5,45 @@ const Singers = () => {
         {/* First set of images */}
         <div className="flex min-w-max">
           <img
-            src="/singers/casper.png"
+            src="/singers/singer-1.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/chloe.png"
+            src="/singers/singer-2.png"
             alt="Singer 3"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/dessie.png"
+            src="/singers/singer-3.png"
             alt="Singer 4"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/dina.png"
+            src="/singers/singer-4.png"
             alt="Singer 5"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/iris.png"
+            src="/singers/singer-5.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/kofi.png"
+            src="/singers/singer-6.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/rachel.png"
+            src="/singers/singer-7.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
-          <img src="/singers/image-9.png"
+          <img src="/singers/singer-8.png"
            alt="Singer 9"
            className="w-[204px] h-[296px] mx-4 object-contain" />
 
-          <img src="/singers/image-10.png"
+          <img src="/singers/singer-9.png"
            alt="Singer 10"
            className="w-[204px] h-[296px] mx-4 object-contain" />
         </div>
@@ -51,45 +51,45 @@ const Singers = () => {
         {/* Duplicate set for seamless loop */}
         <div className="flex min-w-max">
           <img
-            src="/singers/casper.png"
+            src="/singers/singer-1.png"
             alt="Singer 2"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/chloe.png"
+            src="/singers/singer-2.png"
             alt="Singer 3"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/dessie.png"
+            src="/singers/singer-3.png"
             alt="Singer 4"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/dina.png"
+            src="/singers/singer-4.png"
             alt="Singer 5"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/iris.png"
+            src="/singers/singer-5.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/kofi.png"
+            src="/singers/singer-6.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
           <img
-            src="/singers/rachel.png"
+            src="/singers/singer-7.png"
             alt="Singer 6"
             className="w-[204px] h-[296px] mx-4 object-contain"
           />
-          <img src="/singers/image-9.png"
+          <img src="/singers/singer-8.png"
            alt="Singer 9"
            className="w-[204px] h-[296px] mx-4 object-contain" />
 
-          <img src="/singers/image-10.png"
+          <img src="/singers/singer-9.png"
            alt="Singer 10"
            className="w-[204px] h-[296px] mx-4 object-contain" />
         </div>
