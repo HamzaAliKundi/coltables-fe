@@ -884,7 +884,7 @@ const PerformerProfile = () => {
                         <span className="text-white/70 text-xs block">
                           {event?.userType === "performer"
                             ? event?.address
-                            : null}
+                            : event?.user?.name}
                         </span>
                       </div>
                     </div>
