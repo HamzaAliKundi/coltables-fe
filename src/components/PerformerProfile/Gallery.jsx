@@ -2,12 +2,13 @@ import { useState } from "react";
 
 const Gallery = ({ images = [], videos = [] }) => {
   const filteredImages = images ? images.filter(img => img !== null) : [];
-  const filteredVideos = videos ? videos.filter(vid => vid !== null) : [];
 
-  const media = [
-    ...filteredVideos.map((video) => ({ url: video, type: "video" })),
-    ...filteredImages.map((img) => ({ url: img, type: "image" })),
-  ];
+  const media = filteredImages.map((item) => {
+    if (typeof item === "string" && item.toLowerCase().endsWith(".mp4")) {
+      return { url: item, type: "video" };
+    }
+    return { url: item, type: "image" };
+  });
 
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
