@@ -40,6 +40,8 @@ const VenuesProfile = () => {
     }
   );
 
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   // Helper functions
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -140,6 +142,7 @@ const VenuesProfile = () => {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
+      timeZone: userTimeZone,
     });
   };
 
@@ -149,6 +152,7 @@ const VenuesProfile = () => {
       weekday: "long",
       month: "short",
       day: "numeric",
+      timeZone: userTimeZone,
     });
   };
 
