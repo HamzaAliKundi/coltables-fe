@@ -468,10 +468,13 @@ const PerformerProfile = () => {
                     "Performer"}
                   's Drag
                 </h2>
-                <p className="text-white/90 text-[18px] font-normal">
-                  {performerDetail?.performer?.description ||
-                    "No description available"}
-                </p>
+                <p 
+                  className="text-white/90 text-[18px] font-normal"
+                  dangerouslySetInnerHTML={{ 
+                    __html: performerDetail?.performer?.description?.replace(/\n/g, '<br />') || 
+                    "No description available" 
+                  }}
+                />
               </div>
 
               {/* Sections Grid */}
