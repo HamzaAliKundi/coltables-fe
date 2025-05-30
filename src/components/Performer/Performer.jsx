@@ -8,15 +8,9 @@ const Performer = ({ isPerformer, searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const performersPerPage = 12;
   const [activeTab, setActiveTab] = useState("all");
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOption, setSelectedOption] = useState({
-    label: "Filter by",
-    value: "",
-  });
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const dropdownRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: allPerformersData,
@@ -26,8 +20,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
     {
       page: currentPage,
       limit: performersPerPage,
-      search: searchQuery || "",
-      address: selectedOption.value || undefined,
+      search: searchTerm || searchQuery || "",
       performerType: activeTab === "all" ? undefined : activeTab,
     },
     {
@@ -37,15 +30,15 @@ const Performer = ({ isPerformer, searchQuery }) => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, activeTab, selectedOption]);
+  }, [searchQuery, activeTab]);
 
   useEffect(() => {
-    if (searchQuery) {
+    if (searchTerm) {
       setIsSearching(true);
       const timer = setTimeout(() => setIsSearching(false), 500);
       return () => clearTimeout(timer);
     }
-  }, [searchQuery]);
+  }, [searchTerm]);
 
   const tabs = [
     { label: "Drag Queens", value: "drag-queen" },
@@ -72,32 +65,6 @@ const Performer = ({ isPerformer, searchQuery }) => {
     }
   }, [isFetching]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const filteredOptions = cityOptions.filter(
-    (option) =>
-      searchTerm === "" ||
-      option.value === "" ||
-      option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-    setSearchTerm("");
-  };
-
   return (
     <>
       <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
@@ -115,7 +82,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
           </div>
         </div>
 
-        {/* Category Tabs with Filter Dropdown */}
+        {/* Category Tabs with Search Input */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="block md:flex md:justify-between md:items-center">
             <div className="md:flex-grow md:flex md:justify-center scrollbar-hide overflow-x-auto pb-2">
@@ -173,68 +140,15 @@ const Performer = ({ isPerformer, searchQuery }) => {
               </div>
             </div>
 
-            <div
-              className="flex justify-end mt-4 md:mt-0 relative"
-              ref={dropdownRef}
-            >
-              <div
-                className="w-[121px] h-[35px] rounded-[8px] border border-[#FF00A2] p-[12px] flex items-center justify-between cursor-pointer"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%] text-white truncate">
-                  {selectedOption.label}
-                </span>
-                <svg
-                  width="10"
-                  height="6"
-                  viewBox="0 0 10 6"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                >
-                  <path
-                    d="M1 1L5 5L9 1"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-
-              {isOpen && (
-                <div className="absolute top-full right-0 mt-1 w-[200px] bg-[#1E1E1E] rounded-[8px] border border-[#FF00A2] shadow-lg z-10">
-                  <div className="p-2 border-b border-[#FF00A2]">
-                    <input
-                      type="text"
-                      placeholder="Search cities..."
-                      className="w-full bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      autoFocus
-                    />
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#FF00A2] scrollbar-track-[#1E1E1E]">
-                    {filteredOptions.length > 0 ? (
-                      filteredOptions.map((option) => (
-                        <div
-                          key={option.value}
-                          className="px-3 py-2 hover:bg-[#FF00A2] hover:bg-opacity-20 cursor-pointer font-['Space_Grotesk'] text-white"
-                          onClick={() => handleOptionClick(option)}
-                        >
-                          {option.label}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="px-3 py-2 text-white font-['Space_Grotesk'] text-center">
-                        No cities found
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+            {/* Search Input */}
+            <div className="flex justify-end mt-4 md:mt-0 relative">
+              <input
+                type="text"
+                placeholder="Search by name or city"
+                className="w-[200px] h-[35px] rounded-[8px] border border-[#FF00A2] p-[12px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
         </div>

@@ -18,7 +18,6 @@ export const performersApi = createApi({
         params.append('page', page);
         // params.append('sort', -1);
         if (search) params.append('search', search);
-        if (address) params.append('address', address);
         if (performerType) params.append('performerType', performerType);
         return `/api/user/performer/get-all-performers?${params.toString()}`;
       },
