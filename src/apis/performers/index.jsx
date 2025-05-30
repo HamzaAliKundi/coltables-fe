@@ -14,11 +14,11 @@ export const performersApi = createApi({
     getAllPerformers: builder.query({
       query: ({ page, limit, search, address, performerType }) => {
         const params = new URLSearchParams();
-        params.append('limit', limit);
-        params.append('page', page);
+        params.append("limit", limit);
+        params.append("page", page);
         // params.append('sort', -1);
-        if (search) params.append('search', search);
-        if (performerType) params.append('performerType', performerType);
+        if (search) params.append("search", search);
+        if (performerType) params.append("performerType", performerType);
         return `/api/user/performer/get-all-performers?${params.toString()}`;
       },
     }),
@@ -52,13 +52,12 @@ export const performersApi = createApi({
     }),
 
     getEventsByDate: builder.query({
-      query: ({ userId, userType, month }) => 
+      query: ({ userId, userType, month }) =>
         `/api/user/event/get-events-by-date?userId=${userId}&userType=${userType}&month=${month}`,
     }),
 
     getUpcomingEvents: builder.query({
-      query: (userId) => 
-        `/api/user/event/get-upcoming-events?userId=${userId}`,
+      query: (userId) => `/api/user/event/get-upcoming-events?userId=${userId}`,
     }),
   }),
 });
@@ -71,5 +70,4 @@ export const {
   useAddReviewMutation,
   useGetEventsByDateQuery,
   useGetUpcomingEventsQuery,
-  
 } = performersApi;

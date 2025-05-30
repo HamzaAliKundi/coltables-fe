@@ -6,6 +6,7 @@ import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
+import { useGetVenuesQuery } from "../../apis/venues";
 
 const performancesOptions = [
   { value: "dance", label: "Dance" },
@@ -53,12 +54,17 @@ const PerformerProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: ad } = useGetAllAdsQuery("performer");
+  const { data: getVenues } = useGetVenuesQuery();
 
   const {
     data: performerDetail,
     isLoading: performerDetailLoading,
     error: performerError,
   } = useGetSinglePerformerByIdQuery(id);
+
+  const venuesList = performerDetail?.performer?.venues || [];
+  const matchedVenues =
+    getVenues?.filter((venue) => venuesList.includes(venue._id)) || [];
 
   const { data: calendarEvents } = useGetCalendarEventsQuery(
     {
@@ -443,10 +449,18 @@ const PerformerProfile = () => {
                       <span className="font-medium">
                         {" "}
                         {(() => {
-                          if (!performerDetail?.performer?.dragAnniversary) return "N/A";
-                          const date = new Date(performerDetail.performer.dragAnniversary);
-                          const month = date.toLocaleString("en-US", { month: "long" });
-                          const day = date.getDate().toString().padStart(2, "0");
+                          if (!performerDetail?.performer?.dragAnniversary)
+                            return "N/A";
+                          const date = new Date(
+                            performerDetail.performer.dragAnniversary
+                          );
+                          const month = date.toLocaleString("en-US", {
+                            month: "long",
+                          });
+                          const day = date
+                            .getDate()
+                            .toString()
+                            .padStart(2, "0");
                           return `${month} ‘${day}`;
                         })()}
                       </span>
@@ -468,11 +482,14 @@ const PerformerProfile = () => {
                     "Performer"}
                   's Drag
                 </h2>
-                <p 
+                <p
                   className="text-white/90 text-[18px] font-normal"
-                  dangerouslySetInnerHTML={{ 
-                    __html: performerDetail?.performer?.description?.replace(/\n/g, '<br />') || 
-                    "No description available" 
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      performerDetail?.performer?.description?.replace(
+                        /\n/g,
+                        "<br />"
+                      ) || "No description available",
                   }}
                 />
               </div>
@@ -637,21 +654,12 @@ const PerformerProfile = () => {
                         Performing?
                       </h2>
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
-                        {performerDetail?.performer?.venues?.map(
-                          (venue, index) => {
-                            const venueLabel = venueOptions.find(
-                              (option) => option.value === venue
-                            )?.label;
-                            return (
-                              <div key={index} className="flex items-center">
-                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>
-                                  {venueLabel ? venueLabel : formatVenue(venue)}
-                                </span>
-                              </div>
-                            );
-                          }
-                        )}
+                        {matchedVenues.map((venue, index) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                            <span>{venue.name || formatVenue(venue._id)}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

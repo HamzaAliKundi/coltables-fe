@@ -14,13 +14,17 @@ export const venuesApi = createApi({
     getAllVenues: builder.query({
       query: ({ page, limit, venueType, search }) => {
         const params = new URLSearchParams();
-        params.append('limit', limit);
-        params.append('page', page);
+        params.append("limit", limit);
+        params.append("page", page);
         // params.append('sort', -1);
-        if (venueType) params.append('venueType', venueType);
-        if (search) params.append('search', search);
+        if (venueType) params.append("venueType", venueType);
+        if (search) params.append("search", search);
         return `/api/user/venue/get-all-venues?${params.toString()}`;
       },
+    }),
+
+    getVenues: builder.query({
+      query: () => `/api/user/venue/get-venues`,
     }),
 
     getSingleVenueById: builder.query({
@@ -36,15 +40,15 @@ export const venuesApi = createApi({
     }),
 
     getEventsByDate: builder.query({
-      query: ({ userId, userType, month }) => 
+      query: ({ userId, userType, month }) =>
         `/api/user/event/get-events-by-date?userId=${userId}&userType=${userType}&month=${month}`,
     }),
-
   }),
 });
 
 export const {
   useGetAllVenuesQuery,
+  useGetVenuesQuery,
   useGetSingleVenueByIdQuery,
   useUpdateVenueProfileMutation,
   useGetEventsByDateQuery,
