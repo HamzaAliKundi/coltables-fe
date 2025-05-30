@@ -278,8 +278,8 @@ const Calendar = () => {
             agendaTimeRangeFormat: ({ start, end }) =>
               `${moment(start).format('h a')} - ${moment(end).format('h a')}`,
             timeGutterFormat: 'h a',
-            eventTimeRangeFormat: ({ start, end }) =>
-              `${moment(start).format('h a')} - ${moment(end).format('h a')}`,
+            eventTimeRangeFormat: ({ start }) =>
+              `${moment(start).format('h a')}`,
           }}
         />
         )}
