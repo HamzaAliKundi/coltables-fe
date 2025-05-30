@@ -1,6 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGetSingleEventByIdQuery } from "../../apis/events";
 import { Link, useParams } from "react-router-dom";
+import { useGetPerformersQuery } from "../../apis/performers";
+import {
+  ChevronDown,
+  ChevronsDown,
+  ChevronsRight,
+  ChevronUp,
+} from "lucide-react";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -9,8 +16,31 @@ const EventDetail = () => {
     useGetSingleEventByIdQuery(id);
   const [showMore, setShowMore] = useState(false);
 
+  const { data: getPerformers } = useGetPerformersQuery();
+
   const performers = getEventsByVenuesById?.event?.performersList || [];
   const performer = getEventsByVenuesById?.event?.user || null;
+
+  const [isPerformersVisible, setIsPerformersVisible] = useState(false);
+
+  const dropdownRef = useRef(null);
+  // Click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsPerformersVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const togglePerformersVisibility = () => {
+    setIsPerformersVisible(!isPerformersVisible);
+  };
 
   const formatDate = (dateString) => {
     const options = {
@@ -94,9 +124,35 @@ const EventDetail = () => {
                       alt="bullet"
                       className="w-5 h-5"
                     />
-                    <span className="truncate">
-                      {getEventsByVenuesById?.event?.host}
-                    </span>
+                    <div className="flex flex-col relative" ref={dropdownRef}>
+                      <div
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={togglePerformersVisibility}
+                      >
+                        {getEventsByVenuesById?.event?.host}
+                        {isPerformersVisible ? <ChevronUp /> : <ChevronDown />}
+                      </div>
+                      {isPerformersVisible && (
+                        <div className="absolute top-full left-0 mt-1 z-10 bg-[#1E1E1E] border border-[#FF00A2] rounded-md shadow-lg p-2 min-w-[200px] max-h-60 overflow-y-auto">
+                          <div className="flex flex-col gap-2">
+                            {getPerformers?.map((performer) => (
+                              <Link
+                                key={performer?._id}
+                                to={`/performer-profile/${performer?._id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.scrollTo(0, 0);
+                                  setIsPerformersVisible(false);
+                                }}
+                                className="border-b border-gray-400 hover:text-[#FF00A2] transition-colors"
+                              >
+                                {performer?.fullDragName}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-start gap-2 max-w-sm">
@@ -204,14 +260,20 @@ const EventDetail = () => {
               </h2>
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <p className="text-white">
-                  {getEventsByVenuesById?.event?.description ? (
-                    getEventsByVenuesById.event.description.split('\n').map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        {index < getEventsByVenuesById.event.description.split('\n').length - 1 && <br />}
-                      </span>
-                    ))
-                  ) : ""}
+                  {getEventsByVenuesById?.event?.description
+                    ? getEventsByVenuesById.event.description
+                        .split("\n")
+                        .map((line, index) => (
+                          <span key={index}>
+                            {line}
+                            {index <
+                              getEventsByVenuesById.event.description.split(
+                                "\n"
+                              ).length -
+                                1 && <br />}
+                          </span>
+                        ))
+                    : ""}
                 </p>
               </div>
             </div>
