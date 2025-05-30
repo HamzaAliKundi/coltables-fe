@@ -9,27 +9,25 @@ const VenuesList = ({ isVenue, searchQuery }) => {
   const [activeTab, setActiveTab] = useState("all");
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { data: allVenuesData, isLoading: allVenuesLoading, isFetching } = useGetAllVenuesQuery({
     page: currentPage,
     limit: venuesPerPage,
     venueType: activeTab === "all" ? "" : activeTab, // Send empty string for "all"
-    search: searchQuery || ""
+    search: searchTerm || searchQuery || ""
   }, {
     refetchOnMountOrArgChange: true
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, activeTab]);
+  }, [searchTerm, searchQuery, activeTab]);
 
   useEffect(() => {
-    if (searchQuery) {
-      setIsSearching(true);
-      const timer = setTimeout(() => setIsSearching(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [searchQuery]);
+    setSearchTerm(searchInput);
+  }, [searchInput]);
 
   const tabs = ["all", "bar/club", "restaurant/dining", "other"]; // Add "all" as first option
 
@@ -72,6 +70,16 @@ const VenuesList = ({ isVenue, searchQuery }) => {
             Venues
           </h2>
         </div>
+        {/* Search input to the right of the title */}
+        <div className="flex justify-end">
+          <input
+            type="text"
+            placeholder="Search by name or city"
+            className="w-[200px] h-[35px] rounded-[8px] border border-[#FF00A2] p-[12px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* Category Tabs with Filter Dropdown */}
@@ -90,7 +98,7 @@ const VenuesList = ({ isVenue, searchQuery }) => {
                     <>
                       {tab === "bar/club" && (
                         <img
-                          src="/venues/venues-list/bar.svg"
+                          src="/venues/venues-list/bar.svg" 
                           alt="Bar"
                           className="w-6 h-6 mr-2"
                         />
