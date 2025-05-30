@@ -23,6 +23,10 @@ export const performersApi = createApi({
       },
     }),
 
+    getPerformers: builder.query({
+      query: () => `/api/user/performer/get-performers`,
+    }),
+
     getSinglePerformerById: builder.query({
       query: (id) => `/api/user/performer/get-single-performer/${id}`,
     }),
@@ -64,6 +68,7 @@ export const performersApi = createApi({
 
 export const {
   useGetAllPerformersQuery,
+  useGetPerformersQuery,
   useGetSinglePerformerByIdQuery,
   useGetPerformerReviewsQuery,
   useGetAllReviewsQuery,
