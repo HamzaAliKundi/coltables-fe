@@ -30,7 +30,7 @@ const Calendar = () => {
 
     // Convert date strings to Date objects for Big Calendar
     const eventsWithDates = monthEvents.map(event => {
-      const eventTime = moment(event.start).format('hh:mm A');
+      const eventTime = moment(event.start).format('h a');
       const title = event.title
       
       // For month view, add time in a unique way
@@ -240,13 +240,16 @@ const Calendar = () => {
             weekHeaderFormat: 'MMMM D YYYY',
             dayHeaderFormat: 'dddd • MMMM D, YYYY',
             dayRangeHeaderFormat: ({ start, end }) => 
-              `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
+              `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
             agendaHeaderFormat: ({ start, end }) =>
-              `${moment(start).format('MMMM D')} - ${moment(end).format('D, YYYY')}`,
+              `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
             agendaDateFormat: 'ddd D MMM',
-            agendaTimeFormat: 'HH:mm',
+            agendaTimeFormat: 'h a',
             agendaTimeRangeFormat: ({ start, end }) =>
-              `${moment(start).format('HH:mm')} - ${moment(end).format('HH:mm')}`,
+              `${moment(start).format('h a')} - ${moment(end).format('h a')}`,
+            timeGutterFormat: 'h a',
+            eventTimeRangeFormat: ({ start, end }) =>
+              `${moment(start).format('h a')} - ${moment(end).format('h a')}`,
           }}
         />
         )}
