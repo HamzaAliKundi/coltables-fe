@@ -165,9 +165,11 @@ const PerformerProfile = () => {
     return `${start.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: userTimeZone,
     })} - ${end.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      timeZone: userTimeZone,
     })}`;
   };
 
@@ -177,6 +179,7 @@ const PerformerProfile = () => {
       month: "long",
       day: "numeric",
       year: "numeric",
+      timeZone: userTimeZone,
     });
   };
 
@@ -196,6 +199,7 @@ const PerformerProfile = () => {
       weekday: "long",
       month: "short",
       day: "numeric",
+      timeZone: userTimeZone,
     });
   };
 
@@ -858,6 +862,7 @@ const PerformerProfile = () => {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
+                    timeZone: userTimeZone,
                   })}
                 </span>
               )}
