@@ -39,7 +39,7 @@ const Calendar = () => {
 
     // Convert date strings to Date objects for Big Calendar
     const eventsWithDates = safeMonthEvents.map(event => {
-      const eventTime = moment(event.start).format('h a');
+      const eventTime = moment(event.start).format('h:mm A');
       const title = event.title
       
       // For month view, add time in a unique way
@@ -274,12 +274,12 @@ const Calendar = () => {
             agendaHeaderFormat: ({ start, end }) =>
               `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
             agendaDateFormat: 'ddd D MMM',
-            agendaTimeFormat: 'h a',
+            agendaTimeFormat: 'h:mm A',
             agendaTimeRangeFormat: ({ start, end }) =>
-              `${moment(start).format('h a')} - ${moment(end).format('h a')}`,
-            timeGutterFormat: 'h a',
+              `${moment(start).format('h:mm A')} - ${moment(end).format('h:mm A')}`,
+            timeGutterFormat: 'h:mm A',
             eventTimeRangeFormat: ({ start }) =>
-              `${moment(start).format('h a')}`,
+              `${moment(start).format('h:mm A')}`,
           }}
         />
         )}
