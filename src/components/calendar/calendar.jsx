@@ -24,12 +24,21 @@ const Calendar = () => {
     skip: currentView !== Views.MONTH
   });
 
+  // Ensure all events have string dates, never Date objects
+  const safeMonthEvents = useMemo(() => {
+    return (monthEvents || []).map(event => ({
+      ...event,
+      start: typeof event.start === 'string' ? event.start : moment(event.start).toISOString(),
+      end: typeof event.end === 'string' ? event.end : moment(event.end).toISOString(),
+    }));
+  }, [monthEvents]);
+
   // Filter events based on current view
   const events = useMemo(() => {
-    if (!monthEvents.length) return [];
+    if (!safeMonthEvents.length) return [];
 
     // Convert date strings to Date objects for Big Calendar
-    const eventsWithDates = monthEvents.map(event => {
+    const eventsWithDates = safeMonthEvents.map(event => {
       const eventTime = moment(event.start).format('h a');
       const title = event.title
       
@@ -77,7 +86,7 @@ const Calendar = () => {
       default:
         return eventsWithDates;
     }
-  }, [monthEvents, currentView, currentDate]);
+  }, [safeMonthEvents, currentView, currentDate]);
 
   // Loading component
   const LoadingComponent = () => (
@@ -200,6 +209,19 @@ const Calendar = () => {
     )
   }
 
+  // Custom agenda range: show all days in the current month
+  const agendaMonthRange = date => {
+    const start = moment(date).startOf('month').toDate();
+    const end = moment(date).endOf('month').toDate();
+    const days = [];
+    let current = moment(start);
+    while (current.isSameOrBefore(end, 'day')) {
+      days.push(current.toDate());
+      current.add(1, 'day');
+    }
+    return days;
+  };
+
   return (
     <div className="p-4 md:p-8">
       <div className="calendar-container" style={{ height: 700, position: 'relative' }}>
@@ -215,7 +237,15 @@ const Calendar = () => {
           timeslots={2}
           defaultView={Views.MONTH}
           view={currentView}
-          onView={setCurrentView}
+          onView={view => {
+            if (view === Views.AGENDA) {
+              const firstOfMonth = moment(currentDate).startOf('month').toDate();
+              setCurrentDate(firstOfMonth);
+              setCurrentView(view);
+            } else {
+              setCurrentView(view);
+            }
+          }}
           date={currentDate}
           onNavigate={date => setCurrentDate(date)}
           views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
@@ -311,6 +341,14 @@ const Calendar = () => {
         }
         .rbc-timeslot-group {
           min-height: 60px !important;
+        }
+        .rbc-agenda-view {
+          max-height: 500px;
+          overflow-y: auto;
+        }
+        .rbc-agenda-content {
+          max-height: 500px;
+          overflow-y: auto;
         }
       `}</style>
     </div>
