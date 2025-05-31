@@ -7,6 +7,8 @@ import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
 import { useGetVenuesQuery } from "../../apis/venues";
+import moment from "moment";
+import "moment-timezone";
 
 const performancesOptions = [
   { value: "dance", label: "Dance" },
@@ -88,14 +90,14 @@ const PerformerProfile = () => {
 
   // Helper functions
   const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
+    const year = moment(date).year();
+    const month = moment(date).month();
+    const firstDay = moment(date).date(1);
+    const lastDay = moment(date).endOf('month');
+    const daysInMonth = lastDay.date();
+    const startingDay = firstDay.day();
 
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const prevMonthLastDay = moment(date).subtract(1, 'month').endOf('month').date();
     const prevMonthDays = Array.from(
       { length: startingDay },
       (_, i) => prevMonthLastDay - startingDay + i + 1
@@ -116,35 +118,23 @@ const PerformerProfile = () => {
   };
 
   const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-    );
+    setCurrentDate(moment(currentDate).subtract(1, 'month').toDate());
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-    );
+    setCurrentDate(moment(currentDate).add(1, 'month').toDate());
   };
 
   const handlePrevWeek = () => {
-    const newDate = new Date(selectedWeekStart);
-    newDate.setDate(newDate.getDate() - 7);
-    setSelectedWeekStart(newDate);
+    setSelectedWeekStart(moment(selectedWeekStart).subtract(7, 'days').toDate());
   };
 
   const handleNextWeek = () => {
-    const newDate = new Date(selectedWeekStart);
-    newDate.setDate(newDate.getDate() + 7);
-    setSelectedWeekStart(newDate);
+    setSelectedWeekStart(moment(selectedWeekStart).add(7, 'days').toDate());
   };
 
   const handleDayClick = (day) => {
-    const clickedDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
+    const clickedDate = moment(currentDate).date(day).toDate();
     setSelectedDay(clickedDate);
   };
 
@@ -154,53 +144,25 @@ const PerformerProfile = () => {
   };
 
   const formatMonthYear = (date) => {
-    return date.toLocaleString("default", { month: "long", year: "numeric" });
+    return moment(date).tz(userTimeZone).format("MMMM YYYY");
   };
 
   const formatWeekRange = (date) => {
-    const start = new Date(date);
-    start.setDate(date.getDate() - date.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    return `${start.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      timeZone: userTimeZone,
-    })} - ${end.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      timeZone: userTimeZone,
-    })}`;
+    const start = moment(date).tz(userTimeZone).startOf('week');
+    const end = moment(start).add(6, 'days');
+    return `${start.format("MMM D")} - ${end.format("MMM D")}`;
   };
 
   const formatDay = (date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      timeZone: userTimeZone,
-    });
+    return moment(date).tz(userTimeZone).format("dddd, MMMM D, YYYY");
   };
 
   const formatEventTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: userTimeZone,
-    });
+    return moment(dateString).tz(userTimeZone).format("h:mm A");
   };
 
   const formatEventDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      timeZone: userTimeZone,
-    });
+    return moment(dateString).tz(userTimeZone).format("dddd, MMM D");
   };
 
   const getEventsForDay = (day) => {
@@ -455,16 +417,9 @@ const PerformerProfile = () => {
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary)
                             return "N/A";
-                          const date = new Date(
-                            performerDetail.performer.dragAnniversary
-                          );
-                          const month = date.toLocaleString("en-US", {
-                            month: "long",
-                          });
-                          const day = date
-                            .getDate()
-                            .toString()
-                            .padStart(2, "0");
+                          const date = moment(performerDetail.performer.dragAnniversary).tz(userTimeZone);
+                          const month = date.format("MMMM");
+                          const day = date.format("DD");
                           return `${month} ‘${day}`;
                         })()}
                       </span>
@@ -789,33 +744,15 @@ const PerformerProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
-                  const date = new Date(
-                    currentDate.getFullYear(),
-                    currentDate.getMonth(),
-                    day
+                  const date = moment(currentDate).date(day);
+                  const isToday = date.isSame(moment(), 'day');
+                  const isSelected = selectedDay && date.isSame(moment(selectedDay), 'day');
+                  const isInCurrentWeek = isMonthView ? false : date.isBetween(
+                    moment(selectedWeekStart).startOf('week'),
+                    moment(selectedWeekStart).endOf('week'),
+                    undefined,
+                    '[]'
                   );
-                  const isToday =
-                    date.toDateString() === new Date().toDateString();
-                  const isSelected =
-                    selectedDay &&
-                    date.toDateString() === selectedDay.toDateString();
-                  const isInCurrentWeek = isMonthView
-                    ? false
-                    : date >=
-                        new Date(
-                          selectedWeekStart.getFullYear(),
-                          selectedWeekStart.getMonth(),
-                          selectedWeekStart.getDate() -
-                            selectedWeekStart.getDay()
-                        ) &&
-                      date <=
-                        new Date(
-                          selectedWeekStart.getFullYear(),
-                          selectedWeekStart.getMonth(),
-                          selectedWeekStart.getDate() -
-                            selectedWeekStart.getDay() +
-                            6
-                        );
 
                   return (
                     <div
