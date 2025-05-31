@@ -75,7 +75,7 @@ const VenuesList = ({ isVenue, searchQuery }) => {
           <input
             type="text"
             placeholder="Search by name or city"
-            className="w-[200px] h-[35px] rounded-[8px] border border-[#FF00A2] p-[12px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
+            className="w-[225px] h-[35px] rounded-[8px] border border-[#FF00A2] p-[12px] bg-transparent text-white placeholder-[#FF00A2] focus:outline-none font-['Space_Grotesk']"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
