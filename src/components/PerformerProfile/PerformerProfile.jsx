@@ -87,6 +87,27 @@ const PerformerProfile = () => {
   );
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const usaTimeZone = "America/New_York";
+
+  // Group all events by local date in the USA timezone
+  const groupEventsByLocalDate = (calendarEvents) => {
+    const grouped = {};
+    if (!calendarEvents?.eventDates) return grouped;
+
+    Object.values(calendarEvents.eventDates).forEach((monthObj) => {
+      Object.values(monthObj).forEach((dayObj) => {
+        dayObj.eventDetails.forEach((event) => {
+          const localDate = moment(event.startDate).tz(usaTimeZone).date(); // 1-31
+          if (!grouped[localDate]) grouped[localDate] = [];
+          grouped[localDate].push(event);
+        });
+      });
+    });
+    return grouped;
+  };
+
+  // Use this for calendar dots and event display
+  const groupedEventsByLocalDate = groupEventsByLocalDate(calendarEvents);
 
   // Helper functions
   const getDaysInMonth = (date) => {
@@ -162,17 +183,12 @@ const PerformerProfile = () => {
   };
 
   const formatEventDate = (dateString) => {
-    return moment(dateString).tz(userTimeZone).format("dddd, MMM D");
+    return moment(dateString).tz(usaTimeZone).format("dddd, MMM D");
   };
 
   const getEventsForDay = (day) => {
-    if (!calendarEvents?.eventDates) return [];
-    const monthKey = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`;
-    const dayStr = String(day).padStart(2, "0");
-
-    return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
+    // 'day' is the day of the month (1-31)
+    return groupedEventsByLocalDate[day] || [];
   };
 
   const renderEventDots = (day, isCurrentWeek = false) => {
@@ -200,43 +216,21 @@ const PerformerProfile = () => {
     if (!calendarEvents?.eventDates) return [];
 
     if (selectedDay) {
-      // When a day is selected, show only that day's events
-      const monthKey = `${selectedDay.getFullYear()}-${String(
-        selectedDay.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const dayStr = String(selectedDay.getDate()).padStart(2, "0");
-      return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
+      // When a day is selected, show only that day's events (in USA timezone)
+      const localDay = moment(selectedDay).tz(usaTimeZone).date();
+      return groupedEventsByLocalDate[localDay] || [];
     } else if (isMonthView) {
-      // In month view, show all events for the current month
-      const monthKey = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const monthEvents = calendarEvents.eventDates[monthKey] || {};
-      return Object.values(monthEvents).flatMap(
-        (day) => day.eventDetails || []
-      );
+      // In month view, show all events for the current month (in USA timezone)
+      return Object.values(groupedEventsByLocalDate).flat();
     } else {
-      // In week view, filter events for the selected week from month data
-      const monthKey = `${selectedWeekStart.getFullYear()}-${String(
-        selectedWeekStart.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const monthEvents = calendarEvents.eventDates[monthKey] || {};
-
-      // Get the week range
-      const weekStart =
-        selectedWeekStart.getDate() - selectedWeekStart.getDay();
-      const weekEnd = weekStart + 6;
-
-      // Filter events for days in the week range
-      const weekEvents = [];
-      Object.entries(monthEvents).forEach(([day, data]) => {
-        const dayNum = parseInt(day);
-        if (dayNum >= weekStart && dayNum <= weekEnd) {
-          weekEvents.push(...(data.eventDetails || []));
-        }
-      });
-
-      return weekEvents;
+      // In week view, filter events for the selected week from local grouping
+      const weekStart = moment(selectedWeekStart).tz(usaTimeZone).startOf('week');
+      const weekEnd = moment(weekStart).add(6, 'days');
+      const weekDays = [];
+      for (let d = 0; d < 7; d++) {
+        weekDays.push(weekStart.clone().add(d, 'days').date());
+      }
+      return weekDays.flatMap((day) => groupedEventsByLocalDate[day] || []);
     }
   };
 
@@ -413,11 +407,9 @@ const PerformerProfile = () => {
                     <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
                       Drag Anniversary:
                       <span className="font-medium">
-                        {" "}
                         {(() => {
-                          if (!performerDetail?.performer?.dragAnniversary)
-                            return "N/A";
-                          const date = moment(performerDetail.performer.dragAnniversary).tz(userTimeZone);
+                          if (!performerDetail?.performer?.dragAnniversary) return "N/A";
+                          const date = moment(performerDetail.performer.dragAnniversary).tz(usaTimeZone);
                           const month = date.format("MMMM");
                           const day = date.format("DD");
                           return `${month} ‘${day}`;
@@ -795,12 +787,21 @@ const PerformerProfile = () => {
               </h3>
               {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {selectedDay.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                    timeZone: userTimeZone,
-                  })}
+                  {moment(selectedDay).tz(usaTimeZone).format("MMM D, YYYY")}
+                </span>
+              )}
+              {!selectedDay && !isMonthView && (
+                <span className="text-white/60 text-[14px] lg:text-[16px]">
+                  {(() => {
+                    const weekStart = moment(selectedWeekStart).tz(usaTimeZone).startOf('week');
+                    const weekEnd = moment(weekStart).add(6, 'days');
+                    return `${weekStart.format("MMM D")} - ${weekEnd.format("MMM D, YYYY")}`;
+                  })()}
+                </span>
+              )}
+              {!selectedDay && isMonthView && (
+                <span className="text-white/60 text-[14px] lg:text-[16px]">
+                  {moment(currentDate).tz(usaTimeZone).format("MMMM YYYY")}
                 </span>
               )}
             </div>
