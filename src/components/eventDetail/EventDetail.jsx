@@ -126,13 +126,13 @@ const EventDetail = () => {
                     />
                     <div className="flex flex-col relative" ref={dropdownRef}>
                       <div
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-2 "
                         onClick={togglePerformersVisibility}
                       >
                         {getEventsByVenuesById?.event?.host}
-                        {isPerformersVisible ? <ChevronUp /> : <ChevronDown />}
+                        {/* {isPerformersVisible ? <ChevronUp /> : <ChevronDown />} */}
                       </div>
-                      {isPerformersVisible && (
+                      {/* {isPerformersVisible && (
                         <div className="absolute top-full left-0 mt-1 z-10 bg-[#1E1E1E] border border-[#FF00A2] rounded-md shadow-lg p-2 min-w-[200px] max-h-60 overflow-y-auto">
                           <div className="flex flex-col gap-2">
                             {getPerformers?.map((performer) => (
@@ -151,7 +151,7 @@ const EventDetail = () => {
                             ))}
                           </div>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
 
