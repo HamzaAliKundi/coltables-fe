@@ -405,14 +405,14 @@ const PerformerProfile = () => {
                   </div>
                   <div className="absolute left-20 top-10 right-0 text-center">
                     <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
-                      Drag Anniversary:
+                      Drag Anniversary: {" "}
                       <span className="font-medium">
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
                           const date = moment(performerDetail.performer.dragAnniversary).tz(usaTimeZone);
                           const month = date.format("MMMM");
-                          const day = date.format("DD");
-                          return `${month} ‘${day}`;
+                          const year = date.format("YY");
+                          return `${month} ‘${year}`;
                         })()}
                       </span>
                     </h2>
