@@ -7,8 +7,6 @@ import { Youtube } from "lucide-react";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
 import { useGetVenuesQuery } from "../../apis/venues";
-import moment from "moment";
-import "moment-timezone";
 
 const performancesOptions = [
   { value: "dance", label: "Dance" },
@@ -87,19 +85,18 @@ const PerformerProfile = () => {
   );
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const usaTimeZone = "America/New_York";
 
-  // Group all events by local date in the USA timezone
+  // Group all events by local date in the user's timezone
   const groupEventsByLocalDate = (calendarEvents) => {
     const grouped = {};
     if (!calendarEvents?.eventDates) return grouped;
-
     Object.values(calendarEvents.eventDates).forEach((monthObj) => {
-      Object.values(monthObj).forEach((dayObj) => {
+      Object.entries(monthObj).forEach(([day, dayObj]) => {
         dayObj.eventDetails.forEach((event) => {
-          const localDate = moment(event.startDate).tz(usaTimeZone).date(); // 1-31
-          if (!grouped[localDate]) grouped[localDate] = [];
-          grouped[localDate].push(event);
+          const date = new Date(event.startDate);
+          const localDateKey = date.toLocaleDateString('en-US', { timeZone: userTimeZone });
+          if (!grouped[localDateKey]) grouped[localDateKey] = [];
+          grouped[localDateKey].push(event);
         });
       });
     });
@@ -111,52 +108,77 @@ const PerformerProfile = () => {
 
   // Helper functions
   const getDaysInMonth = (date) => {
-    const year = moment(date).year();
-    const month = moment(date).month();
-    const firstDay = moment(date).date(1);
-    const lastDay = moment(date).endOf('month');
-    const daysInMonth = lastDay.date();
-    const startingDay = firstDay.day();
-
-    const prevMonthLastDay = moment(date).subtract(1, 'month').endOf('month').date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
     const prevMonthDays = Array.from(
       { length: startingDay },
       (_, i) => prevMonthLastDay - startingDay + i + 1
     );
-
     const currentMonthDays = Array.from(
       { length: daysInMonth },
       (_, i) => i + 1
     );
-
     const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
     const nextMonthDays = Array.from(
       { length: remainingDays },
       (_, i) => i + 1
     );
-
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
 
   const handlePrevMonth = () => {
-    setCurrentDate(moment(currentDate).subtract(1, 'month').toDate());
+    setCurrentDate((prev) => {
+      const d = new Date(prev);
+      d.setMonth(d.getMonth() - 1);
+      return d;
+    });
   };
 
   const handleNextMonth = () => {
-    setCurrentDate(moment(currentDate).add(1, 'month').toDate());
+    setCurrentDate((prev) => {
+      const d = new Date(prev);
+      d.setMonth(d.getMonth() + 1);
+      return d;
+    });
   };
 
   const handlePrevWeek = () => {
-    setSelectedWeekStart(moment(selectedWeekStart).subtract(7, 'days').toDate());
+    setSelectedWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() - 7);
+      return d;
+    });
   };
 
   const handleNextWeek = () => {
-    setSelectedWeekStart(moment(selectedWeekStart).add(7, 'days').toDate());
+    setSelectedWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + 7);
+      return d;
+    });
   };
 
   const handleDayClick = (day) => {
-    const clickedDate = moment(currentDate).date(day).toDate();
-    setSelectedDay(clickedDate);
+    // Figure out which month the clicked day belongs to
+    const days = getDaysInMonth(currentDate);
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+    let clickedMonth = currentDate.getMonth();
+    let clickedYear = currentDate.getFullYear();
+    if (day <= 14 && days.indexOf(day) >= days.length - 14) {
+      // Next month
+      clickedMonth = (currentDate.getMonth() + 1) % 12;
+      if (clickedMonth === 0) clickedYear += 1;
+    } else if (day > 14 && days.indexOf(day) < firstDayOfMonth) {
+      // Previous month
+      clickedMonth = (currentDate.getMonth() + 11) % 12;
+      if (clickedMonth === 11) clickedYear -= 1;
+    }
+    setSelectedDay(new Date(clickedYear, clickedMonth, day));
   };
 
   const handleBackToMonthOrWeek = () => {
@@ -165,36 +187,41 @@ const PerformerProfile = () => {
   };
 
   const formatMonthYear = (date) => {
-    return moment(date).tz(userTimeZone).format("MMMM YYYY");
+    return date.toLocaleString(undefined, { month: 'long', year: 'numeric', timeZone: userTimeZone });
   };
 
   const formatWeekRange = (date) => {
-    const start = moment(date).tz(userTimeZone).startOf('week');
-    const end = moment(start).add(6, 'days');
-    return `${start.format("MMM D")} - ${end.format("MMM D")}`;
+    const start = new Date(date);
+    start.setDate(start.getDate() - start.getDay());
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return `${start.toLocaleString(undefined, { month: 'short', day: 'numeric', timeZone: userTimeZone })} - ${end.toLocaleString(undefined, { month: 'short', day: 'numeric', timeZone: userTimeZone })}`;
   };
 
   const formatDay = (date) => {
-    return moment(date).tz(userTimeZone).format("dddd, MMMM D, YYYY");
+    return date.toLocaleString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: userTimeZone });
   };
 
   const formatEventTime = (dateString) => {
-    return moment(dateString).tz(userTimeZone).format("h:mm A");
+    const date = new Date(dateString);
+    return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: userTimeZone });
   };
 
   const formatEventDate = (dateString) => {
-    return moment(dateString).tz(usaTimeZone).format("dddd, MMM D");
+    const date = new Date(dateString);
+    // Use the same format as the calendar grid: e.g., 'Thursday 5 Jun'
+    return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short', timeZone: userTimeZone });
   };
 
-  const getEventsForDay = (day) => {
-    // 'day' is the day of the month (1-31)
-    return groupedEventsByLocalDate[day] || [];
+  const getEventsForDay = (dateObj) => {
+    // dateObj is a Date object
+    const localDateKey = dateObj.toLocaleDateString('en-US', { timeZone: userTimeZone });
+    return groupedEventsByLocalDate[localDateKey] || [];
   };
 
-  const renderEventDots = (day, isCurrentWeek = false) => {
-    const events = getEventsForDay(day);
+  const renderEventDots = (dateObj, isCurrentWeek = false) => {
+    const events = getEventsForDay(dateObj);
     if (!events || events.length === 0) return null;
-
     return (
       <div className="absolute bottom-1 lg:bottom-2 flex gap-0.5 lg:gap-1">
         {events.slice(0, 3).map((_, i) => (
@@ -214,23 +241,22 @@ const PerformerProfile = () => {
 
   const getEventsForDisplay = () => {
     if (!calendarEvents?.eventDates) return [];
-
     if (selectedDay) {
-      // When a day is selected, show only that day's events (in USA timezone)
-      const localDay = moment(selectedDay).tz(usaTimeZone).date();
-      return groupedEventsByLocalDate[localDay] || [];
+      const localDateKey = new Date(selectedDay).toLocaleDateString('en-US', { timeZone: userTimeZone });
+      return groupedEventsByLocalDate[localDateKey] || [];
     } else if (isMonthView) {
-      // In month view, show all events for the current month (in USA timezone)
       return Object.values(groupedEventsByLocalDate).flat();
     } else {
-      // In week view, filter events for the selected week from local grouping
-      const weekStart = moment(selectedWeekStart).tz(usaTimeZone).startOf('week');
-      const weekEnd = moment(weekStart).add(6, 'days');
+      const weekStart = new Date(selectedWeekStart);
+      weekStart.setHours(0,0,0,0);
       const weekDays = [];
       for (let d = 0; d < 7; d++) {
-        weekDays.push(weekStart.clone().add(d, 'days').date());
+        const weekDay = new Date(weekStart);
+        weekDay.setDate(weekStart.getDate() + d);
+        const localDateKey = weekDay.toLocaleDateString('en-US', { timeZone: userTimeZone });
+        weekDays.push(localDateKey);
       }
-      return weekDays.flatMap((day) => groupedEventsByLocalDate[day] || []);
+      return weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
     }
   };
 
@@ -409,9 +435,9 @@ const PerformerProfile = () => {
                       <span className="font-medium">
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
-                          const date = moment(performerDetail.performer.dragAnniversary).tz(usaTimeZone);
-                          const month = date.format("MMMM");
-                          const year = date.format("YY");
+                          const date = new Date(performerDetail.performer.dragAnniversary);
+                          const month = date.toLocaleString(undefined, { month: 'long', timeZone: userTimeZone });
+                          const year = date.getFullYear().toString().slice(-2);
                           return `${month} ‘${year}`;
                         })()}
                       </span>
@@ -736,16 +762,31 @@ const PerformerProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
-                  const date = moment(currentDate).date(day);
-                  const isToday = date.isSame(moment(), 'day');
-                  const isSelected = selectedDay && date.isSame(moment(selectedDay), 'day');
-                  const isInCurrentWeek = isMonthView ? false : date.isBetween(
-                    moment(selectedWeekStart).startOf('week'),
-                    moment(selectedWeekStart).endOf('week'),
-                    undefined,
-                    '[]'
-                  );
-
+                  const days = getDaysInMonth(currentDate);
+                  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
+                  let cellMonth = currentDate.getMonth();
+                  let cellYear = currentDate.getFullYear();
+                  if (day <= 14 && index >= days.length - 14) {
+                    // Next month
+                    cellMonth = (currentDate.getMonth() + 1) % 12;
+                    if (cellMonth === 0) cellYear += 1;
+                  } else if (day > 14 && index < firstDayOfMonth) {
+                    // Previous month
+                    cellMonth = (currentDate.getMonth() + 11) % 12;
+                    if (cellMonth === 11) cellYear -= 1;
+                  }
+                  const dateObj = new Date(cellYear, cellMonth, day);
+                  const today = new Date();
+                  const isToday = dateObj.toDateString() === today.toDateString();
+                  const isSelected = selectedDay && dateObj.toDateString() === selectedDay.toDateString();
+                  let isInCurrentWeek = false;
+                  if (!isMonthView) {
+                    const weekStart = new Date(selectedWeekStart);
+                    weekStart.setHours(0,0,0,0);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInCurrentWeek = dateObj >= weekStart && dateObj <= weekEnd;
+                  }
                   return (
                     <div
                       key={index}
@@ -762,12 +803,10 @@ const PerformerProfile = () => {
                 }
                 rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
                 transition-colors duration-200
-                ${
-                  isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"
-                }`}
+                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
-                      {renderEventDots(day, !isMonthView && isInCurrentWeek)}
+                      {renderEventDots(dateObj, !isMonthView && isInCurrentWeek)}
                     </div>
                   );
                 })}
@@ -787,21 +826,17 @@ const PerformerProfile = () => {
               </h3>
               {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {moment(selectedDay).tz(usaTimeZone).format("MMM D, YYYY")}
+                  {selectedDay.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: userTimeZone })}
                 </span>
               )}
               {!selectedDay && !isMonthView && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {(() => {
-                    const weekStart = moment(selectedWeekStart).tz(usaTimeZone).startOf('week');
-                    const weekEnd = moment(weekStart).add(6, 'days');
-                    return `${weekStart.format("MMM D")} - ${weekEnd.format("MMM D, YYYY")}`;
-                  })()}
+                  {formatWeekRange(selectedWeekStart)}
                 </span>
               )}
               {!selectedDay && isMonthView && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {moment(currentDate).tz(usaTimeZone).format("MMMM YYYY")}
+                  {formatMonthYear(currentDate)}
                 </span>
               )}
             </div>
