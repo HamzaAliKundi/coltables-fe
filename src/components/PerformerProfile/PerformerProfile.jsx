@@ -110,25 +110,9 @@ const PerformerProfile = () => {
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    const prevMonthDays = Array.from(
-      { length: startingDay },
-      (_, i) => prevMonthLastDay - startingDay + i + 1
-    );
-    const currentMonthDays = Array.from(
-      { length: daysInMonth },
-      (_, i) => i + 1
-    );
-    const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
-    const nextMonthDays = Array.from(
-      { length: remainingDays },
-      (_, i) => i + 1
-    );
-    return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
   };
 
   const handlePrevMonth = () => {
