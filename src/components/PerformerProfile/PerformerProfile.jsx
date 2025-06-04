@@ -188,7 +188,12 @@ const PerformerProfile = () => {
     return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  const formatEventDate = (dateString) => {
+  const formatEventDate = (dateString, event) => {
+    // If event is provided, use getLocalDateKey for consistency
+    if (event) {
+      return getLocalDateKey(event);
+    }
+    // fallback for legacy usage
     const date = new Date(dateString);
     return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
   };
@@ -435,10 +440,10 @@ const PerformerProfile = () => {
                       <span className="font-medium">
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
-                          const date = new Date(performerDetail.performer.dragAnniversary);
-                          const month = date.toLocaleString(undefined, { month: 'long' });
-                          const year = date.getFullYear().toString().slice(-2);
-                          return `${month} ‘${year}`;
+                          const anniversaryDate = new Date(performerDetail.performer.dragAnniversary);
+                          const anniversaryMonth = anniversaryDate.toLocaleString(undefined, { month: 'long' });
+                          const anniversaryYear = anniversaryDate.getFullYear().toString().slice(-2);
+                          return `${anniversaryMonth} ‘${anniversaryYear}`;
                         })()}
                       </span>
                     </h2>
@@ -861,7 +866,7 @@ const PerformerProfile = () => {
                           {event.title}
                         </h4>
                         <p className="text-white/80 text-sm">
-                          {formatEventDate(event.startDate)}
+                          {formatEventDate(event.startDate, event)}
                         </p>
                       </div>
                       <div className="text-right">
