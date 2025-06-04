@@ -266,6 +266,27 @@ const PerformerProfile = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
+  function getLocalDateKey(event) {
+    const date = new Date(event.startDate);
+    // If the UTC time is midnight, and the local time is the previous day, adjust
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      // If the local date is before the UTC date, add a day
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        return localDate.toLocaleDateString();
+      }
+    }
+    // Otherwise, just use the local date
+    return date.toLocaleDateString();
+  }
+
   if (performerError) {
     return (
       <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">

@@ -84,8 +84,6 @@ const PerformerProfile = () => {
     }
   );
 
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   // Group all events by local date in the user's timezone
   const groupEventsByLocalDate = (calendarEvents) => {
     const grouped = {};
@@ -94,7 +92,7 @@ const PerformerProfile = () => {
       Object.entries(monthObj).forEach(([day, dayObj]) => {
         dayObj.eventDetails.forEach((event) => {
           const date = new Date(event.startDate);
-          const localDateKey = date.toLocaleDateString('en-US', { timeZone: userTimeZone });
+          const localDateKey = date.toLocaleDateString();
           if (!grouped[localDateKey]) grouped[localDateKey] = [];
           grouped[localDateKey].push(event);
         });
@@ -171,7 +169,7 @@ const PerformerProfile = () => {
   };
 
   const formatMonthYear = (date) => {
-    return date.toLocaleString(undefined, { month: 'long', year: 'numeric', timeZone: userTimeZone });
+    return date.toLocaleString(undefined, { month: 'long', year: 'numeric' });
   };
 
   const formatWeekRange = (date) => {
@@ -179,27 +177,25 @@ const PerformerProfile = () => {
     start.setDate(start.getDate() - start.getDay());
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-    return `${start.toLocaleString(undefined, { month: 'short', day: 'numeric', timeZone: userTimeZone })} - ${end.toLocaleString(undefined, { month: 'short', day: 'numeric', timeZone: userTimeZone })}`;
+    return `${start.toLocaleString(undefined, { month: 'short', day: 'numeric' })} - ${end.toLocaleString(undefined, { month: 'short', day: 'numeric' })}`;
   };
 
   const formatDay = (date) => {
-    return date.toLocaleString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: userTimeZone });
+    return date.toLocaleString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   };
 
   const formatEventTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: userTimeZone });
+    return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
   const formatEventDate = (dateString) => {
     const date = new Date(dateString);
-    // Use the same format as the calendar grid: e.g., 'Thursday 5 Jun'
-    return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short', timeZone: userTimeZone });
+    return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
   };
 
   const getEventsForDay = (dateObj) => {
-    // dateObj is a Date object
-    const localDateKey = dateObj.toLocaleDateString('en-US', { timeZone: userTimeZone });
+    const localDateKey = dateObj.toLocaleDateString();
     return groupedEventsByLocalDate[localDateKey] || [];
   };
 
@@ -226,7 +222,7 @@ const PerformerProfile = () => {
   const getEventsForDisplay = () => {
     if (!calendarEvents?.eventDates) return [];
     if (selectedDay) {
-      const localDateKey = new Date(selectedDay).toLocaleDateString('en-US', { timeZone: userTimeZone });
+      const localDateKey = new Date(selectedDay).toLocaleDateString();
       return groupedEventsByLocalDate[localDateKey] || [];
     } else if (isMonthView) {
       return Object.values(groupedEventsByLocalDate).flat();
@@ -237,7 +233,7 @@ const PerformerProfile = () => {
       for (let d = 0; d < 7; d++) {
         const weekDay = new Date(weekStart);
         weekDay.setDate(weekStart.getDate() + d);
-        const localDateKey = weekDay.toLocaleDateString('en-US', { timeZone: userTimeZone });
+        const localDateKey = weekDay.toLocaleDateString();
         weekDays.push(localDateKey);
       }
       return weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
@@ -420,7 +416,7 @@ const PerformerProfile = () => {
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
                           const date = new Date(performerDetail.performer.dragAnniversary);
-                          const month = date.toLocaleString(undefined, { month: 'long', timeZone: userTimeZone });
+                          const month = date.toLocaleString(undefined, { month: 'long' });
                           const year = date.getFullYear().toString().slice(-2);
                           return `${month} ‘${year}`;
                         })()}
@@ -810,7 +806,7 @@ const PerformerProfile = () => {
               </h3>
               {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {selectedDay.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: userTimeZone })}
+                  {selectedDay.toLocaleDateString()}
                 </span>
               )}
               {!selectedDay && !isMonthView && (
