@@ -91,8 +91,7 @@ const PerformerProfile = () => {
     Object.values(calendarEvents.eventDates).forEach((monthObj) => {
       Object.entries(monthObj).forEach(([day, dayObj]) => {
         dayObj.eventDetails.forEach((event) => {
-          const date = new Date(event.startDate);
-          const localDateKey = date.toLocaleDateString();
+          const localDateKey = getLocalDateKey(event);
           if (!grouped[localDateKey]) grouped[localDateKey] = [];
           grouped[localDateKey].push(event);
         });
