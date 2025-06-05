@@ -43,6 +43,23 @@ const EventDetail = () => {
   };
 
   const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    // If the UTC time is midnight, and the local time is the previous day, adjust
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      // If the local date is before the UTC date, add a day
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        date = localDate;
+      }
+    }
+    
     const options = {
       year: "numeric",
       month: "short",
@@ -50,11 +67,27 @@ const EventDetail = () => {
       hour: "2-digit",
       minute: "2-digit",
     };
-    return new Date(dateString).toLocaleDateString("en-US", options);
+    return date.toLocaleDateString("en-US", options);
   };
 
   const extractTime = (dateString) => {
     const date = new Date(dateString);
+    // If the UTC time is midnight, and the local time is the previous day, adjust
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      // If the local date is before the UTC date, add a day
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        date = localDate;
+      }
+    }
+
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";

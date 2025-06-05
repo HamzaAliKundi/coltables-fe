@@ -46,29 +46,9 @@ const VenuesProfile = () => {
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
-
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
-    const prevMonthDays = Array.from(
-      { length: startingDay },
-      (_, i) => prevMonthLastDay - startingDay + i + 1
-    );
-
-    const currentMonthDays = Array.from(
-      { length: daysInMonth },
-      (_, i) => i + 1
-    );
-
-    const remainingDays = 42 - (prevMonthDays.length + currentMonthDays.length);
-    const nextMonthDays = Array.from(
-      { length: remainingDays },
-      (_, i) => i + 1
-    );
-
-    return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
   };
 
   const handlePrevMonth = () => {
@@ -156,14 +136,50 @@ const VenuesProfile = () => {
     });
   };
 
-  const getEventsForDay = (day) => {
-    if (!calendarEvents?.eventDates) return [];
-    const monthKey = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}`;
-    const dayStr = String(day).padStart(2, "0");
+  function getLocalDateKey(event) {
+    const date = new Date(event.startDate);
+    // If the UTC time is midnight, and the local time is the previous day, adjust
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      // If the local date is before the UTC date, add a day
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        return localDate.toLocaleDateString();
+      }
+    }
+    // Otherwise, just use the local date
+    return date.toLocaleDateString();
+  }
 
-    return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
+  // Group all events by local date in the user's timezone
+  const groupEventsByLocalDate = (calendarEvents) => {
+    const grouped = {};
+    if (!calendarEvents?.eventDates) return grouped;
+    Object.values(calendarEvents.eventDates).forEach((monthObj) => {
+      Object.entries(monthObj).forEach(([day, dayObj]) => {
+        dayObj.eventDetails.forEach((event) => {
+          const localDateKey = getLocalDateKey(event);
+          if (!grouped[localDateKey]) grouped[localDateKey] = [];
+          grouped[localDateKey].push(event);
+        });
+      });
+    });
+    return grouped;
+  };
+
+  // Use this for calendar dots and event display
+  const groupedEventsByLocalDate = groupEventsByLocalDate(calendarEvents);
+
+  const getEventsForDay = (day) => {
+    const dateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    const localDateKey = dateObj.toLocaleDateString();
+    return groupedEventsByLocalDate[localDateKey] || [];
   };
 
   const renderEventDots = (day, isCurrentWeek = false) => {
@@ -615,33 +631,13 @@ const VenuesProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
-                  const date = new Date(
-                    currentDate.getFullYear(),
-                    currentDate.getMonth(),
-                    day
-                  );
-                  const isToday =
-                    date.toDateString() === new Date().toDateString();
-                  const isSelected =
-                    selectedDay &&
-                    date.toDateString() === selectedDay.toDateString();
+                  const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                  const isToday = date.toDateString() === new Date().toDateString();
+                  const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
                   const isInCurrentWeek = isMonthView
                     ? false
-                    : date >=
-                        new Date(
-                          selectedWeekStart.getFullYear(),
-                          selectedWeekStart.getMonth(),
-                          selectedWeekStart.getDate() -
-                            selectedWeekStart.getDay()
-                        ) &&
-                      date <=
-                        new Date(
-                          selectedWeekStart.getFullYear(),
-                          selectedWeekStart.getMonth(),
-                          selectedWeekStart.getDate() -
-                            selectedWeekStart.getDay() +
-                            6
-                        );
+                    : date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
+                      date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
 
                   return (
                     <div
@@ -659,9 +655,7 @@ const VenuesProfile = () => {
                 }
                 rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
                 transition-colors duration-200
-                ${
-                  isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"
-                }`}
+                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
                       {renderEventDots(day, !isMonthView && isInCurrentWeek)}

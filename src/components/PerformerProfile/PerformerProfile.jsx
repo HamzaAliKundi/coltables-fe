@@ -109,7 +109,16 @@ const PerformerProfile = () => {
     const month = date.getMonth();
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // Create array of empty cells for days before the first day of the month
+    const emptyCells = Array(firstDay).fill(null);
+    
+    // Create array of current month's days
+    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Combine empty cells and current month days
+    return [...emptyCells, ...currentMonthDays];
   };
 
   const handlePrevMonth = () => {
@@ -291,6 +300,25 @@ const PerformerProfile = () => {
     return date.toLocaleDateString();
   }
 
+  // Helper to get local date safely for anniversary (handles midnight UTC issue)
+  function getLocalDateSafe(dateString) {
+    const date = new Date(dateString);
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        return localDate;
+      }
+    }
+    return date;
+  }
+
   if (performerError) {
     return (
       <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">
@@ -440,7 +468,7 @@ const PerformerProfile = () => {
                       <span className="font-medium">
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
-                          const anniversaryDate = new Date(performerDetail.performer.dragAnniversary);
+                          const anniversaryDate = getLocalDateSafe(performerDetail.performer.dragAnniversary);
                           const anniversaryMonth = anniversaryDate.toLocaleString(undefined, { month: 'long' });
                           const anniversaryYear = anniversaryDate.getFullYear().toString().slice(-2);
                           return `${anniversaryMonth} ‘${anniversaryYear}`;
@@ -767,51 +795,43 @@ const PerformerProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
-                  const days = getDaysInMonth(currentDate);
-                  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-                  let cellMonth = currentDate.getMonth();
-                  let cellYear = currentDate.getFullYear();
-                  if (day <= 14 && index >= days.length - 14) {
-                    // Next month
-                    cellMonth = (currentDate.getMonth() + 1) % 12;
-                    if (cellMonth === 0) cellYear += 1;
-                  } else if (day > 14 && index < firstDayOfMonth) {
-                    // Previous month
-                    cellMonth = (currentDate.getMonth() + 11) % 12;
-                    if (cellMonth === 11) cellYear -= 1;
+                  if (day === null) {
+                    return <div key={index} className="h-8 lg:h-12 bg-[#1A1A1A] rounded-lg"></div>;
                   }
-                  const dateObj = new Date(cellYear, cellMonth, day);
+                  
+                  const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
                   const today = new Date();
-                  const isToday = dateObj.toDateString() === today.toDateString();
-                  const isSelected = selectedDay && dateObj.toDateString() === selectedDay.toDateString();
+                  const isToday = date.toDateString() === today.toDateString();
+                  const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
                   let isInCurrentWeek = false;
                   if (!isMonthView) {
                     const weekStart = new Date(selectedWeekStart);
                     weekStart.setHours(0,0,0,0);
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekEnd.getDate() + 6);
-                    isInCurrentWeek = dateObj >= weekStart && dateObj <= weekEnd;
+                    isInCurrentWeek = date >= weekStart && date <= weekEnd;
                   }
+
                   return (
                     <div
                       key={index}
                       onClick={() => handleDayClick(day)}
                       className={`relative h-8 lg:h-12 flex items-center justify-center cursor-pointer
-                ${
-                  isToday
-                    ? "bg-[#FF00A2] text-white"
-                    : isSelected
-                    ? "bg-[#FF00A2] text-white"
-                    : isInCurrentWeek
-                    ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
-                    : "bg-[#2A2A2A] text-white/60"
-                }
-                rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                transition-colors duration-200
-                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
+                        ${
+                          isToday
+                            ? "bg-[#FF00A2] text-white"
+                            : isSelected
+                            ? "bg-[#FF00A2] text-white"
+                            : isInCurrentWeek
+                            ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
+                            : "bg-[#2A2A2A] text-white/60"
+                        }
+                        rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                        transition-colors duration-200
+                        ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
-                      {renderEventDots(dateObj, !isMonthView && isInCurrentWeek)}
+                      {renderEventDots(date, !isMonthView && isInCurrentWeek)}
                     </div>
                   );
                 })}

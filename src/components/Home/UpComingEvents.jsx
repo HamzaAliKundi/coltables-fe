@@ -2,6 +2,32 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useGetUpcomingEventsQuery } from "../../apis/events";
 
+// Helper to get local date parts safely (handles midnight UTC issue)
+function getLocalDateParts(dateString) {
+  const date = new Date(dateString);
+  // If the UTC time is midnight, and the local time is the previous day, adjust
+  if (
+    date.getUTCHours() === 0 &&
+    date.getUTCMinutes() === 0 &&
+    date.getUTCSeconds() === 0
+  ) {
+    const localDate = new Date(date);
+    const localDay = localDate.getDate();
+    const utcDay = date.getUTCDate();
+    if (localDay < utcDay) {
+      localDate.setDate(localDate.getDate() + 1);
+      return {
+        day: localDate.getDate(),
+        month: localDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
+      };
+    }
+  }
+  return {
+    day: date.getDate(),
+    month: date.toLocaleString('default', { month: 'short' }).toUpperCase(),
+  };
+}
+
 const UpComingEvents = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const containerRef = useRef(null);
@@ -11,17 +37,20 @@ const UpComingEvents = () => {
     limit: 10
   });
 
-  const events = upcomingEventsData?.docs?.map((event) => ({
-    id: event._id,
-    image: event.image || "/home/upcomping/upcoming.png",
-    date: new Date(event.startDate).getDate(),
-    month: new Date(event.startDate).toLocaleString('default', { month: 'short' }).toUpperCase(),
-    title: event.title,
-    host: `Hosted By ${event.host}`,
-    time: `Start ${new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-    location: event.address ?? 'N/A',
-    featured: event.type === 'drag-show'
-  })) || [];
+  const events = upcomingEventsData?.docs?.map((event) => {
+    const localDate = getLocalDateParts(event.startDate);
+    return {
+      id: event._id,
+      image: event.image || "/home/upcomping/upcoming.png",
+      date: localDate.day,
+      month: localDate.month,
+      title: event.title,
+      host: `Hosted By ${event.host}`,
+      time: `Start ${new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+      location: event.address ?? 'N/A',
+      featured: event.type === 'drag-show'
+    }
+  }) || [];
 
   const scrollTo = (index) => {
     setActiveSlide(index);

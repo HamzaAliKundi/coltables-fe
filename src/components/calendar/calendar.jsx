@@ -26,11 +26,45 @@ const Calendar = () => {
 
   // Ensure all events have string dates, never Date objects
   const safeMonthEvents = useMemo(() => {
-    return (monthEvents || []).map(event => ({
-      ...event,
-      start: typeof event.start === 'string' ? event.start : moment(event.start).toISOString(),
-      end: typeof event.end === 'string' ? event.end : moment(event.end).toISOString(),
-    }));
+    return (monthEvents || []).map(event => {
+      // Handle timezone adjustment for start date
+      const startDate = new Date(event.start);
+      if (
+        startDate.getUTCHours() === 0 &&
+        startDate.getUTCMinutes() === 0 &&
+        startDate.getUTCSeconds() === 0
+      ) {
+        const localDate = new Date(startDate);
+        const localDay = localDate.getDate();
+        const utcDay = startDate.getUTCDate();
+        if (localDay < utcDay) {
+          localDate.setDate(localDate.getDate() + 1);
+          event.start = localDate.toISOString();
+        }
+      }
+
+      // Handle timezone adjustment for end date
+      const endDate = new Date(event.end);
+      if (
+        endDate.getUTCHours() === 0 &&
+        endDate.getUTCMinutes() === 0 &&
+        endDate.getUTCSeconds() === 0
+      ) {
+        const localDate = new Date(endDate);
+        const localDay = localDate.getDate();
+        const utcDay = endDate.getUTCDate();
+        if (localDay < utcDay) {
+          localDate.setDate(localDate.getDate() + 1);
+          event.end = localDate.toISOString();
+        }
+      }
+
+      return {
+        ...event,
+        start: typeof event.start === 'string' ? event.start : moment(event.start).toISOString(),
+        end: typeof event.end === 'string' ? event.end : moment(event.end).toISOString(),
+      };
+    });
   }, [monthEvents]);
 
   // Filter events based on current view
