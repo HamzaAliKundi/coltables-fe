@@ -115,7 +115,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    let date = new Date(dateString);
     // If the UTC time is midnight, and the local time is the previous day, adjust
     if (
       date.getUTCHours() === 0 &&
@@ -139,7 +139,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
   };
 
   const extractTime = (dateString) => {
-    const date = new Date(dateString);
+    let date = new Date(dateString);
     // If the UTC time is midnight, and the local time is the previous day, adjust
     if (
       date.getUTCHours() === 0 &&
