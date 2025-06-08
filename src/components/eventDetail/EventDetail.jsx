@@ -42,6 +42,25 @@ const EventDetail = () => {
     setIsPerformersVisible(!isPerformersVisible);
   };
 
+  // Helper function to get timezone-safe date
+  const getTimezoneSafeDate = (dateString) => {
+    let date = new Date(dateString);
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        date = localDate;
+      }
+    }
+    return date;
+  };
+
   const formatDate = (dateString) => {
     let date = new Date(dateString);
     // If the UTC time is midnight, and the local time is the previous day, adjust
@@ -132,11 +151,13 @@ const EventDetail = () => {
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
               {String(
-                new Date(getEventsByVenuesById?.event?.startDate).getDate()
+                getTimezoneSafeDate(getEventsByVenuesById?.event?.startDate).getDate()
               ).padStart(2, "0")}
             </span>
             <span className="text-base md:text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
-              {formatDate(getEventsByVenuesById?.event?.startDate)?.slice(0, 3)}
+              {getTimezoneSafeDate(getEventsByVenuesById?.event?.startDate)
+                .toLocaleDateString("en-US", { month: "short" })
+                .slice(0, 3)}
             </span>
           </div>
         </div>
