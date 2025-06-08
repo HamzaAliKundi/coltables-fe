@@ -21,14 +21,28 @@ const Calendar = () => {
     view: 'month',
     fromDate: moment(currentDate).format('YYYY-MM')
   }, {
-    skip: currentView !== Views.MONTH
+    skip: currentView !== Views.MONTH,
+    transformResponse: (response) => {
+      return response.map(event => ({
+        ...event,
+        start: moment(event.start).toISOString(),
+        end: moment(event.end).toISOString()
+      }));
+    }
   });
 
   // Ensure all events have string dates, never Date objects
   const safeMonthEvents = useMemo(() => {
-    return (monthEvents || []).map(event => {
+    if (!monthEvents) return [];
+    
+    return monthEvents.map(event => {
+      // Convert any Date objects to ISO strings
+      const start = event.start instanceof Date ? event.start.toISOString() : event.start;
+      const end = event.end instanceof Date ? event.end.toISOString() : event.end;
+      
       // Handle timezone adjustment for start date
-      const startDate = new Date(event.start);
+      const startDate = new Date(start);
+      let adjustedStart = start;
       if (
         startDate.getUTCHours() === 0 &&
         startDate.getUTCMinutes() === 0 &&
@@ -39,12 +53,13 @@ const Calendar = () => {
         const utcDay = startDate.getUTCDate();
         if (localDay < utcDay) {
           localDate.setDate(localDate.getDate() + 1);
-          event.start = localDate.toISOString();
+          adjustedStart = localDate.toISOString();
         }
       }
 
       // Handle timezone adjustment for end date
-      const endDate = new Date(event.end);
+      const endDate = new Date(end);
+      let adjustedEnd = end;
       if (
         endDate.getUTCHours() === 0 &&
         endDate.getUTCMinutes() === 0 &&
@@ -52,17 +67,17 @@ const Calendar = () => {
       ) {
         const localDate = new Date(endDate);
         const localDay = localDate.getDate();
-        const utcDay = endDate.getUTCDate();
+        const utcDay = endDate.getUTCDate();  
         if (localDay < utcDay) {
           localDate.setDate(localDate.getDate() + 1);
-          event.end = localDate.toISOString();
+          adjustedEnd = localDate.toISOString();
         }
       }
 
       return {
         ...event,
-        start: typeof event.start === 'string' ? event.start : moment(event.start).toISOString(),
-        end: typeof event.end === 'string' ? event.end : moment(event.end).toISOString(),
+        start: adjustedStart,
+        end: adjustedEnd
       };
     });
   }, [monthEvents]);
