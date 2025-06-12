@@ -78,7 +78,7 @@ const EventDetail = () => {
         date = localDate;
       }
     }
-    
+
     const options = {
       year: "numeric",
       month: "short",
@@ -151,7 +151,9 @@ const EventDetail = () => {
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
               {String(
-                getTimezoneSafeDate(getEventsByVenuesById?.event?.startDate).getDate()
+                getTimezoneSafeDate(
+                  getEventsByVenuesById?.event?.startDate
+                ).getDate()
               ).padStart(2, "0")}
             </span>
             <span className="text-base md:text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
@@ -287,9 +289,13 @@ const EventDetail = () => {
                     )}
 
                     {getEventsByVenuesById?.event?.userType === "venue" && (
-                      <span className="truncate">
-                        {getEventsByVenuesById?.event?.user?.name || "N/A"}
-                      </span>
+                      <Link
+                        to={`/venue-profile/${getEventsByVenuesById?.event?.user?._id}`}
+                      >
+                        <span className="truncate">
+                          {getEventsByVenuesById?.event?.user?.name || "N/A"}
+                        </span>
+                      </Link>
                     )}
                   </div>
                 </div>

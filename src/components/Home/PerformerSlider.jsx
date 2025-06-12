@@ -128,14 +128,22 @@ const PerformerSlider = () => {
                 >
                   {/* Main Image */}
                   <div className="relative">
-                  <div className="w-full md:w-[295px] h-[200px] overflow-hidden">
-                    <img
-                      src={performer?.profilePhoto ? performer?.profilePhoto : "/default-profile.png"}
-                      alt={performer?.fullDragName?.split(" ")[0] ? performer?.fullDragName?.split(" ")[0] : "Performer"}
-                      className="rounded-[8px] h-[100%] w-[100%] object-cover"
-                      style={{ objectPosition: "0px 0px" }}
-                    />
-                  </div>
+                    <div className="w-full md:w-[295px] h-[200px] overflow-hidden">
+                      <img
+                        src={
+                          performer?.profilePhoto
+                            ? performer?.profilePhoto
+                            : "/default-profile.png"
+                        }
+                        alt={
+                          performer?.fullDragName?.split(" ")[0]
+                            ? performer?.fullDragName?.split(" ")[0]
+                            : "Performer"
+                        }
+                        className="rounded-[8px] h-[100%] w-[100%] object-cover"
+                        style={{ objectPosition: "0px 0px" }}
+                      />
+                    </div>
                     <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
                     {/* Logo/Icon Image */}
                     <div className="absolute bottom-[-40px] left-[35px]">
@@ -145,19 +153,25 @@ const PerformerSlider = () => {
                         className="w-[80px] h-[80px]"
                       />
                     </div>
+                    <div className="absolute top-[10px] left-[10px]">
+                      <img src="/performer/watermark.svg" alt="wm" />
+                    </div>
                   </div>
 
                   <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 mt-[-8px] h-[250px] flex flex-col">
                     <div className="flex-grow">
-                      <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 cursor-pointer">
-                        {performer?.fullDragName?.length > 16 ? (
-                          <>
-                            {performer?.fullDragName.slice(0, 16)}
-                            <span className="text-[#FF00A2]">...</span>
-                          </>
-                        ) : (
-                          performer?.fullDragName
-                        )}
+                      <h3
+                        className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[22px] leading-[100%] capitalize mb-4 cursor-pointer
+              overflow-hidden"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          width: "20ch",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {performer?.fullDragName}
                       </h3>
 
                       <p className="font-['Space_Grotesk'] text-[#8E96A4] font-normal text-[16px] leading-[24px]">

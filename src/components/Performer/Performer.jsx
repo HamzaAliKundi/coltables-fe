@@ -163,18 +163,26 @@ const Performer = ({ isPerformer, searchQuery }) => {
             allPerformersData.docs.map((performer) => (
               <div
                 key={performer._id}
-                className="w-full h-[400px] md:h-[475px] relative"
+                className="w-full h-[400px] md:h-[500px] relative"
               >
                 {/* Main Image */}
                 <div className="relative">
-                <div className="w-full md:w-[300px] h-[150px] md:h-[300px] overflow-hidden">
+                  <div className="w-full md:w-[300px] h-[150px] md:h-[300px] overflow-hidden">
                     <img
-                      src={performer?.profilePhoto ? performer?.profilePhoto : "/default-profile.png"}
-                      alt={performer?.fullDragName?.split(" ")[0] ? performer?.fullDragName?.split(" ")[0] : "Performer"}
+                      src={
+                        performer?.profilePhoto
+                          ? performer?.profilePhoto
+                          : "/default-profile.png"
+                      }
+                      alt={
+                        performer?.fullDragName?.split(" ")[0]
+                          ? performer?.fullDragName?.split(" ")[0]
+                          : "Performer"
+                      }
                       className="rounded-[8px] h-[100%] w-[100%] object-cover "
                       style={{ objectPosition: "0px 0px" }}
                     />
-                </div>
+                  </div>
                   <div className="w-1/2 -bottom-0.5 absolute left-16 h-[4px] bg-[#FF00A2] rounded-[10px]"></div>
                   {/* Logo/Icon Image */}
                   <div className="absolute bottom-[-40px] left-[35px]">
@@ -184,12 +192,25 @@ const Performer = ({ isPerformer, searchQuery }) => {
                       className="w-[80px] h-[80px]"
                     />
                   </div>
+                    <div className="absolute top-[10px] left-[10px]">
+                      <img src="/performer/watermark.svg" alt="wm" />
+                    </div>
                 </div>
 
                 <div className="text-black rounded-b-[8px] pt-10 md:pt-14 px-4 md:px-6 pb-4 md:pb-6 mt-[-8px] h-[220px] md:h-[300px] flex flex-col">
-                  <div className="h-[50px] md:h-[60px]">
-                    <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4 mt-2 md:mt-0">
+                  <div className="h-[50px] md:h-[80px]">
+                    <h3
+                      className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[18px] md:text-[24px] leading-[100%] capitalize mb-3 md:mb-4 mt-2 md:mt-0 
+              truncate-2-lines max-w-[20ch] overflow-hidden"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        wordBreak: "break-all",
+                      }}
+                    >
                       {performer?.fullDragName}
+                      
                     </h3>
                   </div>
                   <Link
@@ -206,13 +227,11 @@ const Performer = ({ isPerformer, searchQuery }) => {
           ) : (
             <div className="col-span-full text-center py-12">
               <div className="flex flex-col items-center gap-4">
-                
                 <p className="text-white text-xl">
-                  {searchQuery 
+                  {searchQuery
                     ? `No performers found for "${searchQuery}"`
                     : "No performers found in this category."}
                 </p>
-                
               </div>
             </div>
           )}
