@@ -426,8 +426,8 @@ const VenuesProfile = () => {
                       <h3 className="text-white border-b-[3px] border-[#FF00A2] mb-3 pb-1 text-[20px] font-space-grotesk font-bold leading-none capitalize">
                         Location / Address
                       </h3>
-                      <div className="flex items-start gap-2 text-white/90 leading-6">
-                        <span className="w-1.5 h-1.5 bg-white rounded-full mt-2"></span>
+                      <div className="flex items-start gap-2 text-white/90 leading-6 max-w-[50%] ">
+                        {/* <span className="w-1.5 h-1.5 bg-white rounded-full mt-2"></span> */}
                         <div>
                           <a
                             href={`https://maps.google.com/?q=${encodeURIComponent(
@@ -464,7 +464,7 @@ const VenuesProfile = () => {
                         Hours Of Operation
                       </h3>
                       <div className="flex items-center gap-2 text-white/90 leading-6">
-                        <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                        {/* <span className="w-1.5 h-1.5 bg-white rounded-full"></span> */}
                         <span>
                           {formatTimeRange(venueDetail.venue.hoursOfOperation)}
                         </span>
