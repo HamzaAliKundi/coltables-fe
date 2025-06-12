@@ -316,7 +316,10 @@ const PerformerProfile = () => {
         return localDate;
       }
     }
-    return date;
+    // Always add one day to fix timezone offset
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(date.getDate() + 1);
+    return adjustedDate;
   }
 
   if (performerError) {
