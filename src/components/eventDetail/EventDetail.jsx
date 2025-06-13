@@ -3,6 +3,7 @@ import { useGetSingleEventByIdQuery } from "../../apis/events";
 import { Link, useParams } from "react-router-dom";
 import { useGetPerformersQuery } from "../../apis/performers";
 import {
+  CalendarCheck,
   ChevronDown,
   ChevronsDown,
   ChevronsRight,
@@ -83,8 +84,8 @@ const EventDetail = () => {
       year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      // hour: "2-digit",
+      // minute: "2-digit",
     };
     return date.toLocaleDateString("en-US", options);
   };
@@ -171,23 +172,50 @@ const EventDetail = () => {
             </h2>
 
             <div className="flex flex-col gap-4 md:gap-6">
-              {/* First row */}
+              {/* 1st row */}
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-20">
-                  <div className="flex items-start gap-2">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-1 w-full">
+                  <div className="flex items-start gap-2 md:w-[50%]">
+                    <CalendarCheck size={22} color="#FF00A2" />
+                    <div className="flex flex-col relative">
+                      Start Date:{" "}
+                      {formatDate(getEventsByVenuesById?.event?.startDate)}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2 md:w-[50%]">
+                    <img
+                      src="/events/Background-3.png"
+                      alt="bullet"
+                      className="w-5 h-5 mt-1"
+                    />
+
+                    <div className="flex flex-col">
+                      Start Time:{" "}
+                      {extractTime(getEventsByVenuesById?.event?.startTime)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2nd row */}
+              <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-1 w-full">
+                  <div className="flex items-start gap-2 md:w-[50%]">
                     <img
                       src="/events/Background.png"
                       alt="bullet"
-                      className="w-5 h-5"
+                      className="w-5 h-5 mt-1"
                     />
                     <div className="flex flex-col relative" ref={dropdownRef}>
                       <div
-                        className="flex items-center gap-2 "
+                        className="flex items-center gap-2"
                         onClick={togglePerformersVisibility}
                       >
                         {getEventsByVenuesById?.event?.host}
                         {/* {isPerformersVisible ? <ChevronUp /> : <ChevronDown />} */}
                       </div>
+
                       {/* {isPerformersVisible && (
                         <div className="absolute top-full left-0 mt-1 z-10 bg-[#1E1E1E] border border-[#FF00A2] rounded-md shadow-lg p-2 min-w-[200px] max-h-60 overflow-y-auto">
                           <div className="flex flex-col gap-2">
@@ -211,7 +239,7 @@ const EventDetail = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 max-w-sm">
+                  <div className="flex items-start gap-2 md:w-[50%]">
                     <img
                       src="/events/Background-1.png"
                       alt="bullet"
@@ -221,29 +249,36 @@ const EventDetail = () => {
                     <div className="flex flex-col">
                       <div
                         className={`${
-                          showMore ? "flex-wrap" : "truncate"
-                        } flex gap-2 max-w-xs`}
+                          showMore
+                            ? "flex-col max-w-[100%]"
+                            : "truncate max-w-[74%]"
+                        } flex gap-2`}
                       >
                         {performers.length > 0 ? (
-                          performers.map((performer) => (
+                          performers.map(
+                            (performer) =>
+                              performer?.fullDragName && (
+                                <Link
+                                  key={performer?._id}
+                                  to={`/performer-profile/${performer?._id}`}
+                                  onClick={() => window.scrollTo(0, 0)}
+                                  className="border-b border-gray-400 w-fit"
+                                >
+                                  {performer?.fullDragName}
+                                </Link>
+                              )
+                          )
+                        ) : performer?.userType === "performer" ? (
+                          performer?.fullDragName && (
                             <Link
                               key={performer?._id}
                               to={`/performer-profile/${performer?._id}`}
                               onClick={() => window.scrollTo(0, 0)}
-                              className="border-b border-gray-400"
+                              className="border-b border-gray-400 w-fit"
                             >
                               {performer?.fullDragName}
                             </Link>
-                          ))
-                        ) : performer?.userType === "performer" ? (
-                          <Link
-                            key={performer?._id}
-                            to={`/performer-profile/${performer?._id}`}
-                            onClick={() => window.scrollTo(0, 0)}
-                            className="border-b border-gray-400"
-                          >
-                            {performer?.fullDragName}
-                          </Link>
+                          )
                         ) : (
                           <span>N/A</span>
                         )}
@@ -262,58 +297,49 @@ const EventDetail = () => {
                 </div>
               </div>
 
-              {/* Second row */}
+              {/* 3rd row */}
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-16">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src="/events/Background-3.png"
-                      alt="bullet"
-                      className="w-5 h-5"
-                    />
-                    <span className="truncate">
-                      Starts:{" "}
-                      {extractTime(getEventsByVenuesById?.event?.startTime)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-1 w-full">
+                  <div className="flex items-start gap-2 md:w-[50%]">
                     <img
                       src="/events/Background-2.png"
                       alt="bullet"
-                      className="w-5 h-5"
+                      className="w-5 h-5 mt-1"
                     />
-                    {getEventsByVenuesById?.event?.userType !== "venue" && (
-                      <span className="truncate">
-                        {getEventsByVenuesById?.event?.address || "N/A"}
-                      </span>
-                    )}
-
-                    {getEventsByVenuesById?.event?.userType === "venue" && (
-                      <Link
-                        to={`/venue-profile/${getEventsByVenuesById?.event?.user?._id}`}
-                      >
+                    <div className="flex flex-col relative">
+                      {getEventsByVenuesById?.event?.userType !== "venue" && (
                         <span className="truncate">
-                          {getEventsByVenuesById?.event?.user?.name || "N/A"}
+                          {getEventsByVenuesById?.event?.address || "N/A"}
                         </span>
-                      </Link>
-                    )}
+                      )}
+
+                      {getEventsByVenuesById?.event?.userType === "venue" && (
+                        <Link
+                          to={`/venue-profile/${getEventsByVenuesById?.event?.user?._id}`}
+                        >
+                          <span className="truncate">
+                            {getEventsByVenuesById?.event?.user?.name || "N/A"}
+                          </span>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2 md:w-[50%]">
+                    <img
+                      src="/events/Background-4.png"
+                      alt="bullet"
+                      className="w-5 h-5 mt-1"
+                    />
+
+                    <div className="flex flex-col">
+                      {formatEventType(getEventsByVenuesById?.event?.type)}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Third row - single item centered */}
-              <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/events/Background-4.png"
-                    alt="bullet"
-                    className="w-5 h-5"
-                  />
-                  <span>
-                    {formatEventType(getEventsByVenuesById?.event?.type)}
-                  </span>
-                </div>
-              </div>
+              {/* 4th Row */}
 
               <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-0 text-base md:text-lg lg:text-xl text-center">
                 About Event
