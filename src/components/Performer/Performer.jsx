@@ -206,7 +206,7 @@ const Performer = ({ isPerformer, searchQuery }) => {
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical",
-                        wordBreak: "break-all",
+                        overflowWrap: "break-word",
                       }}
                     >
                       {performer?.fullDragName}

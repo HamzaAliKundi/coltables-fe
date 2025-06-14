@@ -158,7 +158,15 @@ const VenuesList = ({ isVenue, searchQuery }) => {
 
               <div className="text-black rounded-b-[8px] pt-8 px-6 pb-6 mt-[-8px] h-[300px] flex flex-col items-center">
                 <div className="h-[60px] text-center">
-                  <h3 className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4">
+                  <h3
+                    className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[24px] leading-[100%] capitalize mb-4 truncate-2-lines max-w-[20ch] overflow-hidden"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflowWrap: "break-word",
+                    }}
+                  >
                     {venue?.name}
                   </h3>
                 </div>
