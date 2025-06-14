@@ -360,6 +360,32 @@ const Calendar = () => {
             width: 800px !important;
           }
         }
+        .rbc-time-content .rbc-events-container {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+        }
+
+        .rbc-time-content .rbc-event {
+          position: relative;
+          width: 100%;
+          left: 0;
+          margin-bottom: 5px;
+          height: auto;
+          top: auto;
+          flex-shrink: 0;
+        }
+
+        .rbc-time-content .rbc-event-overlaps {
+          position: relative;
+          width: 100%;
+          left: 0;
+          margin-bottom: 5px;
+          height: auto;
+          top: auto;
+          flex-shrink: 0;
+        }
         .rbc-calendar {
           background-color: transparent !important;
         }
