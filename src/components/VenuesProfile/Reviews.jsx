@@ -153,7 +153,7 @@ const Reviews = () => {
               {reviewsData.docs.map((review) => (
                 <div
                   key={review._id}
-                  className={`flex-none w-full md:w-[calc(50%-12px)] h-[294px] rounded-2xl p-8 relative snap-center
+                  className={`flex-none w-full md:w-[calc(50%-12px)] h-[350px] rounded-2xl p-8 relative snap-center
                     bg-gradient-to-br from-[#FF00A2]/40 to-[#2A2A2A]`}
                 >
                   <div className="absolute left-0 top-0 w-2 h-full bg-[#FF00A2] rounded-l-2xl"></div>
@@ -189,9 +189,10 @@ const Reviews = () => {
                       </div>
                     </div>
                   </div>
-                  <p className="text-white/90 text-lg leading-relaxed">
-                    {review.description}
-                  </p>
+                  <p
+                    className="text-white/90 text-lg leading-relaxed max-h-[180px] overflow-y-auto"
+                    dangerouslySetInnerHTML={{ __html: review.description }}
+                  ></p>
                 </div>
               ))}
             </div>

@@ -17,7 +17,7 @@ const StarRating = ({ rating }) => {
               key={i}
               className="bg-[#FF00A2] w-12 h-12 flex justify-center items-center rounded-md"
             >
-              <FaCrown color="#ffff00" size={25} className="rotate-45" />
+              <FaCrown color="#e3d4de" size={25} className="rotate-45" />
             </div>
           );
         } else if (i === fullStars && hasHalfStar) {
@@ -27,7 +27,7 @@ const StarRating = ({ rating }) => {
                 <div className="bg-[#FF00A2] w-6 h-12"></div>
               </div>
               <FaCrown
-                color="#ffff00"
+                color="#e3d4de"
                 size={25}
                 className="rotate-45 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
               />
@@ -39,7 +39,7 @@ const StarRating = ({ rating }) => {
               key={i}
               className="bg-white w-12 h-12 flex justify-center items-center rounded-md"
             >
-              <FaCrown color="#ffff00" size={25} className="rotate-45" />
+              <FaCrown color="#FF00A2" size={25} className="rotate-45" />
             </div>
           );
         }
@@ -194,9 +194,10 @@ const Reviews = () => {
                       </div>
                     </div>
                   </div>
-                  <p className="text-white/90 text-lg leading-relaxed">
-                    {review.description}
-                  </p>
+                  <p
+                    className="text-white/90 text-lg leading-relaxed max-h-[180px] overflow-y-auto"
+                    dangerouslySetInnerHTML={{ __html: review.description }}
+                  ></p>
                 </div>
               ))}
             </div>
