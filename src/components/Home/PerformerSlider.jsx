@@ -168,7 +168,7 @@ const PerformerSlider = () => {
                           WebkitLineClamp: 2,
                           WebkitBoxOrient: "vertical",
                           width: "20ch",
-                          wordBreak: "break-all",
+                          overflowWrap: "break-word",
                         }}
                       >
                         {performer?.fullDragName}
