@@ -23,7 +23,6 @@ const EventDetail = () => {
   const performer = getEventsByVenuesById?.event?.user || null;
 
   const [isPerformersVisible, setIsPerformersVisible] = useState(false);
-  const [showFullAddress, setShowFullAddress] = useState(false);
 
   const dropdownRef = useRef(null);
   // Click outside handler
@@ -247,35 +246,33 @@ const EventDetail = () => {
                       className="w-5 h-5 mt-1"
                     />
 
-                    <div className="flex flex-col">
+                    <div className="flex flex-col flex-1">
                       <div
-                        className={`${
-                          showMore
-                            ? "flex-col max-w-[100%]"
-                            : "truncate max-w-[74%]"
-                        } flex gap-2`}
+                        className={`flex gap-2 flex-wrap`}
                       >
                         {performers.length > 0 ? (
-                          performers.map(
-                            (performer) =>
-                              performer?.fullDragName && (
-                                <Link
-                                  key={performer?._id}
-                                  to={`/performer-profile/${performer?._id}`}
-                                  onClick={() => window.scrollTo(0, 0)}
-                                  className="border-b border-gray-400 w-fit"
-                                >
-                                  {performer?.fullDragName}
-                                </Link>
-                              )
-                          )
+                          performers
+                            .slice(0, showMore ? performers.length : 2)
+                            .map(
+                              (performer) =>
+                                performer?.fullDragName && (
+                                  <Link
+                                    key={performer?._id}
+                                    to={`/performer-profile/${performer?._id}`}
+                                    onClick={() => window.scrollTo(0, 0)}
+                                    className="border-b border-gray-400 inline-block"
+                                  >
+                                    {performer?.fullDragName}
+                                  </Link>
+                                )
+                            )
                         ) : performer?.userType === "performer" ? (
                           performer?.fullDragName && (
                             <Link
                               key={performer?._id}
                               to={`/performer-profile/${performer?._id}`}
                               onClick={() => window.scrollTo(0, 0)}
-                              className="border-b border-gray-400 w-fit"
+                              className="border-b border-gray-400 inline-block"
                             >
                               {performer?.fullDragName}
                             </Link>
@@ -309,62 +306,18 @@ const EventDetail = () => {
                     />
                     <div className="flex flex-col relative flex-1 min-w-0">
                       {getEventsByVenuesById?.event?.userType !== "venue" && (
-                        <>
-                          <span>
-                            {showFullAddress
-                              ? getEventsByVenuesById?.event?.address
-                              : getEventsByVenuesById?.event?.address?.length >
-                                50
-                              ? getEventsByVenuesById?.event?.address.slice(
-                                  0,
-                                  50
-                                ) + "..."
-                              : getEventsByVenuesById?.event?.address ||
-                                "N/A"}
-                          </span>
-                          {getEventsByVenuesById?.event?.address?.length >
-                            50 && (
-                            <button
-                              onClick={() =>
-                                setShowFullAddress(!showFullAddress)
-                              }
-                              className="text-[#D876B5] text-sm underline mt-1 self-start"
-                            >
-                              {showFullAddress ? "Show less" : "Show more"}
-                            </button>
-                          )}
-                        </>
+                        <span>
+                          {getEventsByVenuesById?.event?.address || "N/A"}
+                        </span>
                       )}
 
                       {getEventsByVenuesById?.event?.userType === "venue" && (
                         <Link
                           to={`/venue-profile/${getEventsByVenuesById?.event?.user?._id}`}
                         >
-                          <>
-                            <span>
-                              {showFullAddress
-                                ? getEventsByVenuesById?.event?.user?.name
-                                : getEventsByVenuesById?.event?.user?.name
-                                    ?.length > 50
-                                ? getEventsByVenuesById?.event?.user?.name.slice(
-                                    0,
-                                    50
-                                  ) + "..."
-                                : getEventsByVenuesById?.event?.user?.name ||
-                                  "N/A"}
-                            </span>
-                            {getEventsByVenuesById?.event?.user?.name
-                              ?.length > 50 && (
-                              <button
-                                onClick={() =>
-                                  setShowFullAddress(!showFullAddress)
-                                }
-                                className="text-[#D876B5] text-sm underline mt-1 self-start"
-                              >
-                                {showFullAddress ? "Show less" : "Show more"}
-                              </button>
-                            )}
-                          </>
+                          <span>
+                            {getEventsByVenuesById?.event?.user?.name || "N/A"}
+                          </span>
                         </Link>
                       )}
                     </div>
