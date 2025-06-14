@@ -158,7 +158,7 @@ const PerformerSlider = () => {
                     </div>
                   </div>
 
-                  <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 mt-[-8px] h-[250px] flex flex-col">
+                  <div className="bg-[] text-black rounded-b-[8px] pt-14 px-6 mt-[-8px] h-[270px] flex flex-col justify-between">
                     <div className="flex-grow">
                       <h3
                         className="font-['Space_Grotesk'] text-[#FFFFFF] font-bold text-[22px] leading-[100%] capitalize mb-4 cursor-pointer
@@ -186,7 +186,7 @@ const PerformerSlider = () => {
                       </p>
                     </div>
 
-                    <div className="flex justify- mt-4">
+                    <div className="flex justify-center mt-auto">
                       <Link
                         to={`/performer-profile/${performer?._id}`}
                         onClick={() => window.scrollTo(0, 0)}
