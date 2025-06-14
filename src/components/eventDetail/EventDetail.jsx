@@ -23,6 +23,7 @@ const EventDetail = () => {
   const performer = getEventsByVenuesById?.event?.user || null;
 
   const [isPerformersVisible, setIsPerformersVisible] = useState(false);
+  const [showFullAddress, setShowFullAddress] = useState(false);
 
   const dropdownRef = useRef(null);
   // Click outside handler
@@ -306,20 +307,64 @@ const EventDetail = () => {
                       alt="bullet"
                       className="w-5 h-5 mt-1"
                     />
-                    <div className="flex flex-col relative">
+                    <div className="flex flex-col relative flex-1 min-w-0">
                       {getEventsByVenuesById?.event?.userType !== "venue" && (
-                        <span className="truncate">
-                          {getEventsByVenuesById?.event?.address || "N/A"}
-                        </span>
+                        <>
+                          <span>
+                            {showFullAddress
+                              ? getEventsByVenuesById?.event?.address
+                              : getEventsByVenuesById?.event?.address?.length >
+                                50
+                              ? getEventsByVenuesById?.event?.address.slice(
+                                  0,
+                                  50
+                                ) + "..."
+                              : getEventsByVenuesById?.event?.address ||
+                                "N/A"}
+                          </span>
+                          {getEventsByVenuesById?.event?.address?.length >
+                            50 && (
+                            <button
+                              onClick={() =>
+                                setShowFullAddress(!showFullAddress)
+                              }
+                              className="text-[#D876B5] text-sm underline mt-1 self-start"
+                            >
+                              {showFullAddress ? "Show less" : "Show more"}
+                            </button>
+                          )}
+                        </>
                       )}
 
                       {getEventsByVenuesById?.event?.userType === "venue" && (
                         <Link
                           to={`/venue-profile/${getEventsByVenuesById?.event?.user?._id}`}
                         >
-                          <span className="truncate">
-                            {getEventsByVenuesById?.event?.user?.name || "N/A"}
-                          </span>
+                          <>
+                            <span>
+                              {showFullAddress
+                                ? getEventsByVenuesById?.event?.user?.name
+                                : getEventsByVenuesById?.event?.user?.name
+                                    ?.length > 50
+                                ? getEventsByVenuesById?.event?.user?.name.slice(
+                                    0,
+                                    50
+                                  ) + "..."
+                                : getEventsByVenuesById?.event?.user?.name ||
+                                  "N/A"}
+                            </span>
+                            {getEventsByVenuesById?.event?.user?.name
+                              ?.length > 50 && (
+                              <button
+                                onClick={() =>
+                                  setShowFullAddress(!showFullAddress)
+                                }
+                                className="text-[#D876B5] text-sm underline mt-1 self-start"
+                              >
+                                {showFullAddress ? "Show less" : "Show more"}
+                              </button>
+                            )}
+                          </>
                         </Link>
                       )}
                     </div>
