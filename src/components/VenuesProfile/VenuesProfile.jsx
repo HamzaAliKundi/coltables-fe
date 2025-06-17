@@ -704,7 +704,7 @@ const VenuesProfile = () => {
                     >
                       <div>
                         <h4 className="text-white font-medium">
-                          {event.title}
+                          {event.title && event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
                         </h4>
                         <p className="text-white/80 text-sm">
                           {formatEventDate(event.startDate)}
@@ -715,7 +715,7 @@ const VenuesProfile = () => {
                           {formatEventTime(event.startTime)}
                         </span>
                         <span className="text-white/70 text-xs block">
-                          {event.host}
+                          {event.host && event.host.length > 15 ? event.host.slice(0, 15) + '...' : event.host}
                         </span>
                       </div>
                     </div>
