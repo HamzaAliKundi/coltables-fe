@@ -248,7 +248,7 @@ const EventDetail = () => {
 
                     <div className="flex flex-col flex-1">
                       <div
-                        className={`flex gap-2 flex-wrap`}
+                        className={`flex gap-2 ${showMore ? 'flex-col' : 'flex-wrap'}`}
                       >
                         {performers.length > 0 ? (
                           performers
