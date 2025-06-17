@@ -886,7 +886,7 @@ const PerformerProfile = () => {
                     >
                       <div>
                         <h4 className="text-white font-medium">
-                          {event.title}
+                          {event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
                         </h4>
                         <p className="text-white/80 text-sm">
                           {formatEventDate(event.startDate, event)}
@@ -898,8 +898,9 @@ const PerformerProfile = () => {
                         </span>
                         <span className="text-white/70 text-xs block">
                           {event?.userType === "performer"
-                            ? event?.address
-                            : event?.user?.name}
+                            ? (event?.address && event.address.length > 15 ? event.address.slice(0, 15) + '...' : event.address)
+                            : (event?.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name)
+                          }
                         </span>
                       </div>
                     </div>
