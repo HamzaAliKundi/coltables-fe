@@ -246,6 +246,7 @@ const EventDetail = () => {
                       className="w-5 h-5 mt-1"
                     />
 
+
                     <div className="flex flex-col flex-1">
                       <div
                         className={`flex gap-2 ${showMore ? 'flex-col' : 'flex-wrap'}`}
