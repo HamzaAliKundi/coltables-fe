@@ -229,6 +229,7 @@ const Calendar = () => {
           >
             Month
           </button>
+          {/*
           <button
             type="button"
             onClick={() => onView(Views.WEEK)}
@@ -245,6 +246,7 @@ const Calendar = () => {
           >
             Day
           </button>
+          */}
           <button
             type="button"
             onClick={() => onView(Views.AGENDA)}
@@ -297,7 +299,7 @@ const Calendar = () => {
           }}
           date={currentDate}
           onNavigate={date => setCurrentDate(date)}
-          views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+          views={[Views.MONTH, Views.AGENDA]}
           popup={true}
           onShowMore={(events, date) => setShowModal(true)}
           onSelectEvent={event => {
