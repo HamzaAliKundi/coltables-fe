@@ -375,7 +375,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
               {/* Event Details */}
               <div className="p-5">
                 <h3 className="font-['Space_Grotesk'] font-bold text-[24px] leading-[100%] capitalize text-white mb-6">
-                  {event.title}
+                  {event.title.length > 20 ? `${event.title.substring(0, 20)}...` : event.title}
                 </h3>
                 <div className="flex items-center mb-4 text-gray-300">
                   <img
