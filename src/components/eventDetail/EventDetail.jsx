@@ -261,7 +261,7 @@ const EventDetail = () => {
                                     key={performer?._id}
                                     to={`/performer-profile/${performer?._id}`}
                                     onClick={() => window.scrollTo(0, 0)}
-                                    className="border-b border-gray-400 inline-block"
+                                    className="inline-block"
                                   >
                                     {performer?.fullDragName}
                                   </Link>
@@ -273,7 +273,7 @@ const EventDetail = () => {
                               key={performer?._id}
                               to={`/performer-profile/${performer?._id}`}
                               onClick={() => window.scrollTo(0, 0)}
-                              className="border-b border-gray-400 inline-block"
+                              className="inline-block"
                             >
                               {performer?.fullDragName}
                             </Link>

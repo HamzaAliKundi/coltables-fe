@@ -397,7 +397,9 @@ const EventListing = ({ isEvent, searchQuery }) => {
                   <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
                     {event?.userType !== "venue" && (
                       <span className="truncate">
-                        {event?.address || "N/A"}
+                        {event?.address?.length > 20 
+                          ? `${event.address.substring(0, 20)}...` 
+                          : event?.address || "N/A"}
                       </span>
                     )}
 
