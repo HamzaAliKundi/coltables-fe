@@ -16,11 +16,17 @@ const EventDetail = () => {
   const { data: getEventsByVenuesById, isLoading: getEventLoading } =
     useGetSingleEventByIdQuery(id);
   const [showMore, setShowMore] = useState(false);
+  const [showMoreHosts, setShowMoreHosts] = useState(false);
 
   const { data: getPerformers } = useGetPerformersQuery();
 
   const performers = getEventsByVenuesById?.event?.performersList || [];
   const performer = getEventsByVenuesById?.event?.user || null;
+  const hosts = Array.isArray(getEventsByVenuesById?.event?.host) 
+    ? getEventsByVenuesById.event.host 
+    : getEventsByVenuesById?.event?.host 
+      ? [getEventsByVenuesById.event.host] 
+      : [];
 
   const [isPerformersVisible, setIsPerformersVisible] = useState(false);
 
@@ -208,34 +214,30 @@ const EventDetail = () => {
                       className="w-5 h-5 mt-1"
                     />
                     <div className="flex flex-col relative" ref={dropdownRef}>
-                      <div
-                        className="flex items-center gap-2"
-                        onClick={togglePerformersVisibility}
-                      >
-                        {getEventsByVenuesById?.event?.host}
-                        {/* {isPerformersVisible ? <ChevronUp /> : <ChevronDown />} */}
-                      </div>
-
-                      {/* {isPerformersVisible && (
-                        <div className="absolute top-full left-0 mt-1 z-10 bg-[#1E1E1E] border border-[#FF00A2] rounded-md shadow-lg p-2 min-w-[200px] max-h-60 overflow-y-auto">
-                          <div className="flex flex-col gap-2">
-                            {getPerformers?.map((performer) => (
-                              <Link
-                                key={performer?._id}
-                                to={`/performer-profile/${performer?._id}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.scrollTo(0, 0);
-                                  setIsPerformersVisible(false);
-                                }}
-                                className="border-b border-gray-400 hover:text-[#FF00A2] transition-colors"
-                              >
-                                {performer?.fullDragName}
-                              </Link>
-                            ))}
-                          </div>
+                      <div className="flex flex-col flex-1">
+                        <div className={`flex gap-2 ${showMoreHosts ? 'flex-col' : 'flex-wrap'}`}>
+                          {hosts.length > 0 ? (
+                            hosts
+                              .slice(0, showMoreHosts ? hosts.length : 2)
+                              .map((host, index) => (
+                                <span key={index} className="inline-block">
+                                  {host}
+                                </span>
+                              ))
+                          ) : (
+                            <span>N/A</span>
+                          )}
                         </div>
-                      )} */}
+
+                        {hosts.length > 2 && (
+                          <button
+                            onClick={() => setShowMoreHosts(!showMoreHosts)}
+                            className="text-[#D876B5] text-sm underline mt-1 self-start"
+                          >
+                            {showMoreHosts ? "Show less" : "Show more"}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
