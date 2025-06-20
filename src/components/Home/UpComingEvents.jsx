@@ -39,15 +39,39 @@ const UpComingEvents = () => {
 
   const events = upcomingEventsData?.docs?.map((event) => {
     const localDate = getLocalDateParts(event.startDate);
+    
+    // Determine host display based on userType
+    let hostDisplay;
+    if (event.userType === "venue") {
+      hostDisplay = `Hosted By ${event.user?.name || 'N/A'}`;
+    } else {
+      // For performers, use the host field (could be string or array)
+      const hostValue = Array.isArray(event.host) ? event.host.join(', ') : event.host;
+      hostDisplay = `Hosted By ${hostValue || 'N/A'}`;
+    }
+    
+    // Limit to 20 characters
+    const truncatedHost = hostDisplay.length > 20 ? hostDisplay.substring(0, 20) + '...' : hostDisplay;
+    
+    // Determine location display
+    let locationDisplay;
+    if (event.address && event.address.trim() !== '') {
+      locationDisplay = event.address;
+    } else if (event.userType === "venue" && event.user?.name) {
+      locationDisplay = event.user.name;
+    } else {
+      locationDisplay = 'Location TBA';
+    }
+    
     return {
       id: event._id,
       image: event.image || "/home/upcomping/upcoming.png",
       date: localDate.day,
       month: localDate.month,
       title: event.title,
-      host: `Hosted By ${event.host}`,
+      host: truncatedHost,
       time: `Start ${new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-      location: event.address ?? 'N/A',
+      location: locationDisplay,
       featured: event.type === 'drag-show'
     }
   }) || [];
