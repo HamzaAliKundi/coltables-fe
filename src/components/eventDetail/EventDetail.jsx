@@ -213,7 +213,7 @@ const EventDetail = () => {
                     <User size={22} color="#FF00A2" className="mt-1" />
                     <div className="flex flex-col relative" ref={dropdownRef}>
                       <div className="flex flex-col flex-1">
-                        <div className={`flex gap-2 ${showMoreHosts ? 'flex-col' : 'flex-wrap'}`}>
+                        <div className="flex flex-col items-start">
                           {hosts.length > 0 ? (
                             hosts
                               .slice(0, showMoreHosts ? hosts.length : 2)
