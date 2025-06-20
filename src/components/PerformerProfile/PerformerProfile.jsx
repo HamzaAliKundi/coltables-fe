@@ -465,7 +465,7 @@ const PerformerProfile = () => {
                       <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
                     </div>
                   </div>
-                  <div className="absolute left-20 top-10 right-0 text-center">
+                  <div className="absolute left-14 sm:left-16 top-10 right-0 text-center">
                     <h2 className="text-[#FF00A2] text-[18px] sm:text-[22px] font-space-grotesk">
                       Drag Anniversary: {" "}
                       <span className="font-medium">
@@ -474,7 +474,7 @@ const PerformerProfile = () => {
                           const anniversaryDate = getLocalDateSafe(performerDetail.performer.dragAnniversary);
                           const anniversaryMonth = anniversaryDate.toLocaleString(undefined, { month: 'long' });
                           const anniversaryYear = anniversaryDate.getFullYear().toString().slice(-2);
-                          return `${anniversaryMonth} ‘${anniversaryYear}`;
+                          return `${anniversaryMonth} '${anniversaryYear}`;
                         })()}
                       </span>
                     </h2>
