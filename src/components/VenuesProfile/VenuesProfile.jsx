@@ -292,6 +292,19 @@ const VenuesProfile = () => {
       .join(" - ");
   }
 
+  const formatVenueType = (venueType) => {
+    switch (venueType) {
+      case "bar/club":
+        return "Bar/Club";
+      case "restaurant/dining":
+        return "Restaurant/Dining";
+      case "other":
+        return "OTHER";
+      default:
+        return venueType?.toUpperCase() || "OTHER";
+    }
+  };
+
   return (
     <div className="min-h-screen text-white p-4 lg:p-8">
       {/* Main Container */}
@@ -481,7 +494,7 @@ const VenuesProfile = () => {
                     </h3>
                     <div className="flex items-center gap-2 text-white/90">
                       <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                      <span>{venueDetail.venue.venueType}</span>
+                      <span>{formatVenueType(venueDetail.venue.venueType)}</span>
                     </div>
                   </div>
                 )}
