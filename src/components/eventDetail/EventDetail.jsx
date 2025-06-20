@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import { useGetPerformersQuery } from "../../apis/performers";
 import {
   CalendarCheck,
+  Crown,
+  User,
   ChevronDown,
   ChevronsDown,
   ChevronsRight,
@@ -208,11 +210,7 @@ const EventDetail = () => {
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-1 w-full">
                   <div className="flex items-start gap-2 md:w-[50%]">
-                    <img
-                      src="/events/Background.png"
-                      alt="bullet"
-                      className="w-5 h-5 mt-1"
-                    />
+                    <User size={22} color="#FF00A2" className="mt-1" />
                     <div className="flex flex-col relative" ref={dropdownRef}>
                       <div className="flex flex-col flex-1">
                         <div className={`flex gap-2 ${showMoreHosts ? 'flex-col' : 'flex-wrap'}`}>
@@ -242,44 +240,47 @@ const EventDetail = () => {
                   </div>
 
                   <div className="flex items-start gap-2 md:w-[50%]">
-                    <img
-                      src="/events/Background-1.png"
-                      alt="bullet"
-                      className="w-5 h-5 mt-1"
-                    />
-
-
+                    {performers.length > 0 && (
+                      <div className="flex gap-1 mt-1">
+                        <Crown size={18} color="#FF00A2" />
+                      </div>
+                    )}
+                    
                     <div className="flex flex-col flex-1">
                       <div
                         className={`flex gap-2 ${showMore ? 'flex-col' : 'flex-wrap'}`}
                       >
                         {performers.length > 0 ? (
-                          performers
-                            .slice(0, showMore ? performers.length : 2)
-                            .map(
-                              (performer) =>
+                          <div className="flex flex-col items-start">
+                            {performers
+                              .slice(0, showMore ? performers.length : 2)
+                              .map((performer) =>
                                 performer?.fullDragName && (
                                   <Link
-                                    key={performer?._id}
-                                    to={`/performer-profile/${performer?._id}`}
+                                    key={performer._id}
+                                    to={`/performer-profile/${performer._id}`}
                                     onClick={() => window.scrollTo(0, 0)}
-                                    className="inline-block"
+                                    className="inline-block hover:underline"
                                   >
-                                    {performer?.fullDragName}
+                                    {performer.fullDragName}
                                   </Link>
                                 )
-                            )
+                            )}
+                          </div>
                         ) : performer?.userType === "performer" ? (
-                          performer?.fullDragName && (
-                            <Link
-                              key={performer?._id}
-                              to={`/performer-profile/${performer?._id}`}
-                              onClick={() => window.scrollTo(0, 0)}
-                              className="inline-block"
-                            >
-                              {performer?.fullDragName}
-                            </Link>
-                          )
+                          <div className="flex items-center gap-2">
+                            <Crown size={22} color="#FF00A2" />
+                            {performer?.fullDragName && (
+                              <Link
+                                key={performer?._id}
+                                to={`/performer-profile/${performer?._id}`}
+                                onClick={() => window.scrollTo(0, 0)}
+                                className="inline-block hover:underline"
+                              >
+                                {performer?.fullDragName}
+                              </Link>
+                            )}
+                          </div>
                         ) : (
                           <span>N/A</span>
                         )}
