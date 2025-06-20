@@ -154,11 +154,11 @@ const UpComingEvents = () => {
                         alt="crown"
                         className="absolute -right-4 -top-4 md:-top-7 w-[24px] h-[24px] md:w-[36px] md:h-[36px]"
                       />
-                      <h3 className="font-['Space_Grotesk'] font-bold text-base md:text-2xl mb-1 text-white">
-                        {event.title}
+                      <h3 className="font-['Space_Grotesk'] font-bold text-base md:text-2xl mb-1 text-white truncate">
+                        {event.title.length > 25 ? event.title.substring(0, 25) + '...' : event.title}
                       </h3>
                       <p className="font-['Space_Grotesk'] text-xs md:text-base mb-1 md:mb-4 text-white">
-                        {event.host}
+                        {event.host.length > 35 ? event.host.substring(0, 35) + '...' : event.host}
                       </p>
 
                       <div className="flex items-center mb-1 md:mb-2">
@@ -175,7 +175,7 @@ const UpComingEvents = () => {
                           📍
                         </span>
                         <span className="font-['Space_Grotesk'] text-xs md:text-sm text-white">
-                          {event.location}
+                          {event.location.length > 25 ? event.location.substring(0, 25) + '...' : event.location}
                         </span>
                       </div>
 
