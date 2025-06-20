@@ -208,7 +208,7 @@ export default function Navbar({ onSearch }) {
                 Register as Performer
               </a>
               <a
-                href="https://coltable-deshboard-venues.vercel.app"
+                href="https://coltable-deshboard-venues-blue.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
@@ -256,7 +256,7 @@ export default function Navbar({ onSearch }) {
                 </div>
               </a>
               <a
-                href="https://coltable-deshboard-venues.vercel.app"
+                href="https://coltable-deshboard-venues-blue.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
@@ -336,7 +336,7 @@ export default function Navbar({ onSearch }) {
                     Register as Performer
                   </a>
                   <a
-                    href="https://coltable-deshboard-venues.vercel.app"
+                    href="https://coltable-deshboard-venues-blue.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
@@ -374,7 +374,7 @@ export default function Navbar({ onSearch }) {
                     <span>Login as Performer</span>
                   </a>
                   <a
-                    href="https://coltable-deshboard-venues.vercel.app"
+                    href="https://coltable-deshboard-venues-blue.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
