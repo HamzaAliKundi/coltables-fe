@@ -40,23 +40,28 @@ const UpComingEvents = () => {
   // Add scroll event listener to update active slide
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !upcomingEventsData?.docs.length) return;
 
-    const handleScroll = () => {
-      const cards = container.querySelectorAll('.flex-shrink-0');
-      if (cards.length === 0) return;
-      
-      const cardWidth = cards[0].offsetWidth;
-      const spacing = 24; // space-x-6 = 24px
-      const totalCardWidth = cardWidth + spacing;
-      const scrollLeft = container.scrollLeft;
-      const newActiveSlide = Math.round(scrollLeft / totalCardWidth);
-      setActiveSlide(newActiveSlide);
-    };
+    // Small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      const handleScroll = () => {
+        const cards = container.querySelectorAll('.flex-shrink-0');
+        if (cards.length === 0) return;
+        
+        const cardWidth = cards[0].offsetWidth;
+        const spacing = 24; // space-x-6 = 24px
+        const totalCardWidth = cardWidth + spacing;
+        const scrollLeft = container.scrollLeft;
+        const newActiveSlide = Math.round(scrollLeft / totalCardWidth);
+        setActiveSlide(newActiveSlide);
+      };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [upcomingEventsData]);
 
   const events = upcomingEventsData?.docs?.map((event) => {
     const localDate = getLocalDateParts(event.startDate);
