@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGetUpcomingEventsQuery } from "../../apis/events";
 
@@ -36,6 +36,24 @@ const UpComingEvents = () => {
     page: 1,
     limit: 10
   });
+
+  // Add scroll event listener to update active slide
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const cardWidth = 320; // Mobile card width
+      const spacing = 24; // space-x-6 = 24px
+      const totalCardWidth = cardWidth + spacing;
+      const scrollLeft = container.scrollLeft;
+      const newActiveSlide = Math.round(scrollLeft / totalCardWidth);
+      setActiveSlide(newActiveSlide);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const events = upcomingEventsData?.docs?.map((event) => {
     const localDate = getLocalDateParts(event.startDate);
@@ -79,7 +97,9 @@ const UpComingEvents = () => {
   const scrollTo = (index) => {
     setActiveSlide(index);
     if (containerRef.current) {
-      const scrollPosition = index * (containerRef.current.offsetWidth / 3);
+      const cardWidth = 320; // Mobile card width
+      const spacing = 24; // space-x-6 = 24px
+      const scrollPosition = index * (cardWidth + spacing);
       containerRef.current.scrollTo({
         left: scrollPosition,
         behavior: "smooth",
