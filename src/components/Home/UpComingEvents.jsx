@@ -43,7 +43,10 @@ const UpComingEvents = () => {
     if (!container) return;
 
     const handleScroll = () => {
-      const cardWidth = 320; // Mobile card width
+      const cards = container.querySelectorAll('.flex-shrink-0');
+      if (cards.length === 0) return;
+      
+      const cardWidth = cards[0].offsetWidth;
       const spacing = 24; // space-x-6 = 24px
       const totalCardWidth = cardWidth + spacing;
       const scrollLeft = container.scrollLeft;
@@ -97,7 +100,10 @@ const UpComingEvents = () => {
   const scrollTo = (index) => {
     setActiveSlide(index);
     if (containerRef.current) {
-      const cardWidth = 320; // Mobile card width
+      const cards = containerRef.current.querySelectorAll('.flex-shrink-0');
+      if (cards.length === 0) return;
+      
+      const cardWidth = cards[0].offsetWidth;
       const spacing = 24; // space-x-6 = 24px
       const scrollPosition = index * (cardWidth + spacing);
       containerRef.current.scrollTo({
