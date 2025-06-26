@@ -728,7 +728,7 @@ const VenuesProfile = () => {
                           {formatEventTime(event.startTime)}
                         </span>
                         <span className="text-white/70 text-xs block">
-                          {event.host && event.host.length > 15 ? event.host.slice(0, 15) + '...' : event.host}
+                          {event.host && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user.name}
                         </span>
                       </div>
                     </div>

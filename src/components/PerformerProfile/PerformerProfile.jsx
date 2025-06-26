@@ -198,13 +198,9 @@ const PerformerProfile = () => {
   };
 
   const formatEventDate = (dateString, event) => {
-    // If event is provided, use getLocalDateKey for consistency
-    if (event) {
-      return getLocalDateKey(event);
-    }
-    // fallback for legacy usage
+    // Always use the original date string for formatting
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   };
 
   const getEventsForDay = (dateObj) => {
@@ -853,7 +849,12 @@ const PerformerProfile = () => {
               </h3>
               {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {selectedDay.toLocaleDateString()}
+                  {selectedDay.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </span>
               )}
               {!selectedDay && !isMonthView && (
