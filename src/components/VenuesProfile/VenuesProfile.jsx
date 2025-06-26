@@ -6,6 +6,7 @@ import { Youtube } from "lucide-react";
 import Gallery from "../PerformerProfile/Gallery";
 import { useGetCalendarEventsQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
+import { useGetPerformersQuery } from "../../apis/performers";
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
@@ -16,6 +17,8 @@ const VenuesProfile = () => {
   const navigate = useNavigate();
 
   const { data: ad } = useGetAllAdsQuery("venue");
+  const { data: getPerformers } = useGetPerformersQuery();
+  console.log(getPerformers);
 
 
   const { id } = useParams();
@@ -424,9 +427,23 @@ const VenuesProfile = () => {
                     </h3>
                     <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
                       {venueDetail?.venue?.topDragPerformers?.map(
-                        (performer, index) => (
-                          <li key={index}>{performer}</li>
-                        )
+                        (performerId, index) => {
+                          // Find the performer in the getPerformers data
+                          const performer = getPerformers?.find(p => p._id === performerId);
+                          return (
+                            <li key={index}>
+                              <button
+                                onClick={() => {
+                                  navigate(`/performer-profile/${performerId}`);
+                                  window.scrollTo(0, 0);
+                                }}
+                                className="text-left hover:text-[#FF00A2] transition-colors duration-200"
+                              >
+                                {performer?.fullDragName || performerId}
+                              </button>
+                            </li>
+                          );
+                        }
                       )}
                     </ul>
                   </div>
