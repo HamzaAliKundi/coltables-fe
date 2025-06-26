@@ -116,7 +116,7 @@ const Gallery = ({ images = [], videos = [] }) => {
               >
                 {media.type === "video" ? (
                   <video
-                    className="w-full md:h-[550px] h-[170px] object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full md:h-[550px] h-[170px] object-cover object-center-top transition-transform duration-300 group-hover:scale-105"
                     muted
                     loop
                     autoPlay
@@ -128,7 +128,7 @@ const Gallery = ({ images = [], videos = [] }) => {
                   <img
                     src={media.url}
                     alt={`Center Gallery ${index + 1}`}
-                    className="w-full md:h-[550px] h-[170px] object-fit transition-transform duration-300 group-hover:scale-105"
+                    className="w-full md:h-[550px] h-[170px] object-cover object-center-top transition-transform duration-300 group-hover:scale-105"
                   />
                 )}
                 <PreviewButton openModal={() => openModal(media)} />
@@ -168,7 +168,7 @@ const MediaTile = ({ media, index, openModal }) => (
   <div className="aspect-square rounded-2xl overflow-hidden relative group">
     {media.type === "video" ? (
       <video
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        className="w-full h-full object-cover object-center-top transition-transform duration-300 group-hover:scale-105"
         muted
         loop
         autoPlay
@@ -180,7 +180,7 @@ const MediaTile = ({ media, index, openModal }) => (
       <img
         src={media.url}
         alt={`Gallery item ${index + 1}`}
-        className="w-full h-full object-fit transition-transform duration-300 group-hover:scale-105"
+        className="w-full h-full object-cover object-center-top transition-transform duration-300 group-hover:scale-105"
       />
     )}
     <PreviewButton openModal={() => openModal(media)} />

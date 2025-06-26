@@ -362,8 +362,7 @@ const PerformerProfile = () => {
                       performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                       "Performer"
                     }
-                    className="md:w-[350px] w-[377px] h-[450px] object-fit rounded-lg"
-                    // style={{ objectPosition: "0px -42px" }}
+                    className="w-full h-auto object-contain rounded-lg"
                   />
                 </div>
 
