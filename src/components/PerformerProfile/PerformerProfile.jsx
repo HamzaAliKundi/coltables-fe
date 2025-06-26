@@ -662,12 +662,29 @@ const PerformerProfile = () => {
                         Performing?
                       </h2>
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
-                        {matchedVenues.map((venue, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{venue.name || formatVenue(venue._id)}</span>
-                          </div>
-                        ))}
+                        {performerDetail?.performer?.venues?.map((venue, index) => {
+                          // Check if this is a venue ID (matches the pattern of venue IDs)
+                          const isVenueId = /^[a-f0-9]{24}$/i.test(venue);
+                          
+                          if (isVenueId) {
+                            // Find the matched venue from the venues data
+                            const matchedVenue = matchedVenues.find(v => v._id === venue);
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{matchedVenue?.name || formatVenue(venue)}</span>
+                              </div>
+                            );
+                          } else {
+                            // This is a direct venue name, display as-is
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{venue}</span>
+                              </div>
+                            );
+                          }
+                        })}
                       </div>
                     </div>
                   )}
