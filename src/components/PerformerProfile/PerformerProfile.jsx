@@ -676,11 +676,16 @@ const PerformerProfile = () => {
                               </div>
                             );
                           } else {
-                            // This is a direct venue name, display as-is
+                            // This is a direct venue name, format it properly
+                            const formattedName = venue
+                              .split('-') // Split by hyphens
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+                              .join(' '); // Join with spaces instead of hyphens
+                            
                             return (
                               <div key={index} className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{venue}</span>
+                                <span>{formattedName}</span>
                               </div>
                             );
                           }
