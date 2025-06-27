@@ -99,37 +99,10 @@ const Calendar = () => {
           : `${eventTime} ${title}`;
       }
 
-      // For agenda view, apply additional timezone fix if needed
-      let eventStart = event.start;
-      let eventEnd = event.end;
-      
-      if (currentView === Views.AGENDA) {
-        const startDate = new Date(event.start);
-        // If it's a midnight UTC date, ensure it's treated as local date
-        if (
-          startDate.getUTCHours() === 0 &&
-          startDate.getUTCMinutes() === 0 &&
-          startDate.getUTCSeconds() === 0
-        ) {
-          const localDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-          eventStart = localDate.toISOString();
-        }
-        
-        const endDate = new Date(event.end);
-        if (
-          endDate.getUTCHours() === 0 &&
-          endDate.getUTCMinutes() === 0 &&
-          endDate.getUTCSeconds() === 0
-        ) {
-          const localDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-          eventEnd = localDate.toISOString();
-        }
-      }
-
       return {
         ...event,
-        start: new Date(eventStart),
-        end: new Date(eventEnd),
+        start: new Date(event.start),
+        end: new Date(event.end),
         title: displayTitle,
         tooltipContent: `${title}\n${eventTime}` // Full info in tooltip
       }
