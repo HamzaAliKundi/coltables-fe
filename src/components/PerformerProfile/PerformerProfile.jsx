@@ -488,7 +488,7 @@ const PerformerProfile = () => {
                   About{" "}
                   {performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                     "Performer"}
-                  's Drag
+                  {/* 's Drag */}
                 </h2>
                 <p
                   className="text-white/90 text-[18px] font-normal"
