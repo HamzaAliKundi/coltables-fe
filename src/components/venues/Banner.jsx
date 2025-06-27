@@ -1,16 +1,26 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGetAllBannersQuery } from "../../apis/adsBanner";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useLocation } from "react-router-dom";
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
-  const bannerImages = [
-    "/venues/banner/banner-1.svg",
-    "/venues/banner/banner-2.svg",
+  const isVenuePage = location.pathname === "/venues";
+
+  const { data: venueBanner } = useGetAllBannersQuery(
+    isVenuePage ? "venue" : skipToken
+  );
+
+  const venuePageBannerImages = [
+    venueBanner?.[0]?.images[1],
+    venueBanner?.[0]?.images[2],
   ];
 
-  const totalSlides = bannerImages.length;
+  const totalSlides = venuePageBannerImages.length;
   const indicatorWidth = 200; 
   const segmentWidth = indicatorWidth / totalSlides; 
   
@@ -54,7 +64,7 @@ const Banner = () => {
               transition={{ duration: 0.5 }}
             >
               <img 
-                src={bannerImages[currentSlide]} 
+                src={venuePageBannerImages[currentSlide]} 
                 alt="Venue visual" 
                 className="object-contain w-[400px] h-[650px]"
               />
@@ -85,7 +95,7 @@ const Banner = () => {
             >
               <div className="absolute inset-0 bg-black opacity-50"></div>
               <img 
-                src={bannerImages[currentSlide]} 
+                src={venuePageBannerImages[currentSlide]} 
                 alt="Venue visual" 
                 className="object-contain w-full md:w-[650px] h-[400px] md:h-[650px]"
               />
@@ -107,7 +117,7 @@ const Banner = () => {
               transition={{ duration: 0.5 }}
             >
               <img 
-                src={bannerImages[(currentSlide + 1) % totalSlides]} 
+                src={venuePageBannerImages[(currentSlide + 1) % totalSlides]} 
                 alt="Venue visual" 
                 className="object-contain w-[400px] h-[650px]"
               />

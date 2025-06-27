@@ -1,25 +1,57 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import { useGetAllBannersQuery } from "../../apis/adsBanner";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [imageLoading, setImageLoading] = useState(true);
+  const location = useLocation();
 
-  const bannerImages = [
-    "/home/banner/banner-image-1.png",
-    "/home/banner/banner-image-2.png",
+  const isHomePage = location.pathname === "/";
+  const isPerformerPage = location.pathname === "/performers";
+  const isVenuePage = location.pathname === "/venues";
+  const isEventPage = location.pathname === "/events";
+
+  const { data: homeBanner } = useGetAllBannersQuery(
+    isHomePage ? "home" : skipToken
+  );
+
+  const { data: performerBanner, } = useGetAllBannersQuery(
+    isPerformerPage ? "performer" : skipToken
+  );
+
+  // console.log(homeBanner[0].images[2]);
+
+  const homePageBannerImages = [
+    homeBanner?.[0]?.images[1],
+    homeBanner?.[0]?.images[2],
   ];
 
-  const totalSlides = bannerImages.length;
+  const performerPageBannerImages = [
+    performerBanner?.[0]?.images[1],
+    performerBanner?.[0]?.images[2],
+  ];
+
+  const totalSlides = homePageBannerImages.length;
   const indicatorWidth = 200; 
   const segmentWidth = indicatorWidth / totalSlides; 
+  
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    setImageLoading(true);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) =>
       prev === 0 ? totalSlides - 1 : prev - 1
     );
+    setImageLoading(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
   };
 
   return (
@@ -46,11 +78,24 @@ const Banner = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="md:hidden absolute inset-0 bg-black opacity-50"></div>
-            <img 
-              src={bannerImages[currentSlide]} 
-              alt="Drag performers" 
-              className="object-cover md:object-contain w-full md:w-[650px] h-[400px] md:h-[650px]"
-            />
+            {isHomePage && homePageBannerImages[currentSlide] && (
+              <img 
+                src={homePageBannerImages[currentSlide]} 
+                alt="Drag performers" 
+                className="object-cover md:object-contain w-full md:w-[650px] h-[400px] md:h-[650px]"
+                onLoad={handleImageLoad}
+                style={{ opacity: imageLoading ? 0.3 : 1, transition: 'opacity 0.3s ease' }}
+              />  
+            )}
+            {isPerformerPage && performerPageBannerImages[currentSlide] && (
+              <img 
+                src={performerPageBannerImages[currentSlide]} 
+                alt="Drag performers" 
+                className="object-cover md:object-contain w-full md:w-[650px] h-[400px] md:h-[650px]"
+                onLoad={handleImageLoad}
+                style={{ opacity: imageLoading ? 0.3 : 1, transition: 'opacity 0.3s ease' }}
+              />  
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
