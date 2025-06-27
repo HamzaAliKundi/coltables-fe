@@ -109,7 +109,16 @@ const PerformerProfile = () => {
     const month = date.getMonth();
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // Create array of empty cells for days before the first day of the month
+    const emptyCells = Array(firstDay).fill(null);
+    
+    // Create array of current month's days
+    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Combine empty cells and current month days
+    return [...emptyCells, ...currentMonthDays];
   };
 
   const handlePrevMonth = () => {
@@ -188,9 +197,10 @@ const PerformerProfile = () => {
     return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  const formatEventDate = (dateString) => {
+  const formatEventDate = (dateString, event) => {
+    // Always use the original date string for formatting
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   };
 
   const getEventsForDay = (dateObj) => {
@@ -286,6 +296,28 @@ const PerformerProfile = () => {
     return date.toLocaleDateString();
   }
 
+  // Helper to get local date safely for anniversary (handles midnight UTC issue)
+  function getLocalDateSafe(dateString) {
+    const date = new Date(dateString);
+    if (
+      date.getUTCHours() === 0 &&
+      date.getUTCMinutes() === 0 &&
+      date.getUTCSeconds() === 0
+    ) {
+      const localDate = new Date(date);
+      const localDay = localDate.getDate();
+      const utcDay = date.getUTCDate();
+      if (localDay < utcDay) {
+        localDate.setDate(localDate.getDate() + 1);
+        return localDate;
+      }
+    }
+    // Always add one day to fix timezone offset
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(date.getDate() + 1);
+    return adjustedDate;
+  }
+
   if (performerError) {
     return (
       <div className="min-h-screen text-white p-4 lg:p-8 flex items-center justify-center">
@@ -326,8 +358,7 @@ const PerformerProfile = () => {
                       performerDetail?.performer?.fullDragName?.split(" ")[0] ||
                       "Performer"
                     }
-                    className="md:w-[350px] w-[377px] h-[450px] object-fit rounded-lg"
-                    // style={{ objectPosition: "0px -42px" }}
+                    className="w-full h-auto object-contain rounded-lg"
                   />
                 </div>
 
@@ -429,16 +460,16 @@ const PerformerProfile = () => {
                       <div className="h-[3px] bg-[#FF00A2] ml-[-7px]"></div>
                     </div>
                   </div>
-                  <div className="absolute left-20 top-10 right-0 text-center">
-                    <h2 className="text-[#FF00A2] text-[14px] sm:text-[20px] font-space-grotesk">
+                  <div className="absolute left-14 sm:left-16 top-10 right-0 text-center">
+                    <h2 className="text-[#FF00A2] text-[18px] sm:text-[22px] font-space-grotesk">
                       Drag Anniversary: {" "}
                       <span className="font-medium">
                         {(() => {
                           if (!performerDetail?.performer?.dragAnniversary) return "N/A";
-                          const date = new Date(performerDetail.performer.dragAnniversary);
-                          const month = date.toLocaleString(undefined, { month: 'long' });
-                          const year = date.getFullYear().toString().slice(-2);
-                          return `${month} ‘${year}`;
+                          const anniversaryDate = getLocalDateSafe(performerDetail.performer.dragAnniversary);
+                          const anniversaryMonth = anniversaryDate.toLocaleString(undefined, { month: 'long' });
+                          const anniversaryYear = anniversaryDate.getFullYear().toString().slice(-2);
+                          return `${anniversaryMonth} '${anniversaryYear}`;
                         })()}
                       </span>
                     </h2>
@@ -631,12 +662,34 @@ const PerformerProfile = () => {
                         Performing?
                       </h2>
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-1 gap-x-2 text-white/90">
-                        {matchedVenues.map((venue, index) => (
-                          <div key={index} className="flex items-center">
-                            <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                            <span>{venue.name || formatVenue(venue._id)}</span>
-                          </div>
-                        ))}
+                        {performerDetail?.performer?.venues?.map((venue, index) => {
+                          // Check if this is a venue ID (matches the pattern of venue IDs)
+                          const isVenueId = /^[a-f0-9]{24}$/i.test(venue);
+                          
+                          if (isVenueId) {
+                            // Find the matched venue from the venues data
+                            const matchedVenue = matchedVenues.find(v => v._id === venue);
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{matchedVenue?.name || formatVenue(venue)}</span>
+                              </div>
+                            );
+                          } else {
+                            // This is a direct venue name, format it properly
+                            const formattedName = venue
+                              .split('-') // Split by hyphens
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+                              .join(' '); // Join with spaces instead of hyphens
+                            
+                            return (
+                              <div key={index} className="flex items-center">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                                <span>{formattedName}</span>
+                              </div>
+                            );
+                          }
+                        })}
                       </div>
                     </div>
                   )}
@@ -762,51 +815,43 @@ const PerformerProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
-                  const days = getDaysInMonth(currentDate);
-                  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
-                  let cellMonth = currentDate.getMonth();
-                  let cellYear = currentDate.getFullYear();
-                  if (day <= 14 && index >= days.length - 14) {
-                    // Next month
-                    cellMonth = (currentDate.getMonth() + 1) % 12;
-                    if (cellMonth === 0) cellYear += 1;
-                  } else if (day > 14 && index < firstDayOfMonth) {
-                    // Previous month
-                    cellMonth = (currentDate.getMonth() + 11) % 12;
-                    if (cellMonth === 11) cellYear -= 1;
+                  if (day === null) {
+                    return <div key={index} className="h-8 lg:h-12 bg-[#1A1A1A] rounded-lg"></div>;
                   }
-                  const dateObj = new Date(cellYear, cellMonth, day);
+                  
+                  const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
                   const today = new Date();
-                  const isToday = dateObj.toDateString() === today.toDateString();
-                  const isSelected = selectedDay && dateObj.toDateString() === selectedDay.toDateString();
+                  const isToday = date.toDateString() === today.toDateString();
+                  const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
                   let isInCurrentWeek = false;
                   if (!isMonthView) {
                     const weekStart = new Date(selectedWeekStart);
                     weekStart.setHours(0,0,0,0);
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekEnd.getDate() + 6);
-                    isInCurrentWeek = dateObj >= weekStart && dateObj <= weekEnd;
+                    isInCurrentWeek = date >= weekStart && date <= weekEnd;
                   }
+
                   return (
                     <div
                       key={index}
                       onClick={() => handleDayClick(day)}
                       className={`relative h-8 lg:h-12 flex items-center justify-center cursor-pointer
-                ${
-                  isToday
-                    ? "bg-[#FF00A2] text-white"
-                    : isSelected
-                    ? "bg-[#FF00A2] text-white"
-                    : isInCurrentWeek
-                    ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
-                    : "bg-[#2A2A2A] text-white/60"
-                }
-                rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                transition-colors duration-200
-                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
+                        ${
+                          isToday
+                            ? "bg-[#FF00A2] text-white"
+                            : isSelected
+                            ? "bg-[#FF00A2] text-white"
+                            : isInCurrentWeek
+                            ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
+                            : "bg-[#2A2A2A] text-white/60"
+                        }
+                        rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                        transition-colors duration-200
+                        ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
-                      {renderEventDots(dateObj, !isMonthView && isInCurrentWeek)}
+                      {renderEventDots(date, !isMonthView && isInCurrentWeek)}
                     </div>
                   );
                 })}
@@ -826,7 +871,12 @@ const PerformerProfile = () => {
               </h3>
               {selectedDay && (
                 <span className="text-white/60 text-[14px] lg:text-[16px]">
-                  {selectedDay.toLocaleDateString()}
+                  {selectedDay.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </span>
               )}
               {!selectedDay && !isMonthView && (
@@ -858,10 +908,10 @@ const PerformerProfile = () => {
                     >
                       <div>
                         <h4 className="text-white font-medium">
-                          {event.title}
+                          {event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
                         </h4>
                         <p className="text-white/80 text-sm">
-                          {formatEventDate(event.startDate)}
+                          {formatEventDate(event.startDate, event)}
                         </p>
                       </div>
                       <div className="text-right">
@@ -870,8 +920,9 @@ const PerformerProfile = () => {
                         </span>
                         <span className="text-white/70 text-xs block">
                           {event?.userType === "performer"
-                            ? event?.address
-                            : event?.user?.name}
+                            ? (event?.address && event.address.length > 15 ? event.address.slice(0, 15) + '...' : event.address)
+                            : (event?.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name)
+                          }
                         </span>
                       </div>
                     </div>

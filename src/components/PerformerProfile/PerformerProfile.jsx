@@ -894,39 +894,60 @@ const PerformerProfile = () => {
             {getEventsForDisplay().length > 0 ? (
               <div className="max-h-[300px] overflow-y-auto pr-2">
                 <div className="space-y-2">
-                  {getEventsForDisplay().map((event, i) => (
-                    <div
-                      key={event._id}
-                      onClick={() => navigate(`/event-detail/${event._id}`)}
-                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
-                        i === 0
-                          ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
-                          : isDayView
-                          ? "bg-[#721345] hover:bg-[#822455]"
-                          : "bg-[#FF00A2] hover:bg-[#721345]"
-                      }`}
-                    >
-                      <div>
-                        <h4 className="text-white font-medium">
-                          {event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
-                        </h4>
-                        <p className="text-white/80 text-sm">
-                          {formatEventDate(event.startDate, event)}
-                        </p>
+                  {getEventsForDisplay().map((event, i) => {
+                    // Use the same timezone handling as the dots
+                    const eventDate = new Date(event.startDate);
+                    let adjustedDate = eventDate;
+                    
+                    // Apply the same timezone fix that works for dots
+                    if (
+                      eventDate.getUTCHours() === 0 &&
+                      eventDate.getUTCMinutes() === 0 &&
+                      eventDate.getUTCSeconds() === 0
+                    ) {
+                      const localDate = new Date(eventDate);
+                      const localDay = localDate.getDate();
+                      const utcDay = eventDate.getUTCDate();
+                      if (localDay < utcDay) {
+                        localDate.setDate(localDate.getDate() + 1);
+                        adjustedDate = localDate;
+                      }
+                    }
+                    
+                    return (
+                      <div
+                        key={event._id}
+                        onClick={() => navigate(`/event-detail/${event._id}`)}
+                        className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
+                          i === 0
+                            ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
+                            : isDayView
+                            ? "bg-[#721345] hover:bg-[#822455]"
+                            : "bg-[#FF00A2] hover:bg-[#721345]"
+                        }`}
+                      >
+                        <div>
+                          <h4 className="text-white font-medium">
+                            {event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
+                          </h4>
+                          <p className="text-white/80 text-sm">
+                            {adjustedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-white text-sm font-medium block">
+                            {formatEventTime(event.startTime)}
+                          </span>
+                          <span className="text-white/70 text-xs block">
+                            {event?.userType === "performer"
+                              ? (event?.address && event.address.length > 15 ? event.address.slice(0, 15) + '...' : event.address)
+                              : (event?.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name)
+                            }
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-white text-sm font-medium block">
-                          {formatEventTime(event.startTime)}
-                        </span>
-                        <span className="text-white/70 text-xs block">
-                          {event?.userType === "performer"
-                            ? (event?.address && event.address.length > 15 ? event.address.slice(0, 15) + '...' : event.address)
-                            : (event?.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name)
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (
