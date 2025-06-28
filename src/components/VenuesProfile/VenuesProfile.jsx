@@ -468,7 +468,22 @@ const VenuesProfile = () => {
                             rel="noopener noreferrer"
                             className="underline hover:text-[#FF00A2]"
                           >
-                            {venueDetail.venue.location}
+                            {(() => {
+                              const address = venueDetail.venue.location;
+                              const firstCommaIndex = address.indexOf(',');
+                              if (firstCommaIndex !== -1) {
+                                const streetAddress = address.substring(0, firstCommaIndex);
+                                const cityStateZip = address.substring(firstCommaIndex + 1).trim();
+                                return (
+                                  <>
+                                    {streetAddress}
+                                    <br />
+                                    {cityStateZip}
+                                  </>
+                                );
+                              }
+                              return address;
+                            })()}
                           </a>
                           {venueDetail?.venue?.phone && (
                             <>
