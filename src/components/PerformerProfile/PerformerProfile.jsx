@@ -634,9 +634,17 @@ const PerformerProfile = () => {
                             const matchedGenre = genreOptions.find(
                               (option) => option.value === genre
                             );
-                            const displayLabel = matchedGenre
+                            let displayLabel = matchedGenre
                               ? matchedGenre.label
                               : genre;
+
+                            // If no match found in genreOptions, format the genre name
+                            if (!matchedGenre) {
+                              displayLabel = genre
+                                .split(/[\s\-_/]+/) // Split on space, dash, underscore, slash
+                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                                .join(" ");
+                            }
 
                             return (
                               <div key={index} className="flex items-center">
