@@ -150,13 +150,15 @@ const EventDetail = () => {
     <div className="flex justify-center items-center pt-8 md:pt-16 px-4">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 justify-center w-full max-w-[1200px]">
         <div className="p-2 relative w-full lg:w-auto">
-          <img
-            src={
-              getEventsByVenuesById?.event?.image || "/events/event-1.jpg.svg"
-            }
-            alt="event"
-            className="w-[500px] h-[500px] object-cover rounded-lg"
-          />
+          <div className="w-full max-w-[500px] lg:w-[500px] lg:h-[500px] rounded-lg">
+            <img
+              src={
+                getEventsByVenuesById?.event?.image || "/events/event-1.jpg.svg"
+              }
+              alt="event"
+              className="w-full h-full object-contain rounded-lg"
+            />
+          </div>
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
               {String(
