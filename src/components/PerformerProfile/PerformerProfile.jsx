@@ -630,29 +630,12 @@ const PerformerProfile = () => {
                       <div className="h-[3px] bg-[#FF00A2]"></div>
                       <div className="grid grid-cols-2 lg:grid-cols-3 gap-y-1 gap-x-4 text-white/90">
                         {performerDetail?.performer?.genres?.map(
-                          (genre, index) => {
-                            const matchedGenre = genreOptions.find(
-                              (option) => option.value === genre
-                            );
-                            let displayLabel = matchedGenre
-                              ? matchedGenre.label
-                              : genre;
-
-                            // If no match found in genreOptions, format the genre name
-                            if (!matchedGenre) {
-                              displayLabel = genre
-                                .split(/[\s\-_/]+/) // Split on space, dash, underscore, slash
-                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                                .join(" ");
-                            }
-
-                            return (
-                              <div key={index} className="flex items-center">
-                                <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{displayLabel}</span>
-                              </div>
-                            );
-                          }
+                          (genre, index) => (
+                            <div key={index} className="flex items-center">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
+                              <span>{genre}</span>
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -680,20 +663,15 @@ const PerformerProfile = () => {
                             return (
                               <div key={index} className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{matchedVenue?.name || formatVenue(venue)}</span>
+                                <span>{matchedVenue?.name || venue}</span>
                               </div>
                             );
                           } else {
-                            // This is a direct venue name, format it properly
-                            const formattedName = venue
-                              .split('-') // Split by hyphens
-                              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
-                              .join(' '); // Join with spaces instead of hyphens
-                            
+                            // This is a direct venue name, display as is
                             return (
                               <div key={index} className="flex items-center">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full mr-2"></span>
-                                <span>{formattedName}</span>
+                                <span>{venue}</span>
                               </div>
                             );
                           }
