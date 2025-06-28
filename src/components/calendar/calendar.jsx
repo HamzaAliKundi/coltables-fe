@@ -40,7 +40,7 @@ const Calendar = () => {
       const start = event.start instanceof Date ? event.start.toISOString() : event.start;
       const end = event.end instanceof Date ? event.end.toISOString() : event.end;
       
-      // Handle timezone adjustment for start date
+      // Handle timezone adjustment for start date - same logic as PerformerProfile/VenuesProfile
       const startDate = new Date(start);
       let adjustedStart = start;
       if (
@@ -56,8 +56,12 @@ const Calendar = () => {
           adjustedStart = localDate.toISOString();
         }
       }
+      // Always add one day to fix timezone offset - same as PerformerProfile
+      const adjustedStartDate = new Date(adjustedStart);
+      adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
+      adjustedStart = adjustedStartDate.toISOString();
 
-      // Handle timezone adjustment for end date
+      // Handle timezone adjustment for end date - same logic as PerformerProfile/VenuesProfile
       const endDate = new Date(end);
       let adjustedEnd = end;
       if (
@@ -73,6 +77,10 @@ const Calendar = () => {
           adjustedEnd = localDate.toISOString();
         }
       }
+      // Always add one day to fix timezone offset - same as PerformerProfile
+      const adjustedEndDate = new Date(adjustedEnd);
+      adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+      adjustedEnd = adjustedEndDate.toISOString();
 
       return {
         ...event,
@@ -114,6 +122,10 @@ const Calendar = () => {
           const localDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
           eventStart = localDate.toISOString();
         }
+        // Always add one day to fix timezone offset - same as PerformerProfile
+        const adjustedStartDate = new Date(eventStart);
+        adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
+        eventStart = adjustedStartDate.toISOString();
         
         const endDate = new Date(event.end);
         if (
@@ -124,6 +136,10 @@ const Calendar = () => {
           const localDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
           eventEnd = localDate.toISOString();
         }
+        // Always add one day to fix timezone offset - same as PerformerProfile
+        const adjustedEndDate = new Date(eventEnd);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
+        eventEnd = adjustedEndDate.toISOString();
       }
 
       return {
