@@ -167,6 +167,48 @@ const EventListing = ({ isEvent, searchQuery }) => {
     return `${hours}:${minutes} ${ampm}`;
   };
 
+  // New function to get the actual event date by combining startDate and startTime
+  const getActualEventDate = (event) => {
+    // Create a new date from startDate
+    const eventDate = new Date(event.startDate);
+    
+    // Get the time components from startTime
+    const startTime = new Date(event.startTime);
+    const hours = startTime.getUTCHours();
+    const minutes = startTime.getUTCMinutes();
+    const seconds = startTime.getUTCSeconds();
+    
+    // Set the time on the event date
+    eventDate.setUTCHours(hours, minutes, seconds);
+    
+    return eventDate;
+  };
+
+  // New function to format the actual event date
+  const formatActualEventDate = (event) => {
+    const actualDate = getActualEventDate(event);
+    return actualDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // New function to extract actual event time
+  const extractActualEventTime = (event) => {
+    const actualDate = getActualEventDate(event);
+    
+    let hours = actualDate.getHours();
+    let minutes = actualDate.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
   return (
     <div className="bg-gradient-to-b text-white py- px-4 md:px-8 pt-12">
       <div className="max-w-7xl mx-auto flex justify-between items-center mb-6">
@@ -364,10 +406,10 @@ const EventListing = ({ isEvent, searchQuery }) => {
                 />
                 <div className="absolute top-3 left-3 w-[70px] h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
                   <span className="text-2xl font-bold text-[#e3d4de] leading-none">
-                    {formatDate(event.startDate)?.replace(",", "").slice(3, 6)}
+                    {formatActualEventDate(event)?.replace(",", "").slice(3, 6)}
                   </span>
                   <span className="text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
-                    {formatDate(event.startDate)?.slice(0, 3)}
+                    {formatActualEventDate(event)?.slice(0, 3)}
                   </span>
                 </div>
               </div>
@@ -384,7 +426,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
                     className="mr-2 w-4 h-4"
                   />
                   <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                    Starts: {extractTime(event.startTime)}
+                    Starts: {extractActualEventTime(event)}
                   </span>
                 </div>
 

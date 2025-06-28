@@ -172,14 +172,14 @@ const EventListing = ({ isEvent, searchQuery }) => {
     // Create a new date from startDate
     const eventDate = new Date(event.startDate);
     
-    // Get the time components from startTime
+    // Get the time components from startTime (LOCAL time)
     const startTime = new Date(event.startTime);
-    const hours = startTime.getUTCHours();
-    const minutes = startTime.getUTCMinutes();
-    const seconds = startTime.getUTCSeconds();
+    const hours = startTime.getHours();
+    const minutes = startTime.getMinutes();
+    const seconds = startTime.getSeconds();
     
-    // Set the time on the event date
-    eventDate.setUTCHours(hours, minutes, seconds);
+    // Set the time on the event date (LOCAL time)
+    eventDate.setHours(hours, minutes, seconds, 0);
     
     return eventDate;
   };
