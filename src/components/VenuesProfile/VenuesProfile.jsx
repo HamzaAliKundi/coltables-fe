@@ -412,9 +412,10 @@ const VenuesProfile = () => {
                 <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
                   About {venueDetail?.venue?.name}
                 </h2>
-                <p className="text-white/90 text-sm lg:text-base">
-                  {venueDetail?.venue?.description}
-                </p>
+                <p 
+                  className="text-white/90 text-sm lg:text-base"
+                  dangerouslySetInnerHTML={{ __html: venueDetail?.venue?.description?.replace(/\n/g, '<br />') }}
+                />
               </div>
 
               {/* Sections Grid */}
