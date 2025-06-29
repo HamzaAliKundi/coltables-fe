@@ -112,34 +112,10 @@ const Calendar = () => {
       let eventEnd = event.end;
       
       if (currentView === Views.AGENDA) {
-        const startDate = new Date(event.start);
-        // If it's a midnight UTC date, ensure it's treated as local date
-        if (
-          startDate.getUTCHours() === 0 &&
-          startDate.getUTCMinutes() === 0 &&
-          startDate.getUTCSeconds() === 0
-        ) {
-          const localDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-          eventStart = localDate.toISOString();
-        }
-        // Always add one day to fix timezone offset - same as PerformerProfile
-        const adjustedStartDate = new Date(eventStart);
-        adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
-        eventStart = adjustedStartDate.toISOString();
-        
-        const endDate = new Date(event.end);
-        if (
-          endDate.getUTCHours() === 0 &&
-          endDate.getUTCMinutes() === 0 &&
-          endDate.getUTCSeconds() === 0
-        ) {
-          const localDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-          eventEnd = localDate.toISOString();
-        }
-        // Always add one day to fix timezone offset - same as PerformerProfile
-        const adjustedEndDate = new Date(eventEnd);
-        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-        eventEnd = adjustedEndDate.toISOString();
+        // Use the same logic as month view - no additional adjustments needed
+        // The events are already properly adjusted in safeMonthEvents
+        eventStart = event.start;
+        eventEnd = event.end;
       }
 
       return {
