@@ -40,14 +40,17 @@ const Calendar = () => {
       const start = event.start instanceof Date ? event.start.toISOString() : event.start;
       const end = event.end instanceof Date ? event.end.toISOString() : event.end;
       
-      // Handle timezone adjustment for start date - same logic as PerformerProfile/VenuesProfile
+      // Use the same timezone logic as EventListing.jsx and PerformerProfile.jsx
       const startDate = new Date(start);
       let adjustedStart = start;
+      
+      // If the UTC time is midnight, and the local time is the previous day, adjust
       if (
         startDate.getUTCHours() === 0 &&
         startDate.getUTCMinutes() === 0 &&
         startDate.getUTCSeconds() === 0
       ) {
+        // If the local date is before the UTC date, add a day
         const localDate = new Date(startDate);
         const localDay = localDate.getDate();
         const utcDay = startDate.getUTCDate();
@@ -56,12 +59,8 @@ const Calendar = () => {
           adjustedStart = localDate.toISOString();
         }
       }
-      // Always add one day to fix timezone offset - same as PerformerProfile
-      const adjustedStartDate = new Date(adjustedStart);
-      adjustedStartDate.setDate(adjustedStartDate.getDate() + 1);
-      adjustedStart = adjustedStartDate.toISOString();
 
-      // Handle timezone adjustment for end date - same logic as PerformerProfile/VenuesProfile
+      // Handle timezone adjustment for end date - same logic
       const endDate = new Date(end);
       let adjustedEnd = end;
       if (
@@ -77,10 +76,6 @@ const Calendar = () => {
           adjustedEnd = localDate.toISOString();
         }
       }
-      // Always add one day to fix timezone offset - same as PerformerProfile
-      const adjustedEndDate = new Date(adjustedEnd);
-      adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
-      adjustedEnd = adjustedEndDate.toISOString();
 
       return {
         ...event,
