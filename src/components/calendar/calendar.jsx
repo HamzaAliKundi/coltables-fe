@@ -31,56 +31,43 @@ const Calendar = () => {
     }
   });
 
+  // Helper to add +1 day to a date string (ISO format)
+  function addOneDay(dateString) {
+    const date = new Date(dateString);
+    date.setUTCDate(date.getUTCDate() + 1);
+    return date;
+  }
+
   // Ensure all events have string dates, never Date objects
   const safeMonthEvents = useMemo(() => {
     if (!monthEvents) return [];
     
     return monthEvents.map(event => {
-      // Convert any Date objects to ISO strings
-      const start = event.start instanceof Date ? event.start.toISOString() : event.start;
-      const end = event.end instanceof Date ? event.end.toISOString() : event.end;
+      // Use startDate for the date part and startTime for the time part
+      const startDate = event.startDate || event.start;
+      const startTime = event.startTime || event.start;
       
-      // Use the same timezone logic as EventListing.jsx and PerformerProfile.jsx
-      const startDate = new Date(start);
-      let adjustedStart = start;
+      // Create a combined date-time by taking date from startDate and time from startTime
+      const dateFromStartDate = new Date(startDate);
+      const timeFromStartTime = new Date(startTime);
       
-      // If the UTC time is midnight, and the local time is the previous day, adjust
-      if (
-        startDate.getUTCHours() === 0 &&
-        startDate.getUTCMinutes() === 0 &&
-        startDate.getUTCSeconds() === 0
-      ) {
-        // If the local date is before the UTC date, add a day
-        const localDate = new Date(startDate);
-        const localDay = localDate.getDate();
-        const utcDay = startDate.getUTCDate();
-        if (localDay < utcDay) {
-          localDate.setDate(localDate.getDate() + 1);
-          adjustedStart = localDate.toISOString();
-        }
-      }
-
-      // Handle timezone adjustment for end date - same logic
-      const endDate = new Date(end);
-      let adjustedEnd = end;
-      if (
-        endDate.getUTCHours() === 0 &&
-        endDate.getUTCMinutes() === 0 &&
-        endDate.getUTCSeconds() === 0
-      ) {
-        const localDate = new Date(endDate);
-        const localDay = localDate.getDate();
-        const utcDay = endDate.getUTCDate();  
-        if (localDay < utcDay) {
-          localDate.setDate(localDate.getDate() + 1);
-          adjustedEnd = localDate.toISOString();
-        }
-      }
+      // Set the time from startTime onto the date from startDate
+      const combinedDateTime = new Date(dateFromStartDate);
+      combinedDateTime.setUTCHours(
+        timeFromStartTime.getUTCHours(),
+        timeFromStartTime.getUTCMinutes(),
+        timeFromStartTime.getUTCSeconds()
+      );
+      
+      // Add +1 day to fix the timezone issue
+      combinedDateTime.setUTCDate(combinedDateTime.getUTCDate() + 1);
 
       return {
         ...event,
-        start: adjustedStart,
-        end: adjustedEnd
+        start: combinedDateTime.toISOString(),
+        end: combinedDateTime.toISOString(), // Use same time for end since we don't care about end time
+        originalStartDate: startDate,
+        originalStartTime: startTime
       };
     });
   }, [monthEvents]);
@@ -91,7 +78,8 @@ const Calendar = () => {
 
     // Convert date strings to Date objects for Big Calendar
     const eventsWithDates = safeMonthEvents.map(event => {
-      const eventTime = moment(event.start).format('h:mm A');
+      // Use startTime for the time display
+      const eventTime = moment(event.originalStartTime || event.start).format('h:mm A');
       const title = event.title
       
       // For month view, add time in a unique way
@@ -113,10 +101,14 @@ const Calendar = () => {
         eventEnd = event.end;
       }
 
+      // Use displayDate for the start date to apply the +1 day increment
+      const finalStart = event.displayDate ? new Date(event.displayDate) : new Date(eventStart);
+      const finalEnd = new Date(eventEnd);
+
       return {
         ...event,
-        start: new Date(eventStart),
-        end: new Date(eventEnd),
+        start: finalStart,
+        end: finalEnd,
         title: displayTitle,
         tooltipContent: `${title}\n${eventTime}` // Full info in tooltip
       }
@@ -338,7 +330,8 @@ const Calendar = () => {
             agendaHeaderFormat: ({ start, end }) =>
               `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
             agendaDateFormat: (date, culture, localizer) => {
-              return moment.utc(date).format('ddd D MMM');
+              // Use the same date logic as Month view - show the adjusted date
+              return moment(date).format('ddd D MMM');
             },
             agendaTimeFormat: 'h:mm A',
             agendaTimeRangeFormat: ({ start, end }) =>
