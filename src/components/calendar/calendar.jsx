@@ -337,7 +337,9 @@ const Calendar = () => {
               `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
             agendaHeaderFormat: ({ start, end }) =>
               `${moment(start).format('MMMM D')} - ${moment(end).format('MMMM D, YYYY')}`,
-            agendaDateFormat: 'ddd D MMM',
+            agendaDateFormat: (date, culture, localizer) => {
+              return moment.utc(date).format('ddd D MMM');
+            },
             agendaTimeFormat: 'h:mm A',
             agendaTimeRangeFormat: ({ start, end }) =>
               `${moment(start).format('h:mm A')} - ${moment(end).format('h:mm A')}`,
