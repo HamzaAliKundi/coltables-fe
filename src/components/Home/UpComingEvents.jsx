@@ -21,6 +21,30 @@ function formatEventTime(dateString) {
   });
 }
 
+// Group and sort events by UTC date and startTime (for display order only)
+function groupAndSortEvents(events) {
+  // Group by UTC date string (YYYY-MM-DD)
+  const groups = {};
+  events.forEach(event => {
+    const date = new Date(event.startDate);
+    const dateKey = date.getUTCFullYear() + '-' +
+      String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getUTCDate()).padStart(2, '0');
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(event);
+  });
+
+  // Sort each group by startTime
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+  });
+
+  // Flatten back to a single array, preserving date order
+  return Object.keys(groups)
+    .sort() // sort by dateKey
+    .flatMap(dateKey => groups[dateKey]);
+}
+
 const UpComingEvents = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const containerRef = useRef(null);
@@ -56,7 +80,8 @@ const UpComingEvents = () => {
     return () => clearTimeout(timeoutId);
   }, [upcomingEventsData]);
 
-  const events = upcomingEventsData?.docs?.map((event) => {
+  // Use grouped and sorted events for display
+  const events = groupAndSortEvents(upcomingEventsData?.docs || []).map((event) => {
     const localDate = getLocalDateParts(event);
     
     // Determine host display based on userType
