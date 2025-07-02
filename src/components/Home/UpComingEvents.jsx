@@ -2,10 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGetUpcomingEventsQuery } from "../../apis/events";
 
-// Helper to get local date parts safely (add +1 day in UTC for badge)
+// Helper to get local date parts safely (show true UTC date for badge)
 function getLocalDateParts(event) {
   const date = new Date(event.startDate); // UTC from MongoDB
-  date.setUTCDate(date.getUTCDate() + 1); // Add +1 day in UTC
   return {
     day: date.getUTCDate(),
     month: date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
