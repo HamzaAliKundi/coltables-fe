@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGetUpcomingEventsQuery } from "../../apis/events";
 
-// Helper to get local date parts safely (handles midnight UTC issue)
+// Helper to get local date parts safely (handles timezone issues)
 function getLocalDateParts(event) {
-  // Create a new date from startDate
+  // Use startDate for the date part
   const eventDate = new Date(event.startDate);
   
   // Get the time components from startTime
@@ -16,19 +16,31 @@ function getLocalDateParts(event) {
   // Set the time on the event date
   eventDate.setUTCHours(hours, minutes, seconds);
   
-  // Add +1 day to fix the timezone issue (same as calendar fix)
-  eventDate.setUTCDate(eventDate.getUTCDate() + 1);
+  // Force UTC timezone to avoid conversion issues
+  const utcDate = new Date(Date.UTC(
+    eventDate.getUTCFullYear(),
+    eventDate.getUTCMonth(),
+    eventDate.getUTCDate(),
+    hours,
+    minutes,
+    seconds
+  ));
   
   return {
-    day: eventDate.getDate(),
-    month: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
+    day: utcDate.getUTCDate(),
+    month: utcDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
   };
 }
 
 // Helper to format time properly
 function formatEventTime(dateString) {
   const date = new Date(dateString);
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  // Use UTC time to avoid timezone conversion issues
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    timeZone: 'UTC'
+  });
 }
 
 const UpComingEvents = () => {
