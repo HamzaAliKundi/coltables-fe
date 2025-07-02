@@ -4,17 +4,8 @@ import { useGetUpcomingEventsQuery } from "../../apis/events";
 
 // Helper to get local date parts safely (handles timezone issues)
 function getLocalDateParts(event) {
-  // Use startDate for the date part
+  // Use ONLY startDate for the date part
   const eventDate = new Date(event.startDate);
-  
-  // Get the time components from startTime
-  const startTime = new Date(event.startTime);
-  const hours = startTime.getUTCHours();
-  const minutes = startTime.getUTCMinutes();
-  const seconds = startTime.getUTCSeconds();
-  
-  // Set the time on the event date
-  eventDate.setUTCHours(hours, minutes, seconds);
   
   // Use local timezone for display (as it was entered)
   return {
@@ -23,7 +14,7 @@ function getLocalDateParts(event) {
   };
 }
 
-// Helper to format time properly - show times as entered
+// Helper to format time properly - use ONLY startTime for time
 function formatEventTime(dateString) {
   const date = new Date(dateString);
   // Show time in local timezone (as it was entered)
