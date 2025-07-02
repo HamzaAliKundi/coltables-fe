@@ -16,23 +16,9 @@ function getLocalDateParts(event) {
   // Set the time on the event date
   eventDate.setUTCHours(hours, minutes, seconds);
   
-  // If the UTC time is midnight, and the local time is the previous day, adjust
-  if (
-    eventDate.getUTCHours() === 0 &&
-    eventDate.getUTCMinutes() === 0 &&
-    eventDate.getUTCSeconds() === 0
-  ) {
-    const localDate = new Date(eventDate);
-    const localDay = localDate.getDate();
-    const utcDay = eventDate.getUTCDate();
-    if (localDay < utcDay) {
-      localDate.setDate(localDate.getDate() + 1);
-      return {
-        day: localDate.getDate(),
-        month: localDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
-      };
-    }
-  }
+  // Add +1 day to fix the timezone issue (same as calendar fix)
+  eventDate.setUTCDate(eventDate.getUTCDate() + 1);
+  
   return {
     day: eventDate.getDate(),
     month: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
