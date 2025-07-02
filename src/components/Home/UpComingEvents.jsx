@@ -2,15 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGetUpcomingEventsQuery } from "../../apis/events";
 
-// Helper to get local date parts safely (handles timezone issues)
+// Helper to get local date parts safely (add +1 day in UTC for badge)
 function getLocalDateParts(event) {
-  // Use ONLY startDate for the date part
-  const eventDate = new Date(event.startDate);
-  
-  // Use local timezone for display (as it was entered)
+  const date = new Date(event.startDate); // UTC from MongoDB
+  date.setUTCDate(date.getUTCDate() + 1); // Add +1 day in UTC
   return {
-    day: eventDate.getDate(),
-    month: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
+    day: date.getUTCDate(),
+    month: date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
   };
 }
 
