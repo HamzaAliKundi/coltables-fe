@@ -16,30 +16,20 @@ function getLocalDateParts(event) {
   // Set the time on the event date
   eventDate.setUTCHours(hours, minutes, seconds);
   
-  // Force UTC timezone to avoid conversion issues
-  const utcDate = new Date(Date.UTC(
-    eventDate.getUTCFullYear(),
-    eventDate.getUTCMonth(),
-    eventDate.getUTCDate(),
-    hours,
-    minutes,
-    seconds
-  ));
-  
+  // Use local timezone for display (as it was entered)
   return {
-    day: utcDate.getUTCDate(),
-    month: utcDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
+    day: eventDate.getDate(),
+    month: eventDate.toLocaleString('default', { month: 'short' }).toUpperCase(),
   };
 }
 
-// Helper to format time properly
+// Helper to format time properly - show times as entered
 function formatEventTime(dateString) {
   const date = new Date(dateString);
-  // Use UTC time to avoid timezone conversion issues
+  // Show time in local timezone (as it was entered)
   return date.toLocaleTimeString('en-US', { 
     hour: '2-digit', 
-    minute: '2-digit',
-    timeZone: 'UTC'
+    minute: '2-digit'
   });
 }
 
