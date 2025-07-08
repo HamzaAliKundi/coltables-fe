@@ -55,9 +55,9 @@ const WhoWeAre = () => {
     venues:
       "Designed to assist venues in managing their profiles, providing an easy way to showcase the unique atmosphere and experiences they offer. With an intuitive platform, venues can quickly update their information, events, and special promotions, ensuring they attract the right audience. DragSpace also provides analytics to help venues understand their performance and optimize their offerings.",
     performers:
-      "DragSpace makes it effortless for performers to showcase their unique talents to fans and offering them a user-friendly platform to easily connect with venues and unlock incredible opportunities. Performers can create detailed profiles, share their performance videos, and get discovered by venues looking for specific talents. The platform also handles bookings and payments, making the business side of drag more manageable.",
+      "DragSpace makes it effortless for performers to showcase their unique talents to fans and offers a user-friendly platform to easily connect with venues and unlock incredible opportunities. Performers can create detailed profiles, share their performance videos, and get discovered by venues looking for specific talents. By allowing performers to display their calendar and availability, the platform helps support the booking side of their talent.",
     support:
-      "Committed to providing comprehensive online and phone support to ensure you make the most of your experience on the platform. Whether you need help navigating the platform, troubleshooting technical issues, or optimizing your profile, our dedicated support team is available 24/7 to assist you. We also offer regular workshops and tutorials to help users maximize the platform's potential.",
+      "Committed to providing comprehensive online and phone support to ensure you make the most of your experience on the platform. Whether you need help navigating the platform, troubleshooting technical issues, or optimizing your profile, our dedicated support team is available to assist you. We also offer regular workshops and tutorials to help users maximize the platform's potential.",
   };
 
   const previewTexts = {
@@ -65,7 +65,7 @@ const WhoWeAre = () => {
     venues:
       "Designed to assist venues in managing their profiles, providing an easy way to showcase the unique atmosphere and experiences they offer. With an intuitive platform, venues can quickly update their information...",
     performers:
-      "DragSpace makes it effortless for performers to showcase their unique talents to fans and offering them a user-friendly platform to easily connect with venues and unlock incredible opportunities...",
+      "DragSpace makes it effortless for performers to showcase their unique talents to fans and offers a user-friendly platform to easily connect with venues and unlock incredible opportunities...",
     support:
       "Committed to providing comprehensive online and phone support to ensure you make the most of your experience on the platform. Whether you need help navigating the platform...",
   };
