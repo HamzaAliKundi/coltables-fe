@@ -244,7 +244,7 @@ export default function Navbar({ onSearch }) {
               onMouseLeave={handleLoginMouseLeave}
             >
               <a
-                href="https://coltable-deshabord-performer.vercel.app/"
+                href="https://performer.dragspace.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
@@ -256,7 +256,7 @@ export default function Navbar({ onSearch }) {
                 </div>
               </a>
               <a
-                href="https://coltable-deshboard-venues-blue.vercel.app/"
+                href="https://venue.dragspace.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
@@ -316,37 +316,7 @@ export default function Navbar({ onSearch }) {
               <FaCalendarAlt /> Events
             </Link>
 
-            {/* Mobile Registration Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowRegisterDropdown(!showRegisterDropdown)}
-                className="flex items-center gap-2 py-2 w-full text-left"
-              >
-                Registration
-              </button>
-              {showRegisterDropdown && (
-                <div className="pl-4 space-y-2">
-                  <a
-                    href="https://coltable-deshabord-performer.vercel.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
-                    onClick={handleLinkClick}
-                  >
-                    Register as Performer
-                  </a>
-                  <a
-                    href="https://coltable-deshboard-venues-blue.vercel.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
-                    onClick={handleLinkClick}
-                  >
-                    Register as Venue
-                  </a>
-                </div>
-              )}
-            </div>
+
 
             {/* Mobile Login Dropdown */}
             <div className="relative">
@@ -364,7 +334,7 @@ export default function Navbar({ onSearch }) {
               {showLoginDropdown && (
                 <div className="pl-4 space-y-2">
                   <a
-                    href="https://coltable-deshabord-performer.vercel.app/"
+                    href="https://performer.dragspace.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
@@ -374,7 +344,7 @@ export default function Navbar({ onSearch }) {
                     <span>Login as Performer</span>
                   </a>
                   <a
-                    href="https://coltable-deshboard-venues-blue.vercel.app/"
+                    href="https://venue.dragspace.com/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 py-2 text-sm text-white hover:text-[#FF00A2] transition-colors"
