@@ -51,7 +51,16 @@ const VenuesProfile = () => {
     const month = date.getMonth();
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // Create array of empty cells for days before the first day of the month
+    const emptyCells = Array(firstDay).fill(null);
+    
+    // Create array of current month's days
+    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Combine empty cells and current month days
+    return [...emptyCells, ...currentMonthDays];
   };
 
   const handlePrevMonth = () => {
@@ -677,31 +686,40 @@ const VenuesProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
+                  if (day === null) {
+                    return <div key={index} className="h-8 lg:h-12 bg-[#1A1A1A] rounded-lg"></div>;
+                  }
+                  
                   const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                  const isToday = date.toDateString() === new Date().toDateString();
+                  const today = new Date();
+                  const isToday = date.toDateString() === today.toDateString();
                   const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
-                  const isInCurrentWeek = isMonthView
-                    ? false
-                    : date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                      date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
+                  let isInCurrentWeek = false;
+                  if (!isMonthView) {
+                    const weekStart = new Date(selectedWeekStart);
+                    weekStart.setHours(0,0,0,0);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInCurrentWeek = date >= weekStart && date <= weekEnd;
+                  }
 
                   return (
                     <div
                       key={index}
                       onClick={() => handleDayClick(day)}
                       className={`relative h-8 lg:h-12 flex items-center justify-center cursor-pointer
-                ${
-                  isToday
-                    ? "bg-[#FF00A2] text-white"
-                    : isSelected
-                    ? "bg-[#FF00A2] text-white"
-                    : isInCurrentWeek
-                    ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
-                    : "bg-[#2A2A2A] text-white/60"
-                }
-                rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                transition-colors duration-200
-                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
+                        ${
+                          isToday
+                            ? "bg-[#FF00A2] text-white"
+                            : isSelected
+                            ? "bg-[#FF00A2] text-white"
+                            : isInCurrentWeek
+                            ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
+                            : "bg-[#2A2A2A] text-white/60"
+                        }
+                        rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                        transition-colors duration-200
+                        ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
                       {renderEventDots(day, !isMonthView && isInCurrentWeek)}
