@@ -51,7 +51,16 @@ const VenuesProfile = () => {
     const month = date.getMonth();
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // Create array of empty cells for days before the first day of the month
+    const emptyCells = Array(firstDay).fill(null);
+    
+    // Create array of current month's days
+    const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+    
+    // Combine empty cells and current month days
+    return [...emptyCells, ...currentMonthDays];
   };
 
   const handlePrevMonth = () => {
@@ -320,7 +329,7 @@ const VenuesProfile = () => {
             </div>
           ) : (
             <>
-              <h1 className="font-tangerine text-[64px] font-bold mb-4 lg:mb-8 text-center">
+              <h1 className="font-['Bebas_Neue'] text-[64px] font-bold mb-4 lg:mb-8 text-center">
                 {venueDetail?.venue?.name}
               </h1>
 
@@ -412,9 +421,10 @@ const VenuesProfile = () => {
                 <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-[20px] font-space-grotesk font-bold leading-none capitalize text-center">
                   About {venueDetail?.venue?.name}
                 </h2>
-                <p className="text-white/90 text-sm lg:text-base">
-                  {venueDetail?.venue?.description}
-                </p>
+                <p 
+                  className="text-white/90 text-sm lg:text-base"
+                  dangerouslySetInnerHTML={{ __html: venueDetail?.venue?.description?.replace(/\n/g, '<br />') }}
+                />
               </div>
 
               {/* Sections Grid */}
@@ -467,7 +477,22 @@ const VenuesProfile = () => {
                             rel="noopener noreferrer"
                             className="underline hover:text-[#FF00A2]"
                           >
-                            {venueDetail.venue.location}
+                            {(() => {
+                              const address = venueDetail.venue.location;
+                              const firstCommaIndex = address.indexOf(',');
+                              if (firstCommaIndex !== -1) {
+                                const streetAddress = address.substring(0, firstCommaIndex);
+                                const cityStateZip = address.substring(firstCommaIndex + 1).trim();
+                                return (
+                                  <>
+                                    {streetAddress}
+                                    <br />
+                                    {cityStateZip}
+                                  </>
+                                );
+                              }
+                              return address;
+                            })()}
                           </a>
                           {venueDetail?.venue?.phone && (
                             <>
@@ -661,31 +686,40 @@ const VenuesProfile = () => {
 
                 {/* Calendar Days */}
                 {getDaysInMonth(currentDate).map((day, index) => {
+                  if (day === null) {
+                    return <div key={index} className="h-8 lg:h-12 bg-[#1A1A1A] rounded-lg"></div>;
+                  }
+                  
                   const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                  const isToday = date.toDateString() === new Date().toDateString();
+                  const today = new Date();
+                  const isToday = date.toDateString() === today.toDateString();
                   const isSelected = selectedDay && date.toDateString() === selectedDay.toDateString();
-                  const isInCurrentWeek = isMonthView
-                    ? false
-                    : date >= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay()) &&
-                      date <= new Date(selectedWeekStart.getFullYear(), selectedWeekStart.getMonth(), selectedWeekStart.getDate() - selectedWeekStart.getDay() + 6);
+                  let isInCurrentWeek = false;
+                  if (!isMonthView) {
+                    const weekStart = new Date(selectedWeekStart);
+                    weekStart.setHours(0,0,0,0);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    isInCurrentWeek = date >= weekStart && date <= weekEnd;
+                  }
 
                   return (
                     <div
                       key={index}
                       onClick={() => handleDayClick(day)}
                       className={`relative h-8 lg:h-12 flex items-center justify-center cursor-pointer
-                ${
-                  isToday
-                    ? "bg-[#FF00A2] text-white"
-                    : isSelected
-                    ? "bg-[#FF00A2] text-white"
-                    : isInCurrentWeek
-                    ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
-                    : "bg-[#2A2A2A] text-white/60"
-                }
-                rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
-                transition-colors duration-200
-                ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
+                        ${
+                          isToday
+                            ? "bg-[#FF00A2] text-white"
+                            : isSelected
+                            ? "bg-[#FF00A2] text-white"
+                            : isInCurrentWeek
+                            ? "bg-[#1E1E1E] text-white/90 border border-[#FF00A2]/30"
+                            : "bg-[#2A2A2A] text-white/60"
+                        }
+                        rounded-lg text-[16px] lg:text-[18px] font-space-grotesk
+                        transition-colors duration-200
+                        ${isInCurrentWeek ? "hover:bg-[#2A1E2A]" : "hover:bg-[#3A3A3A]"}`}
                     >
                       {day}
                       {renderEventDots(day, !isMonthView && isInCurrentWeek)}
@@ -720,36 +754,57 @@ const VenuesProfile = () => {
             {getEventsForDisplay().length > 0 ? (
               <div className="max-h-[300px] overflow-y-auto pr-2">
                 <div className="space-y-2">
-                  {getEventsForDisplay().map((event, i) => (
-                    <div
-                      key={event._id}
-                      onClick={() => navigate(`/event-detail/${event._id}`)}
-                      className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
-                        i === 0
-                          ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
-                          : isDayView
-                          ? "bg-[#721345] hover:bg-[#822455]"
-                          : "bg-[#FF00A2] hover:bg-[#721345]"
-                      }`}
-                    >
-                      <div>
-                        <h4 className="text-white font-medium">
-                          {event.title && event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
-                        </h4>
-                        <p className="text-white/80 text-sm">
-                          {formatEventDate(event.startDate)}
-                        </p>
+                  {getEventsForDisplay().map((event, i) => {
+                    // Use the same timezone handling as the dots
+                    const eventDate = new Date(event.startDate);
+                    let adjustedDate = eventDate;
+                    
+                    // Apply the same timezone fix that works for dots
+                    if (
+                      eventDate.getUTCHours() === 0 &&
+                      eventDate.getUTCMinutes() === 0 &&
+                      eventDate.getUTCSeconds() === 0
+                    ) {
+                      const localDate = new Date(eventDate);
+                      const localDay = localDate.getDate();
+                      const utcDay = eventDate.getUTCDate();
+                      if (localDay < utcDay) {
+                        localDate.setDate(localDate.getDate() + 1);
+                        adjustedDate = localDate;
+                      }
+                    }
+                    
+                    return (
+                      <div
+                        key={event._id}
+                        onClick={() => navigate(`/event-detail/${event._id}`)}
+                        className={`p-3 rounded-lg flex items-center justify-between cursor-pointer transition-all hover:scale-[1.01] ${
+                          i === 0
+                            ? "bg-gradient-to-r from-[#FF00A2] to-[#FF2AB2] shadow-[0_0_10px_rgba(255,0,162,0.5)]"
+                            : isDayView
+                            ? "bg-[#721345] hover:bg-[#822455]"
+                            : "bg-[#FF00A2] hover:bg-[#721345]"
+                        }`}
+                      >
+                        <div>
+                          <h4 className="text-white font-medium">
+                            {event.title && event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
+                          </h4>
+                          <p className="text-white/80 text-sm">
+                            {adjustedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-white text-sm font-medium block">
+                            {formatEventTime(event.startTime)}
+                          </span>
+                          <span className="text-white/70 text-xs block">
+                            {event.host && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user.name}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-white text-sm font-medium block">
-                          {formatEventTime(event.startTime)}
-                        </span>
-                        <span className="text-white/70 text-xs block">
-                          {event.host && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user.name}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (

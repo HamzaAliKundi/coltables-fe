@@ -230,11 +230,13 @@ const PerformerProfile = () => {
 
   const getEventsForDisplay = () => {
     if (!calendarEvents?.eventDates) return [];
+    let events = [];
+    
     if (selectedDay) {
       const localDateKey = new Date(selectedDay).toLocaleDateString();
-      return groupedEventsByLocalDate[localDateKey] || [];
+      events = groupedEventsByLocalDate[localDateKey] || [];
     } else if (isMonthView) {
-      return Object.values(groupedEventsByLocalDate).flat();
+      events = Object.values(groupedEventsByLocalDate).flat();
     } else {
       const weekStart = new Date(selectedWeekStart);
       weekStart.setHours(0,0,0,0);
@@ -245,8 +247,29 @@ const PerformerProfile = () => {
         const localDateKey = weekDay.toLocaleDateString();
         weekDays.push(localDateKey);
       }
-      return weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
+      events = weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
     }
+    
+    // Group events by date and sort each group by time
+    const groups = {};
+    events.forEach(event => {
+      const date = new Date(event.startDate);
+      const dateKey = date.getUTCFullYear() + '-' +
+        String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getUTCDate()).padStart(2, '0');
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(event);
+    });
+
+    // Sort each group by startTime
+    Object.values(groups).forEach(group => {
+      group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    });
+
+    // Flatten back to a single array, preserving date order
+    return Object.keys(groups)
+      .sort() // sort by dateKey
+      .flatMap(dateKey => groups[dateKey]);
   };
 
   const handleViewChange = (isMonth) => {
