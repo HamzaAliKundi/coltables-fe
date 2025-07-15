@@ -217,6 +217,7 @@ const VenuesProfile = () => {
 
   const getEventsForDisplay = () => {
     if (!calendarEvents?.eventDates) return [];
+    let events = [];
 
     if (selectedDay) {
       // When a day is selected, show only that day's events
@@ -224,14 +225,14 @@ const VenuesProfile = () => {
         selectedDay.getMonth() + 1
       ).padStart(2, "0")}`;
       const dayStr = String(selectedDay.getDate()).padStart(2, "0");
-      return calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
+      events = calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
     } else if (isMonthView) {
       // In month view, show all events for the current month
       const monthKey = `${currentDate.getFullYear()}-${String(
         currentDate.getMonth() + 1
       ).padStart(2, "0")}`;
       const monthEvents = calendarEvents.eventDates[monthKey] || {};
-      return Object.values(monthEvents).flatMap(
+      events = Object.values(monthEvents).flatMap(
         (day) => day.eventDetails || []
       );
     } else {
@@ -255,8 +256,29 @@ const VenuesProfile = () => {
         }
       });
 
-      return weekEvents;
+      events = weekEvents;
     }
+    
+    // Group events by date and sort each group by time
+    const groups = {};
+    events.forEach(event => {
+      const date = new Date(event.startDate);
+      const dateKey = date.getUTCFullYear() + '-' +
+        String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getUTCDate()).padStart(2, '0');
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(event);
+    });
+
+    // Sort each group by startTime
+    Object.values(groups).forEach(group => {
+      group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    });
+
+    // Flatten back to a single array, preserving date order
+    return Object.keys(groups)
+      .sort() // sort by dateKey
+      .flatMap(dateKey => groups[dateKey]);
   };
 
   const handleViewChange = (isMonth) => {
