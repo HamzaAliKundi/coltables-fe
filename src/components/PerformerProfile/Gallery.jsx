@@ -3,8 +3,40 @@ import { useState } from "react";
 const Gallery = ({ images = [], videos = [] }) => {
   const filteredImages = images ? images.filter(img => img !== null) : [];
 
+  // ✅ FIXED: Enhanced video detection function that supports multiple formats
+  const isVideo = (url) => {
+    if (!url || typeof url !== "string") return false;
+    
+    // Check if URL contains /video/upload/ (Cloudinary video URLs)
+    if (url.includes('/video/upload/')) return true;
+    
+    // Also check for video file extensions
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv', '.wmv', '.flv', '.m4v', '.3gp', '.ogg'];
+    const urlLower = url.toLowerCase();
+    return videoExtensions.some(ext => urlLower.includes(ext));
+  };
+
+  // ✅ FIXED: Helper function to get correct MIME type for videos
+  const getVideoMimeType = (url) => {
+    if (!url || typeof url !== "string") return 'video/mp4';
+    const urlLower = url.toLowerCase();
+    
+    if (urlLower.includes('.mov')) return 'video/quicktime';
+    if (urlLower.includes('.avi')) return 'video/x-msvideo';
+    if (urlLower.includes('.webm')) return 'video/webm';
+    if (urlLower.includes('.mkv')) return 'video/x-matroska';
+    if (urlLower.includes('.wmv')) return 'video/x-ms-wmv';
+    if (urlLower.includes('.flv')) return 'video/x-flv';
+    if (urlLower.includes('.m4v')) return 'video/x-m4v';
+    if (urlLower.includes('.3gp')) return 'video/3gpp';
+    if (urlLower.includes('.ogg')) return 'video/ogg';
+    
+    return 'video/mp4'; // default
+  };
+
   const media = filteredImages.map((item) => {
-    if (typeof item === "string" && item.toLowerCase().endsWith(".mp4")) {
+    // ✅ FIXED: Use new isVideo function instead of just checking .mp4
+    if (typeof item === "string" && isVideo(item)) {
       return { url: item, type: "video" };
     }
     return { url: item, type: "image" };
@@ -103,6 +135,7 @@ const Gallery = ({ images = [], videos = [] }) => {
                 media={media}
                 index={index}
                 openModal={openModal}
+                getVideoMimeType={getVideoMimeType}
               />
             ))}
           </div>
@@ -122,7 +155,7 @@ const Gallery = ({ images = [], videos = [] }) => {
                     autoPlay
                     playsInline
                   >
-                    <source src={media.url} type="video/mp4" />
+                    <source src={media.url} type={getVideoMimeType(media.url)} />
                   </video>
                 ) : (
                   <img
@@ -144,6 +177,7 @@ const Gallery = ({ images = [], videos = [] }) => {
                 media={media}
                 index={index + left.length + center.length}
                 openModal={openModal}
+                getVideoMimeType={getVideoMimeType}
               />
             ))}
           </div>
@@ -154,7 +188,7 @@ const Gallery = ({ images = [], videos = [] }) => {
 
       {/* Preview Modal */}
       {isModalOpen && (
-        <ModalPreview media={selectedMedia} closeModal={closeModal} />
+        <ModalPreview media={selectedMedia} closeModal={closeModal} getVideoMimeType={getVideoMimeType} />
       )}
 
       {/* Custom Scrollbar Styles */}
@@ -163,8 +197,8 @@ const Gallery = ({ images = [], videos = [] }) => {
   );
 };
 
-// MediaTile component to handle both images and videos
-const MediaTile = ({ media, index, openModal }) => (
+// ✅ FIXED: MediaTile component with proper video MIME type
+const MediaTile = ({ media, index, openModal, getVideoMimeType }) => (
   <div className="aspect-square rounded-2xl overflow-hidden relative group">
     {media.type === "video" ? (
       <video
@@ -174,7 +208,7 @@ const MediaTile = ({ media, index, openModal }) => (
         autoPlay
         playsInline
       >
-        <source src={media.url} type="video/mp4" />
+        <source src={media.url} type={getVideoMimeType(media.url)} />
       </video>
     ) : (
       <img
@@ -209,7 +243,8 @@ const PreviewButton = ({ openModal }) => (
   </button>
 );
 
-const ModalPreview = ({ media, closeModal }) => (
+// ✅ FIXED: ModalPreview with proper video MIME type
+const ModalPreview = ({ media, closeModal, getVideoMimeType }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4">
     <div className="relative max-w-4xl w-full max-h-[90vh] flex justify-center">
       {media.type === "video" ? (
@@ -219,7 +254,7 @@ const ModalPreview = ({ media, closeModal }) => (
           autoPlay
           playsInline
         >
-          <source src={media.url} type="video/mp4" />
+          <source src={media.url} type={getVideoMimeType(media.url)} />
         </video>
       ) : (
         <img
