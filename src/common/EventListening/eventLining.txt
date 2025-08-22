@@ -4,6 +4,30 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
+// Group and sort events by UTC date and startTime (for display order only)
+function groupAndSortEvents(events) {
+  // Group by UTC date string (YYYY-MM-DD)
+  const groups = {};
+  events.forEach(event => {
+    const date = new Date(event.startDate);
+    const dateKey = date.getUTCFullYear() + '-' +
+      String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getUTCDate()).padStart(2, '0');
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(event);
+  });
+
+  // Sort each group by startTime
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+  });
+
+  // Flatten back to a single array, preserving date order
+  return Object.keys(groups)
+    .sort() // sort by dateKey
+    .flatMap(dateKey => groups[dateKey]);
+}
+
 const EventListing = ({ isEvent, searchQuery }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 12;
@@ -426,7 +450,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : allEventsData?.docs?.length > 0 ? (
-          allEventsData.docs.map((event) => (
+          groupAndSortEvents(allEventsData.docs).map((event) => (
             <div
               key={event._id}
               className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[475px] relative"
