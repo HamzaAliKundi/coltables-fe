@@ -28,6 +28,7 @@ function groupAndSortEvents(events) {
 
 const UpComingEvents = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [visibleTooltip, setVisibleTooltip] = useState(null);
   const containerRef = useRef(null);
 
   const { data: upcomingEventsData, isLoading, error } = useGetUpcomingEventsQuery({
@@ -67,13 +68,10 @@ const UpComingEvents = () => {
     
     // Determine host display based on userType
     let hostDisplay;
-    if (event.userType === "venue") {
-      hostDisplay = `Hosted By ${event.user?.name || 'N/A'}`;
-    } else {
-      // For performers, use the host field (could be string or array)
-      const hostValue = Array.isArray(event.host) ? event.host.join(', ') : event.host;
-      hostDisplay = `Hosted By ${hostValue || 'N/A'}`;
-    }
+    // Handle host field for both venue and performer events (could be string or array)
+    const hostValue = Array.isArray(event.host) ? event.host.join(', ') : event.host;
+    const fullHostDisplay = `Hosted By ${hostValue || 'N/A'}`;
+    hostDisplay = fullHostDisplay;
     
     // Limit to 20 characters
     const truncatedHost = hostDisplay.length > 20 ? hostDisplay.substring(0, 20) + '...' : hostDisplay;
@@ -95,6 +93,7 @@ const UpComingEvents = () => {
       month: localDate.month,
       title: event.title,
       host: truncatedHost,
+      fullHost: fullHostDisplay,
       time: `Start ${formatEventTime(event.startTime)} - ${formatEventTime(event.endTime)}`,
       location: locationDisplay,
       featured: event.type === 'drag-show'
@@ -211,9 +210,23 @@ const UpComingEvents = () => {
                       <h3 className="font-['Space_Grotesk'] font-bold text-base md:text-2xl mb-1 text-white truncate">
                         {event.title.length > 25 ? event.title.substring(0, 25) + '...' : event.title}
                       </h3>
-                      <p className="font-['Space_Grotesk'] text-xs md:text-base mb-1 md:mb-4 text-white">
-                        {event.host.length > 35 ? event.host.substring(0, 35) + '...' : event.host}
-                      </p>
+                      <div className="relative">
+                        <p 
+                          className="font-['Space_Grotesk'] text-xs md:text-base mb-1 md:mb-4 text-white cursor-help"
+                          onMouseEnter={() => setVisibleTooltip(event.id)}
+                          onMouseLeave={() => setVisibleTooltip(null)}
+                        >
+                          {event.host.length > 35 ? event.host.substring(0, 35) + '...' : event.host}
+                        </p>
+                        
+                        {/* Tooltip */}
+                        {visibleTooltip === event.id && (
+                          <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-black/90 text-white text-xs rounded-lg whitespace-nowrap z-50 max-w-xs">
+                            {event.fullHost}
+                            <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/90"></div>
+                          </div>
+                        )}
+                      </div>
 
                       <div className="flex items-center mb-1 md:mb-2">
                         <span className="text-[#FF00A2] mr-1 md:mr-2 text-sm md:text-lg">
