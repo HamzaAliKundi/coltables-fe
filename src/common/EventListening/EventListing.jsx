@@ -224,9 +224,9 @@ const EventListing = ({ isEvent, searchQuery }) => {
     });
   };
 
-  // Function to format the event time in the user's local timezone using startTime
+  // Function to format the event time using sortDateTime (which correctly combines date and time)
   const formatEventLocalTime = (event) => {
-    const date = new Date(event.startTime);
+    const date = new Date(event.sortDateTime);
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
