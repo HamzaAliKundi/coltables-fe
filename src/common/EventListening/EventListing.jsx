@@ -227,9 +227,8 @@ const EventListing = ({ isEvent, searchQuery }) => {
   // Function to format the event time using sortDateTime (which correctly combines date and time)
   const formatEventLocalTime = (event) => {
     const date = new Date(event.sortDateTime);
-    // Use UTC methods to avoid timezone conversion issues
-    let hours = date.getUTCHours();
-    let minutes = date.getUTCMinutes();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours ? hours : 12;
