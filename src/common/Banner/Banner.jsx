@@ -59,7 +59,7 @@ const Banner = () => {
       {/* Text Content */}
       <div className="absolute -left-0 right-0 md:left-[200px] md:right-auto top-[140px] md:top-[280px] z-10 px-4 md:px-0 text-center md:text-left">
         <h2 className="font-['Space_Grotesk'] font-bold text-[18px] md:text-[32px] leading-[100%] capitalize mb-2 md:mb-4 text-white">
-          When And Where????
+          When And Where?
         </h2>
         <h1 className="font-['Space_Grotesk'] font-bold text-[32px] md:text-[68px] leading-[36px] md:leading-[70px] text-[#FF00A2]">
           Find Your Favorite<br />Performers
