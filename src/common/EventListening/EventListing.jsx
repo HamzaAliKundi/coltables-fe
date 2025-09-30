@@ -4,7 +4,7 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-// Group and sort events by UTC date and startTime (for display order only)
+// Group events by date - backend already handles sorting correctly
 function groupAndSortEvents(events) {
   // Group by UTC date string (YYYY-MM-DD)
   const groups = {};
@@ -17,12 +17,10 @@ function groupAndSortEvents(events) {
     groups[dateKey].push(event);
   });
 
-  // Sort each group by startTime
-  Object.values(groups).forEach(group => {
-    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-  });
-
-  // Flatten back to a single array, preserving date order
+  // DON'T sort within groups - backend already sorted by sortDateTime correctly
+  // Just return events in the order they came from backend
+  
+  // Flatten back to a single array, preserving backend sort order
   return Object.keys(groups)
     .sort() // sort by dateKey
     .flatMap(dateKey => groups[dateKey]);
@@ -243,11 +241,24 @@ const EventListing = ({ isEvent, searchQuery }) => {
     });
   };
 
-  // Function to format the event time in the user's local timezone using startTime
+  // Function to format the event time in the user's local timezone using corrected logic
   const formatEventLocalTime = (event) => {
-    const date = new Date(event.startTime);
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
+    // Use the same logic as backend: combine startDate (correct date) with startTime (correct time)
+    const startDate = new Date(event.startDate);
+    const startTime = new Date(event.startTime);
+    
+    // Create combined datetime: date from startDate + time from startTime
+    const combinedDate = new Date(
+      startDate.getUTCFullYear(),
+      startDate.getUTCMonth(), 
+      startDate.getUTCDate(),
+      startTime.getHours(),
+      startTime.getMinutes(),
+      startTime.getSeconds()
+    );
+    
+    let hours = combinedDate.getHours();
+    let minutes = combinedDate.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12;
     hours = hours ? hours : 12;
