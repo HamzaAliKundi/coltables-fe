@@ -6,9 +6,6 @@ import { cityOptions } from "../../utils/citiesList";
 
 // Backend now handles sorting, so we just return events as received
 function groupAndSortEvents(events) {
-<<<<<<< Updated upstream
-  return events;
-=======
   console.log('\n=== FRONTEND SORTING DEBUG ===');
   console.log('Input events:', events.length);
   
@@ -79,7 +76,6 @@ function groupAndSortEvents(events) {
   console.log('=== END FRONTEND SORTING DEBUG ===\n');
   
   return result;
->>>>>>> Stashed changes
 }
 
 const EventListing = ({ isEvent, searchQuery }) => {
