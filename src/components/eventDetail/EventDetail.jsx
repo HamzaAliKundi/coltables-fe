@@ -53,71 +53,40 @@ const EventDetail = () => {
 
   // Helper function to get timezone-safe date
   const getTimezoneSafeDate = (dateString) => {
-    let date = new Date(dateString);
-    if (
-      date.getUTCHours() === 0 &&
-      date.getUTCMinutes() === 0 &&
-      date.getUTCSeconds() === 0
-    ) {
-      const localDate = new Date(date);
-      const localDay = localDate.getDate();
-      const utcDay = date.getUTCDate();
-      if (localDay < utcDay) {
-        localDate.setDate(localDate.getDate() + 1);
-        date = localDate;
-      }
-    }
-    return date;
+    // Simply use the startDate as-is - it represents the correct event date
+    return new Date(dateString);
   };
 
   const formatDate = (dateString) => {
+    // Simply use the startDate as-is without timezone adjustments
+    // startDate represents the correct event date
     let date = new Date(dateString);
-    // If the UTC time is midnight, and the local time is the previous day, adjust
-    if (
-      date.getUTCHours() === 0 &&
-      date.getUTCMinutes() === 0 &&
-      date.getUTCSeconds() === 0
-    ) {
-      // If the local date is before the UTC date, add a day
-      const localDate = new Date(date);
-      const localDay = localDate.getDate();
-      const utcDay = date.getUTCDate();
-      if (localDay < utcDay) {
-        localDate.setDate(localDate.getDate() + 1);
-        date = localDate;
-      }
-    }
-
+    
     const options = {
       year: "numeric",
       month: "short",
       day: "numeric",
-      // hour: "2-digit",
-      // minute: "2-digit",
     };
     return date.toLocaleDateString("en-US", options);
   };
 
-  const extractTime = (dateString) => {
-    let date = new Date(dateString);
-    // If the UTC time is midnight, and the local time is the previous day, adjust
-    if (
-      date.getUTCHours() === 0 &&
-      date.getUTCMinutes() === 0 &&
-      date.getUTCSeconds() === 0
-    ) {
-      // If the local date is before the UTC date, add a day
-      const localDate = new Date(date);
-      const localDay = localDate.getDate();
-      const utcDay = date.getUTCDate();
-      if (localDay < utcDay) {
-        localDate.setDate(localDate.getDate() + 1);
-        date = localDate;
-      }
-    }
+  const extractTime = (event) => {
+    // Use corrected logic: combine startDate (correct date) with startTime (correct time)
+    const startDate = new Date(event.startDate);
+    const startTime = new Date(event.startTime);
+    
+    // Create combined datetime: date from startDate + time from startTime
+    const combinedDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(), 
+      startDate.getDate(),
+      startTime.getHours(),
+      startTime.getMinutes(),
+      startTime.getSeconds()
+    );
 
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
+    let hours = combinedDate.getHours();
+    let minutes = combinedDate.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
 
     hours = hours % 12;
@@ -202,7 +171,7 @@ const EventDetail = () => {
 
                     <div className="flex flex-col">
                       Start Time:{" "}
-                      {extractTime(getEventsByVenuesById?.event?.startTime)}
+                      {extractTime(getEventsByVenuesById?.event)}
                     </div>
                   </div>
                 </div>
