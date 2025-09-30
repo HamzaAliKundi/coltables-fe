@@ -17,9 +17,9 @@ function groupAndSortEvents(events) {
     groups[dateKey].push(event);
   });
 
-  // Sort each group by startTime
+  // Sort each group by sortDateTime (backend provides correct sorting)
   Object.values(groups).forEach(group => {
-    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    group.sort((a, b) => new Date(a.sortDateTime) - new Date(b.sortDateTime));
   });
 
   // Flatten back to a single array, preserving date order
