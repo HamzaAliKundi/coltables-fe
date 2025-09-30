@@ -53,35 +53,33 @@ const EventDetail = () => {
 
   // Helper function to get timezone-safe date
   const getTimezoneSafeDate = (dateString) => {
-    // Use UTC methods to prevent timezone conversion
-    const date = new Date(dateString);
-    return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    // Simply use the startDate as-is - it represents the correct event date
+    return new Date(dateString);
   };
 
   const formatDate = (dateString) => {
-    // Use UTC methods to prevent timezone conversion
-    const date = new Date(dateString);
-    const utcDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    // Simply use the startDate as-is without timezone adjustments
+    // startDate represents the correct event date
+    let date = new Date(dateString);
     
     const options = {
       year: "numeric",
       month: "short",
       day: "numeric",
     };
-    return utcDate.toLocaleDateString("en-US", options);
+    return date.toLocaleDateString("en-US", options);
   };
 
   const extractTime = (event) => {
     // Use corrected logic: combine startDate (correct date) with startTime (correct time)
-    // Use UTC methods to prevent timezone conversion for date
     const startDate = new Date(event.startDate);
     const startTime = new Date(event.startTime);
     
-    // Create combined datetime using UTC date + local time
+    // Create combined datetime: date from startDate + time from startTime
     const combinedDate = new Date(
-      startDate.getUTCFullYear(),
-      startDate.getUTCMonth(), 
-      startDate.getUTCDate(),
+      startDate.getFullYear(),
+      startDate.getMonth(), 
+      startDate.getDate(),
       startTime.getHours(),
       startTime.getMinutes(),
       startTime.getSeconds()
