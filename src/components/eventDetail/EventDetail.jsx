@@ -132,11 +132,9 @@ const EventDetail = () => {
           </div>
           <div className="absolute top-3 left-3 w-[50px] h-[50px] md:w-[70px] md:h-[70px] bg-gradient-to-b from-[#FF00A2] to-[#D876B5] rounded-full flex flex-col items-center justify-center">
             <span className="text-xl md:text-2xl font-bold text-[#e3d4de] leading-none">
-              {String(
-                getTimezoneSafeDate(
-                  getEventsByVenuesById?.event?.startDate
-                ).getDate()
-              ).padStart(2, "0")}
+              {getTimezoneSafeDate(
+                getEventsByVenuesById?.event?.startDate
+              ).getDate()}
             </span>
             <span className="text-base md:text-lg font-semibold text-[#ebd4e3] uppercase leading-none">
               {getTimezoneSafeDate(getEventsByVenuesById?.event?.startDate)
@@ -149,7 +147,7 @@ const EventDetail = () => {
         <div className="w-full max-w-xl">
           <div className="mb-6 lg:mb-8 mt-4 lg:mt-12">
             <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-base md:text-lg lg:text-xl text-center">
-              {getEventsByVenuesById?.event?.title} ........
+              {getEventsByVenuesById?.event?.title}
             </h2>
 
             <div className="flex flex-col gap-4 md:gap-6">
