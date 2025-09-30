@@ -17,9 +17,9 @@ function groupAndSortEvents(events) {
     groups[dateKey].push(event);
   });
 
-  // Sort each group by sortDateTime (backend provides correct sorting)
+  // Sort each group by sortTimeSeconds (time of day in seconds since midnight)
   Object.values(groups).forEach(group => {
-    group.sort((a, b) => new Date(a.sortDateTime) - new Date(b.sortDateTime));
+    group.sort((a, b) => (a.sortTimeSeconds || 0) - (b.sortTimeSeconds || 0));
   });
 
   // Flatten back to a single array, preserving date order
