@@ -149,7 +149,7 @@ const EventDetail = () => {
         <div className="w-full max-w-xl">
           <div className="mb-6 lg:mb-8 mt-4 lg:mt-12">
             <h2 className="bg-[#FF00A2] text-white py-2 px-4 rounded-md mb-4 text-base md:text-lg lg:text-xl text-center">
-              {getEventsByVenuesById?.event?.title}
+              {getEventsByVenuesById?.event?.title} ........
             </h2>
 
             <div className="flex flex-col gap-4 md:gap-6">
