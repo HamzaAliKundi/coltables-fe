@@ -4,29 +4,9 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-
-// Group and sort events by UTC date and startTime (for display order only)
+// Backend now handles sorting, so we just return events as received
 function groupAndSortEvents(events) {
-  // Group by UTC date string (YYYY-MM-DD)
-  const groups = {};
-  events.forEach(event => {
-    const date = new Date(event.startDate);
-    const dateKey = date.getUTCFullYear() + '-' +
-      String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
-      String(date.getUTCDate()).padStart(2, '0');
-    if (!groups[dateKey]) groups[dateKey] = [];
-    groups[dateKey].push(event);
-  });
-
-  // Sort each group by startTime
-  Object.values(groups).forEach(group => {
-    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-  });
-
-  // Flatten back to a single array, preserving date order
-  return Object.keys(groups)
-    .sort() // sort by dateKey
-    .flatMap(dateKey => groups[dateKey]);
+  return events;
 }
 
 const EventListing = ({ isEvent, searchQuery }) => {
