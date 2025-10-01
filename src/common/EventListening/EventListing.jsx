@@ -4,11 +4,9 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-// Backend now handles sorting, so we just return events as received
+
+// Group and sort events by UTC date and startTime (for display order only)
 function groupAndSortEvents(events) {
-  console.log('\n=== FRONTEND SORTING DEBUG ===');
-  console.log('Input events:', events.length);
-  
   // Group by UTC date string (YYYY-MM-DD)
   const groups = {};
   events.forEach(event => {
@@ -20,62 +18,15 @@ function groupAndSortEvents(events) {
     groups[dateKey].push(event);
   });
 
-  // Sort each group by sortTimeSeconds from backend (or fallback to UTC time components with day rollover)
-  Object.keys(groups).forEach(dateKey => {
-    const group = groups[dateKey];
-    console.log(`\nSorting group for ${dateKey} (${group.length} events):`);
-    
-    group.forEach((event, index) => {
-      const startTime = new Date(event.startTime);
-      console.log(`  Before sort ${index + 1}. ${event.title}`);
-      console.log(`    sortTimeSeconds: ${event.sortTimeSeconds}`);
-      console.log(`    startTime: ${event.startTime} (${startTime.getUTCHours()}:${startTime.getUTCMinutes().toString().padStart(2, '0')} UTC)`);
-    });
-    
-    group.sort((a, b) => {
-      // Use backend's sortTimeSeconds if available, otherwise fallback to UTC time components
-      if (a.sortTimeSeconds !== undefined && b.sortTimeSeconds !== undefined) {
-        console.log(`  Comparing: ${a.title} (${a.sortTimeSeconds}) vs ${b.title} (${b.sortTimeSeconds})`);
-        return a.sortTimeSeconds - b.sortTimeSeconds;
-      } else {
-        const dateA = new Date(a.startTime);
-        const dateB = new Date(b.startTime);
-        const hourA = dateA.getUTCHours();
-        const hourB = dateB.getUTCHours();
-        
-        // Treat early morning hours (0-6) as next day (24-30) for sorting
-        const adjustedHourA = hourA <= 6 ? hourA + 24 : hourA;
-        const adjustedHourB = hourB <= 6 ? hourB + 24 : hourB;
-        
-        console.log(`  Comparing: ${a.title} (${adjustedHourA}h) vs ${b.title} (${adjustedHourB}h)`);
-        return adjustedHourA - adjustedHourB 
-             || dateA.getUTCMinutes() - dateB.getUTCMinutes();
-      }
-    });
-    
-    console.log(`  After sort for ${dateKey}:`);
-    group.forEach((event, index) => {
-      console.log(`    ${index + 1}. ${event.title} (sortTimeSeconds: ${event.sortTimeSeconds})`);
-    });
+  // Sort each group by startTime
+  Object.values(groups).forEach(group => {
+    group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
   });
 
   // Flatten back to a single array, preserving date order
-  const result = Object.keys(groups)
+  return Object.keys(groups)
     .sort() // sort by dateKey
     .flatMap(dateKey => groups[dateKey]);
-    
-  console.log('\nFinal frontend result order:');
-  result.forEach((event, index) => {
-    const startTime = new Date(event.startTime);
-    const startDate = new Date(event.startDate);
-    console.log(`${index + 1}. ${event.title}`);
-    console.log(`   Date: ${startDate.toISOString().split('T')[0]}`);
-    console.log(`   Time: ${startTime.getUTCHours()}:${startTime.getUTCMinutes().toString().padStart(2, '0')} UTC`);
-    console.log(`   sortTimeSeconds: ${event.sortTimeSeconds}`);
-  });
-  console.log('=== END FRONTEND SORTING DEBUG ===\n');
-  
-  return result;
 }
 
 const EventListing = ({ isEvent, searchQuery }) => {
