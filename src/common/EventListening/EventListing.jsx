@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
+import moment from "moment"
 
 // Backend now handles sorting, so we just return events as received
 function groupAndSortEvents(events) {
@@ -237,13 +238,25 @@ const EventListing = ({ isEvent, searchQuery }) => {
   };
 
   // Always show the date as entered (UTC, not shifted to local)
+  // const formatEventAdminDate = (event) => {
+  //   const date = new Date(event.startDate);
+  //   return date.toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric",
+  //     timeZone: "UTC", // Force UTC so it never shifts
+  //   });
+  // };
   const formatEventAdminDate = (event) => {
-    const date = new Date(event.startDate);
+    const parsedDate = moment.utc(event.startDate).add(moment.utc(event?.startTime)?.hours(), 'hours').toDate();
+    
+    const date = new Date(parsedDate);
+    
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-      timeZone: "UTC", // Force UTC so it never shifts
+      // timeZone: "UTC", // Force UTC so it never shifts
     });
   };
 
