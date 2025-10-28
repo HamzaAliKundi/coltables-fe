@@ -4,9 +4,51 @@ import Pagination from "./Pagination";
 import { useGetAllEventsQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-// Backend now handles sorting, so we just return events as received
+// Combine date from startDate with time from startTime and sort events
 function groupAndSortEvents(events) {
-  return events;
+  // return events;
+  if (!events || !Array.isArray(events)) {
+    return events;
+  }
+
+  // Sort events by date first, then by local time-of-day
+  const sortedEvents = [...events].sort((a, b) => {
+    // First, sort by date (using startDate)
+    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+    
+    if (dateA !== dateB) {
+      return dateA.localeCompare(dateB);
+    }
+    
+    // If dates are the same, sort by local time-of-day
+    // Convert sortDateTime to local time and extract time-of-day
+    if (a.sortDateTime && b.sortDateTime) {
+      const dateA_obj = new Date(a.sortDateTime);
+      const dateB_obj = new Date(b.sortDateTime);
+      
+      // Get local time-of-day in minutes since midnight
+      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+      
+      return localMinutesA - localMinutesB;
+    }
+    
+    // Fallback: combine startDate and startTime
+    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+    
+    const fallbackDateA = new Date(fullA);
+    const fallbackDateB = new Date(fullB);
+    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+    
+    return fallbackMinutesA - fallbackMinutesB;
+  });
+
+  return sortedEvents;
 }
 
 const EventListing = ({ isEvent, searchQuery }) => {
