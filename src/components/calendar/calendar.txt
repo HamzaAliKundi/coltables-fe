@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom'
 // Set up moment locale and localizer
 moment.locale('en-GB')
 const localizer = momentLocalizer(moment)
-// deploy commit
 
 const Calendar = () => {
   const navigate = useNavigate()
