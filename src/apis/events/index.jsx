@@ -104,6 +104,15 @@ export const eventsApi = createApi({
       }
     }),
 
+    getCalendarEventsForListing: builder.query({
+      query: ({ view = 'month', fromDate }) => {
+        const params = new URLSearchParams();
+        params.append('view', view);
+        params.append('fromDate', fromDate);
+        return `/api/user/event/get-calendar-events?${params.toString()}`;
+      },
+    }),
+
   }),
 });
 
@@ -114,4 +123,5 @@ export const {
   useLazyGetSingleEventByIdQuery, 
   useGetCalendarEventsQuery,
   useGetBigCalendarEventsQuery,
+  useGetCalendarEventsForListingQuery,
 } = eventsApi;
