@@ -232,7 +232,7 @@ const PerformerProfile = () => {
     if (!calendarEvents?.eventDates) return [];
     let events = [];
     
-    if (selectedDay) {
+    if (isDayView && selectedDay) {
       const localDateKey = new Date(selectedDay).toLocaleDateString();
       events = groupedEventsByLocalDate[localDateKey] || [];
     } else if (isMonthView) {

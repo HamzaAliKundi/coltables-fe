@@ -223,7 +223,7 @@ const VenuesProfile = () => {
     if (!calendarEvents?.eventDates) return [];
     let events = [];
 
-    if (selectedDay) {
+    if (isDayView && selectedDay) {
       // When a day is selected, show only that day's events
       const monthKey = `${selectedDay.getFullYear()}-${String(
         selectedDay.getMonth() + 1
