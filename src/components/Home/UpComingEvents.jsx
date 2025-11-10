@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useGetUpcomingEventsQuery } from "../../apis/events";
+import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 
 // Helper to get local date parts safely (show true UTC date for badge)
 function getLocalDateParts(event) {
@@ -21,9 +21,62 @@ function formatEventTime(dateString) {
   });
 }
 
-// Backend now handles sorting, so we just return events as received
-function groupAndSortEvents(events) {
-  return events;
+// Transform calendar events object to flat array and sort (same logic as EventListing)
+function groupAndSortEvents(eventsObject) {
+  if (!eventsObject || typeof eventsObject !== 'object') {
+    return [];
+  }
+
+  // Flatten events from all dates into a single array
+  const allEvents = [];
+  Object.values(eventsObject).forEach(dateEvents => {
+    if (Array.isArray(dateEvents)) {
+      allEvents.push(...dateEvents);
+    }
+  });
+
+  if (allEvents.length === 0) {
+    return [];
+  }
+
+  // Sort events by date first, then by local time-of-day
+  const sortedEvents = [...allEvents].sort((a, b) => {
+    // First, sort by date (using startDate)
+    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+    
+    if (dateA !== dateB) {
+      return dateA.localeCompare(dateB);
+    }
+    
+    // If dates are the same, sort by local time-of-day
+    // Convert sortDateTime to local time and extract time-of-day
+    if (a.sortDateTime && b.sortDateTime) {
+      const dateA_obj = new Date(a.sortDateTime);
+      const dateB_obj = new Date(b.sortDateTime);
+      
+      // Get local time-of-day in minutes since midnight
+      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+      
+      return localMinutesA - localMinutesB;
+    }
+    
+    // Fallback: combine startDate and startTime
+    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+    
+    const fallbackDateA = new Date(fullA);
+    const fallbackDateB = new Date(fullB);
+    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+    
+    return fallbackMinutesA - fallbackMinutesB;
+  });
+
+  return sortedEvents;
 }
 
 const UpComingEvents = () => {
@@ -31,15 +84,36 @@ const UpComingEvents = () => {
   const [visibleTooltip, setVisibleTooltip] = useState(null);
   const containerRef = useRef(null);
 
-  const { data: upcomingEventsData, isLoading, error } = useGetUpcomingEventsQuery({
-    page: 1,
-    limit: 10
-  });
+  // Get current month/year for calendar API
+  const currentDate = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  }, []);
+
+  const { data: calendarEventsData, isLoading, error } = useGetCalendarEventsForListingQuery(
+    {
+      view: 'month',
+      fromDate: currentDate,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  // Transform calendar events object to sorted array
+  const sortedEvents = useMemo(() => {
+    if (!calendarEventsData?.events) {
+      return [];
+    }
+    return groupAndSortEvents(calendarEventsData.events);
+  }, [calendarEventsData]);
 
   // Add scroll event listener to update active slide
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !upcomingEventsData?.docs.length) return;
+    if (!container || !sortedEvents.length) return;
 
     // Small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
@@ -60,10 +134,10 @@ const UpComingEvents = () => {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [upcomingEventsData]);
+  }, [sortedEvents]);
 
   // Use grouped and sorted events for display
-  const events = groupAndSortEvents(upcomingEventsData?.docs || []).map((event) => {
+  const events = sortedEvents.map((event) => {
     const localDate = getLocalDateParts(event);
     
     // Determine host display based on userType

@@ -250,26 +250,44 @@ const PerformerProfile = () => {
       events = weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
     }
     
-    // Group events by date and sort each group by time
-    const groups = {};
-    events.forEach(event => {
-      const date = new Date(event.startDate);
-      const dateKey = date.getUTCFullYear() + '-' +
-        String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
-        String(date.getUTCDate()).padStart(2, '0');
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(event);
+    // Sort events by date first, then by local time-of-day (same approach as EventListing)
+    const sortedEvents = [...events].sort((a, b) => {
+      // First, sort by date (using startDate)
+      const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+      const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+      
+      if (dateA !== dateB) {
+        return dateA.localeCompare(dateB);
+      }
+      
+      // If dates are the same, sort by local time-of-day
+      // Convert sortDateTime to local time and extract time-of-day
+      if (a.sortDateTime && b.sortDateTime) {
+        const dateA_obj = new Date(a.sortDateTime);
+        const dateB_obj = new Date(b.sortDateTime);
+        
+        // Get local time-of-day in minutes since midnight
+        const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+        const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+        
+        return localMinutesA - localMinutesB;
+      }
+      
+      // Fallback: combine startDate and startTime
+      const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+      const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+      const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+      const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+      
+      const fallbackDateA = new Date(fullA);
+      const fallbackDateB = new Date(fullB);
+      const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+      const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+      
+      return fallbackMinutesA - fallbackMinutesB;
     });
 
-    // Sort each group by startTime
-    Object.values(groups).forEach(group => {
-      group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-    });
-
-    // Flatten back to a single array, preserving date order
-    return Object.keys(groups)
-      .sort() // sort by dateKey
-      .flatMap(dateKey => groups[dateKey]);
+    return sortedEvents;
   };
 
   const handleViewChange = (isMonth) => {

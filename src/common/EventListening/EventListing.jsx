@@ -1,12 +1,65 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Pagination from "./Pagination";
-import { useGetAllEventsQuery } from "../../apis/events";
+import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
-// Backend now handles sorting, so we just return events as received
-function groupAndSortEvents(events) {
-  return events;
+// Transform calendar events object to flat array and sort
+function groupAndSortEvents(eventsObject) {
+  if (!eventsObject || typeof eventsObject !== 'object') {
+    return [];
+  }
+
+  // Flatten events from all dates into a single array
+  const allEvents = [];
+  Object.values(eventsObject).forEach(dateEvents => {
+    if (Array.isArray(dateEvents)) {
+      allEvents.push(...dateEvents);
+    }
+  });
+
+  if (allEvents.length === 0) {
+    return [];
+  }
+
+  // Sort events by date first, then by local time-of-day
+  const sortedEvents = [...allEvents].sort((a, b) => {
+    // First, sort by date (using startDate)
+    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+    
+    if (dateA !== dateB) {
+      return dateA.localeCompare(dateB);
+    }
+    
+    // If dates are the same, sort by local time-of-day
+    // Convert sortDateTime to local time and extract time-of-day
+    if (a.sortDateTime && b.sortDateTime) {
+      const dateA_obj = new Date(a.sortDateTime);
+      const dateB_obj = new Date(b.sortDateTime);
+      
+      // Get local time-of-day in minutes since midnight
+      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+      
+      return localMinutesA - localMinutesB;
+    }
+    
+    // Fallback: combine startDate and startTime
+    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+    
+    const fallbackDateA = new Date(fullA);
+    const fallbackDateB = new Date(fullB);
+    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+    
+    return fallbackMinutesA - fallbackMinutesB;
+  });
+
+  return sortedEvents;
 }
 
 const EventListing = ({ isEvent, searchQuery }) => {
@@ -26,24 +79,75 @@ const EventListing = ({ isEvent, searchQuery }) => {
   });
   const dropdownRef = useRef(null);
 
+  // Get current month/year for calendar API
+  const currentDate = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  }, []);
+
   const {
-    data: allEventsData,
+    data: calendarEventsData,
     isLoading: allEventsLoading,
     isFetching,
-  } = useGetAllEventsQuery(
+  } = useGetCalendarEventsForListingQuery(
     {
-      page: currentPage,
-      limit: eventsPerPage,
-      ...(activeTab !== "all" && {
-        type: activeTab === "other" ? "other" : activeTab,
-      }),
-      address: debouncedSearchTerm,
-      search: searchQuery || "",
+      view: 'month',
+      fromDate: currentDate,
     },
     {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  // Transform and filter events
+  const processedEvents = useMemo(() => {
+    if (!calendarEventsData?.events) {
+      return { allEvents: [], paginatedEvents: [], totalPages: 0 };
+    }
+
+    // Transform calendar events object to sorted array
+    let allEvents = groupAndSortEvents(calendarEventsData.events);
+
+    // Filter by type (activeTab)
+    if (activeTab !== "all") {
+      const filterType = activeTab === "other" ? "other" : activeTab;
+      allEvents = allEvents.filter(event => event.type === filterType);
+    }
+
+    // Filter by search query
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      allEvents = allEvents.filter(event => 
+        event.title?.toLowerCase().includes(searchLower) ||
+        event.description?.toLowerCase().includes(searchLower) ||
+        event.address?.toLowerCase().includes(searchLower) ||
+        event.user?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filter by address (city search)
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      allEvents = allEvents.filter(event => 
+        event.address?.toLowerCase().includes(searchLower) ||
+        event.user?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Calculate pagination
+    const totalPages = Math.ceil(allEvents.length / eventsPerPage);
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    const paginatedEvents = allEvents.slice(startIndex, startIndex + eventsPerPage);
+
+    return {
+      allEvents,
+      paginatedEvents,
+      totalPages,
+      totalDocs: allEvents.length,
+    };
+  }, [calendarEventsData, activeTab, searchQuery, debouncedSearchTerm, currentPage, eventsPerPage]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -430,8 +534,8 @@ const EventListing = ({ isEvent, searchQuery }) => {
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : allEventsData?.docs?.length > 0 ? (
-          groupAndSortEvents(allEventsData.docs).map((event) => (
+        ) : processedEvents.paginatedEvents?.length > 0 ? (
+          processedEvents.paginatedEvents.map((event) => (
             <div
               key={event._id}
               className="bg-[#1a1a1a] p-3 rounded-[8px] overflow-hidden h-[475px] relative"
@@ -475,19 +579,40 @@ const EventListing = ({ isEvent, searchQuery }) => {
                     className="mr-2 w-4 h-4"
                   />
                   <span className="font-['Space_Grotesk'] font-normal text-[16px] leading-[100%]">
-                    {event?.userType !== "venue" && (
-                      <span className="truncate">
-                        {event?.address?.length > 20 
-                          ? `${event.address.substring(0, 20)}...` 
-                          : event?.address || "N/A"}
-                      </span>
-                    )}
-
-                    {event?.userType === "venue" && (
-                      <span className="truncate">
-                        {event?.user?.name || "N/A"}
-                      </span>
-                    )}
+                    {(() => {
+                      let location = "N/A";
+                      
+                      // For venue events, try multiple sources
+                      if (event?.userType === "venue") {
+                        // 1. Check if user is populated object with name
+                        if (typeof event?.user === "object" && event?.user?.name) {
+                          location = event.user.name;
+                        }
+                        // 2. Check if address field exists (some venue events have address)
+                        else if (event?.address) {
+                          location = event.address;
+                        }
+                        // 3. Check venuesList array for venue name (if populated)
+                        else if (Array.isArray(event?.venuesList) && event.venuesList.length > 0) {
+                          const firstVenue = event.venuesList[0];
+                          if (typeof firstVenue === "object" && firstVenue?.name) {
+                            location = firstVenue.name;
+                          }
+                        }
+                      } 
+                      // For non-venue events (performer/admin), show address
+                      else {
+                        location = event?.address || "N/A";
+                      }
+                      
+                      return (
+                        <span className="truncate">
+                          {location.length > 20 
+                            ? `${location.substring(0, 20)}...` 
+                            : location}
+                        </span>
+                      );
+                    })()}
                   </span>
                 </div>
 
@@ -516,11 +641,11 @@ const EventListing = ({ isEvent, searchQuery }) => {
         )}
       </div>
 
-      {isEvent && allEventsData?.totalPages > 1 && (
+      {isEvent && processedEvents.totalPages > 1 && (
         <div className="flex justify-center w-full mt-8">
           <Pagination
             currentPage={currentPage}
-            totalPages={allEventsData.totalPages}
+            totalPages={processedEvents.totalPages}
             onPageChange={handlePageChange}
           />
         </div>

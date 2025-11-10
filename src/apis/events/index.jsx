@@ -41,20 +41,63 @@ export const eventsApi = createApi({
     getCalendarEvents: builder.query({
       query: ({ view, fromDate, userId, userType }) => {
         const params = new URLSearchParams();
-        params.append('userId', userId);
-        params.append('userType', userType);
+        params.append('view', view || 'month');
+        params.append('fromDate', fromDate);
+        if (userId) params.append('userId', userId);
+        if (userType) params.append('userType', userType);
         
-        if (view === 'month') {
-          const [year, month] = fromDate.split('-');
-          params.append('month', `${year}-${month}`);
-        } else if (view === 'day') {
-          params.append('date', fromDate);
-        } else {
-          // For week view, we'll use the start date
-          params.append('date', fromDate);
+        return `/api/user/event/get-calendar-events?${params.toString()}`;
+      },
+      transformResponse: (response) => {
+        // Transform from { events: { "YYYY-MM-DD": [...] } } to { eventDates: { "YYYY-MM": { "DD": { eventDetails: [...] } } } }
+        if (!response?.events) {
+          return { eventDates: {} };
+        }
+
+        const eventDates = {};
+        
+        // Handle month/week view - events grouped by date
+        if (response.view === 'month' || response.view === 'week') {
+          Object.entries(response.events).forEach(([dateKey, events]) => {
+            const [year, month, day] = dateKey.split('-');
+            const monthKey = `${year}-${month}`;
+            const dayStr = day.padStart(2, '0');
+            
+            if (!eventDates[monthKey]) {
+              eventDates[monthKey] = {};
+            }
+            if (!eventDates[monthKey][dayStr]) {
+              eventDates[monthKey][dayStr] = { eventDetails: [] };
+            }
+            
+            // Events are already sorted by the API, just add them
+            eventDates[monthKey][dayStr].eventDetails.push(...events);
+          });
+        } 
+        // Handle day view - events as array
+        else if (response.view === 'day') {
+          // For day view, we need to group by the date
+          if (Array.isArray(response.events)) {
+            response.events.forEach(event => {
+              const date = new Date(event.startDate);
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              const monthKey = `${year}-${month}`;
+              
+              if (!eventDates[monthKey]) {
+                eventDates[monthKey] = {};
+              }
+              if (!eventDates[monthKey][day]) {
+                eventDates[monthKey][day] = { eventDetails: [] };
+              }
+              
+              eventDates[monthKey][day].eventDetails.push(event);
+            });
+          }
         }
         
-        return `/api/user/event/get-events-by-date?${params.toString()}`;
+        return { eventDates };
       },
     }),
 
@@ -104,6 +147,15 @@ export const eventsApi = createApi({
       }
     }),
 
+    getCalendarEventsForListing: builder.query({
+      query: ({ view = 'month', fromDate }) => {
+        const params = new URLSearchParams();
+        params.append('view', view);
+        params.append('fromDate', fromDate);
+        return `/api/user/event/get-calendar-events?${params.toString()}`;
+      },
+    }),
+
   }),
 });
 
@@ -114,4 +166,5 @@ export const {
   useLazyGetSingleEventByIdQuery, 
   useGetCalendarEventsQuery,
   useGetBigCalendarEventsQuery,
+  useGetCalendarEventsForListingQuery,
 } = eventsApi;
