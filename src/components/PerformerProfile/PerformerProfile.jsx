@@ -294,6 +294,15 @@ const PerformerProfile = () => {
     setIsMonthView(isMonth);
     setIsDayView(false);
     setSelectedDay(null);
+  if (!isMonth) {
+    setSelectedWeekStart(() => {
+      const weekStart = new Date(currentDate);
+      weekStart.setHours(0, 0, 0, 0);
+      const dayOfWeek = weekStart.getDay();
+      weekStart.setDate(weekStart.getDate() - dayOfWeek);
+      return weekStart;
+    });
+  }
   };
 
   const venueOptions = [
