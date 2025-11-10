@@ -96,6 +96,7 @@ const UpComingEvents = () => {
     {
       view: 'month',
       fromDate: currentDate,
+      isUpcoming: 1,
     },
     {
       refetchOnMountOrArgChange: true,

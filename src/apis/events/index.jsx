@@ -20,6 +20,10 @@ export const eventsApi = createApi({
         if (address) params.append('address', address);
         if (type) params.append('type', type);
         if (search) params.append('search', search);
+        if (isUpcoming !== undefined && isUpcoming !== null) {
+          const normalizedUpcoming = Number(isUpcoming) ? 1 : 0;
+          params.append('isUpcoming', normalizedUpcoming);
+        }
         return `/api/user/event/get-all-events?${params.toString()}`;
       },
     }),
@@ -33,6 +37,7 @@ export const eventsApi = createApi({
         const params = new URLSearchParams();
         params.append('limit', limit);
         params.append('page', page);
+        params.append('sort', sort);
         params.append('isUpcoming', 1);
         return `/api/user/event/get-all-events?${params.toString()}`;
       },
@@ -112,7 +117,7 @@ export const eventsApi = createApi({
         if (!response?.events) return [];
         
         const transformedEvents = [];
-        Object.entries(response.events).forEach(([date, events]) => {
+        Object.entries(response.events).forEach(([, events]) => {
           events.forEach(event => {
             // Combine startDate with startTime
             const startDate = new Date(event.startDate);
@@ -148,10 +153,14 @@ export const eventsApi = createApi({
     }),
 
     getCalendarEventsForListing: builder.query({
-      query: ({ view = 'month', fromDate }) => {
+      query: ({ view = 'month', fromDate, isUpcoming = 1 }) => {
         const params = new URLSearchParams();
         params.append('view', view);
         params.append('fromDate', fromDate);
+        if (isUpcoming !== undefined && isUpcoming !== null) {
+          const normalizedUpcoming = Number(isUpcoming) ? 1 : 0;
+          params.append('isUpcoming', normalizedUpcoming);
+        }
         return `/api/user/event/get-calendar-events?${params.toString()}`;
       },
     }),
