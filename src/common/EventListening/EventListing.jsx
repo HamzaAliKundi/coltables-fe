@@ -4,6 +4,37 @@ import Pagination from "./Pagination";
 import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 import { cityOptions } from "../../utils/citiesList";
 
+function getEventStartDate(event) {
+  if (!event) return null;
+  if (event.sortDateTime) {
+    const sortDate = new Date(event.sortDateTime);
+    if (!Number.isNaN(sortDate.valueOf())) {
+      return sortDate;
+    }
+  }
+
+  const baseDate = event.startDate ? new Date(event.startDate) : null;
+  const timeDate = event.startTime ? new Date(event.startTime) : null;
+
+  if (baseDate && !Number.isNaN(baseDate.valueOf())) {
+    if (timeDate && !Number.isNaN(timeDate.valueOf())) {
+      baseDate.setHours(
+        timeDate.getHours(),
+        timeDate.getMinutes(),
+        timeDate.getSeconds(),
+        0
+      );
+    }
+    return baseDate;
+  }
+
+  if (timeDate && !Number.isNaN(timeDate.valueOf())) {
+    return timeDate;
+  }
+
+  return null;
+}
+
 // Transform calendar events object to flat array and sort
 function groupAndSortEvents(eventsObject) {
   if (!eventsObject || typeof eventsObject !== 'object') {
@@ -24,39 +55,17 @@ function groupAndSortEvents(eventsObject) {
 
   // Sort events by date first, then by local time-of-day
   const sortedEvents = [...allEvents].sort((a, b) => {
-    // First, sort by date (using startDate)
-    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
-    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
-    
-    if (dateA !== dateB) {
-      return dateA.localeCompare(dateB);
+    const dateA = getEventStartDate(a);
+    const dateB = getEventStartDate(b);
+
+    if (dateA && dateB) {
+      return dateA - dateB;
     }
-    
-    // If dates are the same, sort by local time-of-day
-    // Convert sortDateTime to local time and extract time-of-day
-    if (a.sortDateTime && b.sortDateTime) {
-      const dateA_obj = new Date(a.sortDateTime);
-      const dateB_obj = new Date(b.sortDateTime);
-      
-      // Get local time-of-day in minutes since midnight
-      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
-      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
-      
-      return localMinutesA - localMinutesB;
-    }
-    
-    // Fallback: combine startDate and startTime
-    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
-    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
-    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
-    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
-    
-    const fallbackDateA = new Date(fullA);
-    const fallbackDateB = new Date(fullB);
-    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
-    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
-    
-    return fallbackMinutesA - fallbackMinutesB;
+
+    if (dateA && !dateB) return -1;
+    if (!dateA && dateB) return 1;
+
+    return 0;
   });
 
   return sortedEvents;
@@ -95,6 +104,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
     {
       view: 'month',
       fromDate: currentDate,
+      isUpcoming: 1,
     },
     {
       refetchOnMountOrArgChange: true,
@@ -110,10 +120,48 @@ const EventListing = ({ isEvent, searchQuery }) => {
     // Transform calendar events object to sorted array
     let allEvents = groupAndSortEvents(calendarEventsData.events);
 
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    allEvents = allEvents.filter((event) => {
+      const eventDate = getEventStartDate(event);
+      return eventDate && eventDate >= todayStart;
+    });
+
     // Filter by type (activeTab)
     if (activeTab !== "all") {
       const filterType = activeTab === "other" ? "other" : activeTab;
-      allEvents = allEvents.filter(event => event.type === filterType);
+      const beforeFilterCount = allEvents.length;
+      allEvents = allEvents.filter(event => {
+        const eventType = event?.type?.toLowerCase()?.trim();
+        const matchType = filterType?.toLowerCase()?.trim();
+        const matches = eventType === matchType;
+        
+        // Debug logging (remove in production)
+        if (process.env.NODE_ENV === 'development' && beforeFilterCount < 10) {
+          console.log('[EventListing] Type filter:', {
+            activeTab,
+            filterType,
+            eventType,
+            matches,
+            eventId: event?._id,
+            eventTitle: event?.title
+          });
+        }
+        
+        return matches;
+      });
+      
+      // Debug logging (remove in production)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[EventListing] Type filter result:', {
+          activeTab,
+          filterType,
+          beforeCount: beforeFilterCount,
+          afterCount: allEvents.length,
+          uniqueTypes: [...new Set(allEvents.map(e => e?.type))].filter(Boolean)
+        });
+      }
     }
 
     // Filter by search query
@@ -140,6 +188,20 @@ const EventListing = ({ isEvent, searchQuery }) => {
     const totalPages = Math.ceil(allEvents.length / eventsPerPage);
     const startIndex = (currentPage - 1) * eventsPerPage;
     const paginatedEvents = allEvents.slice(startIndex, startIndex + eventsPerPage);
+
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[EventListing] Processed events:', {
+        activeTab,
+        allEventsCount: allEvents.length,
+        paginatedEventsCount: paginatedEvents.length,
+        currentPage,
+        totalPages,
+        isTabLoading,
+        isFetching,
+        allEventsLoading
+      });
+    }
 
     return {
       allEvents,
@@ -186,7 +248,6 @@ const EventListing = ({ isEvent, searchQuery }) => {
 
   const handleTabChange = (tabValue) => {
     if (tabValue === activeTab) return;
-    setIsTabLoading(true);
     setActiveTab(tabValue);
     setCurrentPage(1);
   };
@@ -530,7 +591,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
 
       {/* Event Cards Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {allEventsLoading || isTabLoading || isSearching ? (
+        {allEventsLoading || isSearching ? (
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
