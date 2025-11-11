@@ -120,12 +120,16 @@ const EventListing = ({ isEvent, searchQuery }) => {
     // Transform calendar events object to sorted array
     let allEvents = groupAndSortEvents(calendarEventsData.events);
 
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const todayStartUtc = Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    );
 
     allEvents = allEvents.filter((event) => {
       const eventDate = getEventStartDate(event);
-      return eventDate && eventDate >= todayStart;
+      return eventDate && eventDate.getTime() >= todayStartUtc;
     });
 
     // Filter by type (activeTab)

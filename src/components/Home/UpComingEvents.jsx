@@ -22,6 +22,37 @@ function formatEventTime(dateString) {
 }
 
 // Transform calendar events object to flat array and sort (same logic as EventListing)
+function getEventStartDate(event) {
+  if (!event) return null;
+  if (event.sortDateTime) {
+    const sortDate = new Date(event.sortDateTime);
+    if (!Number.isNaN(sortDate.valueOf())) {
+      return sortDate;
+    }
+  }
+
+  const baseDate = event.startDate ? new Date(event.startDate) : null;
+  const timeDate = event.startTime ? new Date(event.startTime) : null;
+
+  if (baseDate && !Number.isNaN(baseDate.valueOf())) {
+    if (timeDate && !Number.isNaN(timeDate.valueOf())) {
+      baseDate.setHours(
+        timeDate.getHours(),
+        timeDate.getMinutes(),
+        timeDate.getSeconds(),
+        0
+      );
+    }
+    return baseDate;
+  }
+
+  if (timeDate && !Number.isNaN(timeDate.valueOf())) {
+    return timeDate;
+  }
+
+  return null;
+}
+
 function groupAndSortEvents(eventsObject) {
   if (!eventsObject || typeof eventsObject !== 'object') {
     return [];
@@ -41,39 +72,16 @@ function groupAndSortEvents(eventsObject) {
 
   // Sort events by date first, then by local time-of-day
   const sortedEvents = [...allEvents].sort((a, b) => {
-    // First, sort by date (using startDate)
-    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
-    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
-    
-    if (dateA !== dateB) {
-      return dateA.localeCompare(dateB);
+    const dateA = getEventStartDate(a);
+    const dateB = getEventStartDate(b);
+
+    if (dateA && dateB) {
+      return dateA - dateB;
     }
-    
-    // If dates are the same, sort by local time-of-day
-    // Convert sortDateTime to local time and extract time-of-day
-    if (a.sortDateTime && b.sortDateTime) {
-      const dateA_obj = new Date(a.sortDateTime);
-      const dateB_obj = new Date(b.sortDateTime);
-      
-      // Get local time-of-day in minutes since midnight
-      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
-      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
-      
-      return localMinutesA - localMinutesB;
-    }
-    
-    // Fallback: combine startDate and startTime
-    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
-    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
-    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
-    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
-    
-    const fallbackDateA = new Date(fullA);
-    const fallbackDateB = new Date(fullB);
-    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
-    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
-    
-    return fallbackMinutesA - fallbackMinutesB;
+
+    if (dateA && !dateB) return -1;
+    if (!dateA && dateB) return 1;
+    return 0;
   });
 
   return sortedEvents;
@@ -108,7 +116,18 @@ const UpComingEvents = () => {
     if (!calendarEventsData?.events) {
       return [];
     }
-    return groupAndSortEvents(calendarEventsData.events);
+    const allSortedEvents = groupAndSortEvents(calendarEventsData.events);
+    const now = new Date();
+    const todayStartUtc = Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    );
+
+    return allSortedEvents.filter((event) => {
+      const eventDate = getEventStartDate(event);
+      return eventDate && eventDate.getTime() >= todayStartUtc;
+    });
   }, [calendarEventsData]);
 
   // Add scroll event listener to update active slide
@@ -138,7 +157,9 @@ const UpComingEvents = () => {
   }, [sortedEvents]);
 
   // Use grouped and sorted events for display
-  const events = sortedEvents.map((event) => {
+  const limitedEvents = sortedEvents.slice(0, 10);
+
+  const events = limitedEvents.map((event) => {
     const localDate = getLocalDateParts(event);
     
     // Determine host display based on userType
