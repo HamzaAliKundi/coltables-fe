@@ -13,6 +13,7 @@ import CalendarPage from "./pages/calendar";
 import { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import EventDetailPage from "./pages/EventDetail";
+   
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");

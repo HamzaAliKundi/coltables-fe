@@ -4,7 +4,7 @@ import Reviews from "./Reviews";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetSinglePerformerByIdQuery } from "../../apis/performers";
 import { Youtube } from "lucide-react";
-import { useGetCalendarEventsQuery } from "../../apis/events";
+import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
 import { useGetVenuesQuery } from "../../apis/venues";
 
@@ -66,23 +66,68 @@ const PerformerProfile = () => {
   const matchedVenues =
     getVenues?.filter((venue) => venuesList.includes(venue._id)) || [];
 
-  const { data: calendarEvents } = useGetCalendarEventsQuery(
+  // Get current month/year for calendar API
+  const fromDate = isDayView
+    ? `${selectedDay.getFullYear()}-${String(
+        selectedDay.getMonth() + 1
+      ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
+    : `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+
+  const { data: calendarEventsData } = useGetCalendarEventsForListingQuery(
     {
       view: isMonthView ? "month" : "day",
-      fromDate: isDayView
-        ? `${selectedDay.getFullYear()}-${String(
-            selectedDay.getMonth() + 1
-          ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
-        : `${currentDate.getFullYear()}-${String(
-            currentDate.getMonth() + 1
-          ).padStart(2, "0")}`,
+      fromDate: fromDate,
       userId: id,
-      userType: "performer",
+      // Don't pass userType - let backend filter by userId only (checks user, performersList, venuesList)
     },
     {
       skip: !isMonthView && !isDayView, // Skip API call for week view
     }
   );
+
+  // Transform calendar events to match the expected structure
+  // The new API returns events grouped by date (YYYY-MM-DD), we need to transform to the old structure
+  const transformCalendarEvents = (calendarEventsData) => {
+    if (!calendarEventsData?.events) return { eventDates: {} };
+    
+    // Transform to expected structure
+    const eventDates = {};
+    
+    Object.entries(calendarEventsData.events).forEach(([dateKey, events]) => {
+      if (events.length > 0) {
+        // Parse the date key (YYYY-MM-DD)
+        const [year, month, day] = dateKey.split('-');
+        const monthKey = `${year}-${month}`;
+        
+        if (!eventDates[monthKey]) {
+          eventDates[monthKey] = {};
+        }
+        
+        if (!eventDates[monthKey][day]) {
+          eventDates[monthKey][day] = { eventDetails: [] };
+        }
+        
+        // Events are already sorted by the backend, but we ensure they're sorted by sortDateTime
+        const sortedEvents = [...events].sort((a, b) => {
+          if (a.sortDateTime && b.sortDateTime) {
+            return new Date(a.sortDateTime) - new Date(b.sortDateTime);
+          }
+          const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
+          const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
+          return timeA - timeB;
+        });
+        
+        eventDates[monthKey][day].eventDetails.push(...sortedEvents);
+      }
+    });
+    
+    return { eventDates };
+  };
+
+  // Transform events for this performer
+  const calendarEvents = transformCalendarEvents(calendarEventsData);
 
   // Group all events by local date in the user's timezone
   const groupEventsByLocalDate = (calendarEvents) => {
@@ -232,7 +277,7 @@ const PerformerProfile = () => {
     if (!calendarEvents?.eventDates) return [];
     let events = [];
     
-    if (isDayView && selectedDay) {
+    if (selectedDay) {
       const localDateKey = new Date(selectedDay).toLocaleDateString();
       events = groupedEventsByLocalDate[localDateKey] || [];
     } else if (isMonthView) {
@@ -250,7 +295,7 @@ const PerformerProfile = () => {
       events = weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
     }
     
-    // Sort events by date first, then by local time-of-day (same approach as EventListing)
+    // Sort events by date first, then by local time-of-day (same as EventListing)
     const sortedEvents = [...events].sort((a, b) => {
       // First, sort by date (using startDate)
       const dateA = a.startDate ? a.startDate.split('T')[0] : '';
@@ -294,15 +339,6 @@ const PerformerProfile = () => {
     setIsMonthView(isMonth);
     setIsDayView(false);
     setSelectedDay(null);
-  if (!isMonth) {
-    setSelectedWeekStart(() => {
-      const weekStart = new Date(currentDate);
-      weekStart.setHours(0, 0, 0, 0);
-      const dayOfWeek = weekStart.getDay();
-      weekStart.setDate(weekStart.getDate() - dayOfWeek);
-      return weekStart;
-    });
-  }
   };
 
   const venueOptions = [

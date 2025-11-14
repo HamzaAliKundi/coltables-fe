@@ -21,38 +21,7 @@ function formatEventTime(dateString) {
   });
 }
 
-// Transform calendar events object to flat array and sort (same logic as EventListing)
-function getEventStartDate(event) {
-  if (!event) return null;
-  if (event.sortDateTime) {
-    const sortDate = new Date(event.sortDateTime);
-    if (!Number.isNaN(sortDate.valueOf())) {
-      return sortDate;
-    }
-  }
-
-  const baseDate = event.startDate ? new Date(event.startDate) : null;
-  const timeDate = event.startTime ? new Date(event.startTime) : null;
-
-  if (baseDate && !Number.isNaN(baseDate.valueOf())) {
-    if (timeDate && !Number.isNaN(timeDate.valueOf())) {
-      baseDate.setHours(
-        timeDate.getHours(),
-        timeDate.getMinutes(),
-        timeDate.getSeconds(),
-        0
-      );
-    }
-    return baseDate;
-  }
-
-  if (timeDate && !Number.isNaN(timeDate.valueOf())) {
-    return timeDate;
-  }
-
-  return null;
-}
-
+// Transform calendar events object to flat array and sort (same as EventListing)
 function groupAndSortEvents(eventsObject) {
   if (!eventsObject || typeof eventsObject !== 'object') {
     return [];
@@ -70,18 +39,41 @@ function groupAndSortEvents(eventsObject) {
     return [];
   }
 
-  // Sort events by date first, then by local time-of-day
+  // Sort events by date first, then by local time-of-day (same as EventListing)
   const sortedEvents = [...allEvents].sort((a, b) => {
-    const dateA = getEventStartDate(a);
-    const dateB = getEventStartDate(b);
-
-    if (dateA && dateB) {
-      return dateA - dateB;
+    // First, sort by date (using startDate)
+    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+    
+    if (dateA !== dateB) {
+      return dateA.localeCompare(dateB);
     }
-
-    if (dateA && !dateB) return -1;
-    if (!dateA && dateB) return 1;
-    return 0;
+    
+    // If dates are the same, sort by local time-of-day
+    // Convert sortDateTime to local time and extract time-of-day
+    if (a.sortDateTime && b.sortDateTime) {
+      const dateA_obj = new Date(a.sortDateTime);
+      const dateB_obj = new Date(b.sortDateTime);
+      
+      // Get local time-of-day in minutes since midnight
+      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+      
+      return localMinutesA - localMinutesB;
+    }
+    
+    // Fallback: combine startDate and startTime
+    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+    
+    const fallbackDateA = new Date(fullA);
+    const fallbackDateB = new Date(fullB);
+    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+    
+    return fallbackMinutesA - fallbackMinutesB;
   });
 
   return sortedEvents;
@@ -104,36 +96,67 @@ const UpComingEvents = () => {
     {
       view: 'month',
       fromDate: currentDate,
-      isUpcoming: 1,
+      isUpcoming: true, // Only show upcoming events from today onwards
     },
     {
       refetchOnMountOrArgChange: true,
     }
   );
 
-  // Transform calendar events object to sorted array
-  const sortedEvents = useMemo(() => {
+  // Transform and sort events, then limit to 10
+  const events = useMemo(() => {
     if (!calendarEventsData?.events) {
       return [];
     }
-    const allSortedEvents = groupAndSortEvents(calendarEventsData.events);
-    const now = new Date();
-    const todayStartUtc = Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate()
-    );
 
-    return allSortedEvents.filter((event) => {
-      const eventDate = getEventStartDate(event);
-      return eventDate && eventDate.getTime() >= todayStartUtc;
+    // Transform calendar events object to sorted array
+    let allEvents = groupAndSortEvents(calendarEventsData.events);
+    
+    // Limit to 10 events
+    allEvents = allEvents.slice(0, 10);
+
+    return allEvents.map((event) => {
+      const localDate = getLocalDateParts(event);
+      
+      // Determine host display based on userType
+      let hostDisplay;
+      // Handle host field for both venue and performer events (could be string or array)
+      const hostValue = Array.isArray(event.host) ? event.host.join(', ') : event.host;
+      const fullHostDisplay = `Hosted By ${hostValue || 'N/A'}`;
+      hostDisplay = fullHostDisplay;
+      
+      // Limit to 20 characters
+      const truncatedHost = hostDisplay.length > 20 ? hostDisplay.substring(0, 20) + '...' : hostDisplay;
+      
+      // Determine location display
+      let locationDisplay;
+      if (event.address && event.address.trim() !== '') {
+        locationDisplay = event.address;
+      } else if (event.userType === "venue" && event.user?.name) {
+        locationDisplay = event.user.name;
+      } else {
+        locationDisplay = 'Location TBA';
+      }
+      
+      return {
+        id: event._id,
+        image: event.image || "/home/upcomping/upcoming.png",
+        date: localDate.day,
+        month: localDate.month,
+        title: event.title,
+        host: truncatedHost,
+        fullHost: fullHostDisplay,
+        time: `Start ${formatEventTime(event.startTime)} - ${formatEventTime(event.endTime)}`,
+        location: locationDisplay,
+        featured: event.type === 'drag-show'
+      };
     });
   }, [calendarEventsData]);
 
   // Add scroll event listener to update active slide
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || !sortedEvents.length) return;
+    if (!container || !events.length) return;
 
     // Small delay to ensure DOM is ready
     const timeoutId = setTimeout(() => {
@@ -154,47 +177,7 @@ const UpComingEvents = () => {
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [sortedEvents]);
-
-  // Use grouped and sorted events for display
-  const limitedEvents = sortedEvents.slice(0, 10);
-
-  const events = limitedEvents.map((event) => {
-    const localDate = getLocalDateParts(event);
-    
-    // Determine host display based on userType
-    let hostDisplay;
-    // Handle host field for both venue and performer events (could be string or array)
-    const hostValue = Array.isArray(event.host) ? event.host.join(', ') : event.host;
-    const fullHostDisplay = `Hosted By ${hostValue || 'N/A'}`;
-    hostDisplay = fullHostDisplay;
-    
-    // Limit to 20 characters
-    const truncatedHost = hostDisplay.length > 20 ? hostDisplay.substring(0, 20) + '...' : hostDisplay;
-    
-    // Determine location display
-    let locationDisplay;
-    if (event.address && event.address.trim() !== '') {
-      locationDisplay = event.address;
-    } else if (event.userType === "venue" && event.user?.name) {
-      locationDisplay = event.user.name;
-    } else {
-      locationDisplay = 'Location TBA';
-    }
-    
-    return {
-      id: event._id,
-      image: event.image || "/home/upcomping/upcoming.png",
-      date: localDate.day,
-      month: localDate.month,
-      title: event.title,
-      host: truncatedHost,
-      fullHost: fullHostDisplay,
-      time: `Start ${formatEventTime(event.startTime)} - ${formatEventTime(event.endTime)}`,
-      location: locationDisplay,
-      featured: event.type === 'drag-show'
-    }
-  }) || [];
+  }, [events]);
 
   const scrollTo = (index) => {
     setActiveSlide(index);

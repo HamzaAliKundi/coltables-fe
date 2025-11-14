@@ -27,23 +27,19 @@ const VenuesProfile = () => {
 
   const { data: calendarEvents } = useGetCalendarEventsQuery(
     {
-      view: isMonthView || (!isMonthView && !isDayView) ? "month" : "day",
+      view: isMonthView ? "month" : "day",
       fromDate: isDayView
         ? `${selectedDay.getFullYear()}-${String(
             selectedDay.getMonth() + 1
           ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
-        : isMonthView
-        ? `${currentDate.getFullYear()}-${String(
+        : `${currentDate.getFullYear()}-${String(
             currentDate.getMonth() + 1
-          ).padStart(2, "0")}`
-        : `${selectedWeekStart.getFullYear()}-${String(
-            selectedWeekStart.getMonth() + 1
           ).padStart(2, "0")}`,
       userId: id,
       userType: "venue",
     },
     {
-      skip: false,
+      skip: !isMonthView && !isDayView,
     }
   );
 
@@ -223,7 +219,7 @@ const VenuesProfile = () => {
     if (!calendarEvents?.eventDates) return [];
     let events = [];
 
-    if (isDayView && selectedDay) {
+    if (selectedDay) {
       // When a day is selected, show only that day's events
       const monthKey = `${selectedDay.getFullYear()}-${String(
         selectedDay.getMonth() + 1
@@ -263,44 +259,26 @@ const VenuesProfile = () => {
       events = weekEvents;
     }
     
-    // Sort events by date first, then by local time-of-day (same approach as EventListing)
-    const sortedEvents = [...events].sort((a, b) => {
-      // First, sort by date (using startDate)
-      const dateA = a.startDate ? a.startDate.split('T')[0] : '';
-      const dateB = b.startDate ? b.startDate.split('T')[0] : '';
-      
-      if (dateA !== dateB) {
-        return dateA.localeCompare(dateB);
-      }
-      
-      // If dates are the same, sort by local time-of-day
-      // Convert sortDateTime to local time and extract time-of-day
-      if (a.sortDateTime && b.sortDateTime) {
-        const dateA_obj = new Date(a.sortDateTime);
-        const dateB_obj = new Date(b.sortDateTime);
-        
-        // Get local time-of-day in minutes since midnight
-        const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
-        const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
-        
-        return localMinutesA - localMinutesB;
-      }
-      
-      // Fallback: combine startDate and startTime
-      const timeA = a.startTime ? a.startTime.split('T')[1] : '';
-      const timeB = b.startTime ? b.startTime.split('T')[1] : '';
-      const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
-      const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
-      
-      const fallbackDateA = new Date(fullA);
-      const fallbackDateB = new Date(fullB);
-      const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
-      const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
-      
-      return fallbackMinutesA - fallbackMinutesB;
+    // Group events by date and sort each group by time
+    const groups = {};
+    events.forEach(event => {
+      const date = new Date(event.startDate);
+      const dateKey = date.getUTCFullYear() + '-' +
+        String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getUTCDate()).padStart(2, '0');
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(event);
     });
 
-    return sortedEvents;
+    // Sort each group by startTime
+    Object.values(groups).forEach(group => {
+      group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    });
+
+    // Flatten back to a single array, preserving date order
+    return Object.keys(groups)
+      .sort() // sort by dateKey
+      .flatMap(dateKey => groups[dateKey]);
   };
 
   const handleViewChange = (isMonth) => {
