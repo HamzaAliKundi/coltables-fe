@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Reviews from "./Reviews";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetSingleVenueByIdQuery } from "../../apis/venues";
 import { Youtube } from "lucide-react";
 import Gallery from "../PerformerProfile/Gallery";
-import { useGetCalendarEventsQuery } from "../../apis/events";
+import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
 import { useGetPerformersQuery } from "../../apis/performers";
 
@@ -18,23 +18,25 @@ const VenuesProfile = () => {
 
   const { data: ad } = useGetAllAdsQuery("venue");
   const { data: getPerformers } = useGetPerformersQuery();
-  console.log(getPerformers);
 
 
   const { id } = useParams();
   const { data: venueDetail, isLoading: venueDetailLoading } =
     useGetSingleVenueByIdQuery(id);
 
-  const { data: calendarEvents } = useGetCalendarEventsQuery(
+  // Get current month/year for calendar API
+  const fromDate = isDayView
+    ? `${selectedDay.getFullYear()}-${String(
+        selectedDay.getMonth() + 1
+      ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
+    : `${currentDate.getFullYear()}-${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}`;
+
+  const { data: calendarEventsData } = useGetCalendarEventsForListingQuery(
     {
       view: isMonthView ? "month" : "day",
-      fromDate: isDayView
-        ? `${selectedDay.getFullYear()}-${String(
-            selectedDay.getMonth() + 1
-          ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`
-        : `${currentDate.getFullYear()}-${String(
-            currentDate.getMonth() + 1
-          ).padStart(2, "0")}`,
+      fromDate: fromDate,
       userId: id,
       userType: "venue",
     },
@@ -42,6 +44,83 @@ const VenuesProfile = () => {
       skip: !isMonthView && !isDayView,
     }
   );
+
+  // Transform calendar events to match the expected structure
+  // The new API returns events grouped by date (YYYY-MM-DD), we need to transform to the old structure
+  const transformCalendarEvents = useMemo(() => {
+    return (calendarEventsData) => {
+      if (!calendarEventsData?.events) return { eventDates: {} };
+      
+      const currentMonthStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+      console.log('[VenueCalendar] API Response:', {
+        eventsCount: Object.keys(calendarEventsData.events).length,
+        dateKeys: Object.keys(calendarEventsData.events),
+        currentMonth: currentMonthStr
+      });
+    
+    // Transform to expected structure
+    const eventDates = {};
+    
+    Object.entries(calendarEventsData.events).forEach(([dateKey, events]) => {
+      if (events.length > 0) {
+        // Parse the date key (YYYY-MM-DD) - this is the canonical date from API
+        const [year, month, day] = dateKey.split('-');
+        const monthKey = `${year}-${month}`;
+        
+        console.log('[VenueCalendar] Processing date key:', {
+          dateKey,
+          year,
+          month,
+          day,
+          monthKey,
+          eventsCount: events.length,
+          eventTitles: events.map(e => e.title)
+        });
+        
+        if (!eventDates[monthKey]) {
+          eventDates[monthKey] = {};
+        }
+        
+        if (!eventDates[monthKey][day]) {
+          eventDates[monthKey][day] = { eventDetails: [] };
+        }
+        
+        // Events are already sorted by the backend, but we ensure they're sorted by sortDateTime
+        const sortedEvents = [...events].sort((a, b) => {
+          if (a.sortDateTime && b.sortDateTime) {
+            return new Date(a.sortDateTime) - new Date(b.sortDateTime);
+          }
+          const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
+          const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
+          return timeA - timeB;
+        });
+        
+        // Store the original API date key with each event for proper filtering
+        const eventsWithDateKey = sortedEvents.map(event => ({
+          ...event,
+          _apiDateKey: dateKey, // Store the original date key from API
+          _apiYear: year,
+          _apiMonth: month,
+          _apiDay: day
+        }));
+        
+        eventDates[monthKey][day].eventDetails.push(...eventsWithDateKey);
+      }
+    });
+    
+      console.log('[VenueCalendar] Transformed events structure:', {
+        monthKeys: Object.keys(eventDates),
+        eventDates
+      });
+      
+      return { eventDates };
+    };
+  }, [currentDate]);
+
+  // Transform events for this venue
+  const calendarEvents = useMemo(() => {
+    return transformCalendarEvents(calendarEventsData);
+  }, [calendarEventsData, transformCalendarEvents]);
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -138,60 +217,84 @@ const VenuesProfile = () => {
     });
   };
 
-  const formatEventDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      timeZone: userTimeZone,
-    });
-  };
-
-  function getLocalDateKey(event) {
-    const date = new Date(event.startDate);
-    // If the UTC time is midnight, and the local time is the previous day, adjust
-    if (
-      date.getUTCHours() === 0 &&
-      date.getUTCMinutes() === 0 &&
-      date.getUTCSeconds() === 0
-    ) {
-      // If the local date is before the UTC date, add a day
-      const localDate = new Date(date);
-      const localDay = localDate.getDate();
-      const utcDay = date.getUTCDate();
-      if (localDay < utcDay) {
-        localDate.setDate(localDate.getDate() + 1);
-        return localDate.toLocaleDateString();
-      }
-    }
-    // Otherwise, just use the local date
+  // Get date key from API date key (YYYY-MM-DD format) - use this instead of parsing startDate
+  // This ensures we use the canonical date from the API, avoiding timezone issues
+  function getDateKeyFromApiDate(apiDateKey) {
+    if (!apiDateKey) return null;
+    // apiDateKey is in format YYYY-MM-DD
+    const [year, month, day] = apiDateKey.split('-');
+    // Create a date object in local timezone using the API date components
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     return date.toLocaleDateString();
   }
 
-  // Group all events by local date in the user's timezone
-  const groupEventsByLocalDate = (calendarEvents) => {
+  // Get current month/year key for filtering
+  const currentMonthYear = useMemo(() => {
+    return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+  }, [currentDate]);
+  
+  // Group all events by date using the API date key (not startDate parsing)
+  // This ensures events appear on the correct day as determined by the API
+  // Only process events for the current month to avoid showing events from other months
+  const groupedEventsByApiDate = useMemo(() => {
     const grouped = {};
-    if (!calendarEvents?.eventDates) return grouped;
-    Object.values(calendarEvents.eventDates).forEach((monthObj) => {
+    if (!calendarEvents?.eventDates) {
+      console.log('[VenueCalendar] No calendar events to group');
+      return grouped;
+    }
+    
+    console.log('[VenueCalendar] Grouping events by API date for month:', currentMonthYear);
+    
+    Object.entries(calendarEvents.eventDates).forEach(([monthKey, monthObj]) => {
+      // Only process events for the current month
+      if (monthKey !== currentMonthYear) {
+        console.log('[VenueCalendar] Skipping month:', monthKey, '(not current month:', currentMonthYear, ')');
+        return;
+      }
+      
       Object.entries(monthObj).forEach(([day, dayObj]) => {
         dayObj.eventDetails.forEach((event) => {
-          const localDateKey = getLocalDateKey(event);
-          if (!grouped[localDateKey]) grouped[localDateKey] = [];
-          grouped[localDateKey].push(event);
+          // Use the API date key stored with the event, or fallback to constructing from monthKey and day
+          const apiDateKey = event._apiDateKey || `${monthKey}-${day.padStart(2, '0')}`;
+          const dateKey = getDateKeyFromApiDate(apiDateKey);
+          
+          if (dateKey) {
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(event);
+            
+            console.log('[VenueCalendar] Grouped event:', {
+              eventTitle: event.title,
+              apiDateKey,
+              dateKey,
+              monthKey,
+              day
+            });
+          }
         });
       });
     });
+    
+    console.log('[VenueCalendar] Final grouped events:', {
+      dateKeys: Object.keys(grouped),
+      totalEvents: Object.values(grouped).flat().length
+    });
+    
     return grouped;
-  };
-
-  // Use this for calendar dots and event display
-  const groupedEventsByLocalDate = groupEventsByLocalDate(calendarEvents);
+  }, [calendarEvents, currentMonthYear]);
 
   const getEventsForDay = (day) => {
     const dateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const localDateKey = dateObj.toLocaleDateString();
-    return groupedEventsByLocalDate[localDateKey] || [];
+    const dateKey = dateObj.toLocaleDateString();
+    const events = groupedEventsByApiDate[dateKey] || [];
+    
+    console.log('[VenueCalendar] getEventsForDay:', {
+      day,
+      dateKey,
+      eventsCount: events.length,
+      eventTitles: events.map(e => e.title)
+    });
+    
+    return events;
   };
 
   const renderEventDots = (day, isCurrentWeek = false) => {
@@ -216,69 +319,105 @@ const VenuesProfile = () => {
   };
 
   const getEventsForDisplay = () => {
-    if (!calendarEvents?.eventDates) return [];
-    let events = [];
-
-    if (selectedDay) {
-      // When a day is selected, show only that day's events
-      const monthKey = `${selectedDay.getFullYear()}-${String(
-        selectedDay.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const dayStr = String(selectedDay.getDate()).padStart(2, "0");
-      events = calendarEvents.eventDates[monthKey]?.[dayStr]?.eventDetails || [];
-    } else if (isMonthView) {
-      // In month view, show all events for the current month
-      const monthKey = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const monthEvents = calendarEvents.eventDates[monthKey] || {};
-      events = Object.values(monthEvents).flatMap(
-        (day) => day.eventDetails || []
-      );
-    } else {
-      // In week view, filter events for the selected week from month data
-      const monthKey = `${selectedWeekStart.getFullYear()}-${String(
-        selectedWeekStart.getMonth() + 1
-      ).padStart(2, "0")}`;
-      const monthEvents = calendarEvents.eventDates[monthKey] || {};
-
-      // Get the week range
-      const weekStart =
-        selectedWeekStart.getDate() - selectedWeekStart.getDay();
-      const weekEnd = weekStart + 6;
-
-      // Filter events for days in the week range
-      const weekEvents = [];
-      Object.entries(monthEvents).forEach(([day, data]) => {
-        const dayNum = parseInt(day);
-        if (dayNum >= weekStart && dayNum <= weekEnd) {
-          weekEvents.push(...(data.eventDetails || []));
-        }
-      });
-
-      events = weekEvents;
+    if (!calendarEvents?.eventDates) {
+      console.log('[VenueCalendar] getEventsForDisplay: No calendar events');
+      return [];
     }
     
-    // Group events by date and sort each group by time
-    const groups = {};
-    events.forEach(event => {
-      const date = new Date(event.startDate);
-      const dateKey = date.getUTCFullYear() + '-' +
-        String(date.getUTCMonth() + 1).padStart(2, '0') + '-' +
-        String(date.getUTCDate()).padStart(2, '0');
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(event);
+    let events = [];
+    
+    if (selectedDay) {
+      // For selected day, use the date key from the selected day
+      const dateKey = new Date(selectedDay).toLocaleDateString();
+      events = groupedEventsByApiDate[dateKey] || [];
+      
+      console.log('[VenueCalendar] getEventsForDisplay (selectedDay):', {
+        selectedDay: selectedDay.toLocaleDateString(),
+        dateKey,
+        eventsCount: events.length
+      });
+    } else if (isMonthView) {
+      // For month view, only show events from the current month (already filtered in groupEventsByApiDate)
+      events = Object.values(groupedEventsByApiDate).flat();
+      
+      console.log('[VenueCalendar] getEventsForDisplay (monthView):', {
+        currentMonthYear,
+        dateKeys: Object.keys(groupedEventsByApiDate),
+        eventsCount: events.length,
+        eventDetails: events.map(e => ({
+          title: e.title,
+          apiDateKey: e._apiDateKey,
+          startDate: e.startDate
+        }))
+      });
+    } else {
+      // For week view, filter events for the selected week
+      const weekStart = new Date(selectedWeekStart);
+      weekStart.setHours(0,0,0,0);
+      const weekDays = [];
+      for (let d = 0; d < 7; d++) {
+        const weekDay = new Date(weekStart);
+        weekDay.setDate(weekStart.getDate() + d);
+        const dateKey = weekDay.toLocaleDateString();
+        weekDays.push(dateKey);
+      }
+      events = weekDays.flatMap((key) => groupedEventsByApiDate[key] || []);
+      
+      console.log('[VenueCalendar] getEventsForDisplay (weekView):', {
+        weekDays,
+        eventsCount: events.length
+      });
+    }
+    
+    // Sort events by date first, then by local time-of-day (same as EventListing and PerformerProfile)
+    const sortedEvents = [...events].sort((a, b) => {
+      // First, sort by API date key (most reliable)
+      const apiDateA = a._apiDateKey || (a.startDate ? a.startDate.split('T')[0] : '');
+      const apiDateB = b._apiDateKey || (b.startDate ? b.startDate.split('T')[0] : '');
+      
+      if (apiDateA !== apiDateB) {
+        return apiDateA.localeCompare(apiDateB);
+      }
+      
+      // If dates are the same, sort by local time-of-day
+      // Convert sortDateTime to local time and extract time-of-day
+      if (a.sortDateTime && b.sortDateTime) {
+        const dateA_obj = new Date(a.sortDateTime);
+        const dateB_obj = new Date(b.sortDateTime);
+        
+        // Get local time-of-day in minutes since midnight
+        const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
+        const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
+        
+        return localMinutesA - localMinutesB;
+      }
+      
+      // Fallback: combine startDate and startTime
+      const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+      const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+      const timeA = a.startTime ? a.startTime.split('T')[1] : '';
+      const timeB = b.startTime ? b.startTime.split('T')[1] : '';
+      const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
+      const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
+      
+      const fallbackDateA = new Date(fullA);
+      const fallbackDateB = new Date(fullB);
+      const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
+      const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
+      
+      return fallbackMinutesA - fallbackMinutesB;
     });
 
-    // Sort each group by startTime
-    Object.values(groups).forEach(group => {
-      group.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    console.log('[VenueCalendar] getEventsForDisplay final sorted events:', {
+      count: sortedEvents.length,
+      events: sortedEvents.map(e => ({
+        title: e.title,
+        apiDateKey: e._apiDateKey,
+        startDate: e.startDate
+      }))
     });
 
-    // Flatten back to a single array, preserving date order
-    return Object.keys(groups)
-      .sort() // sort by dateKey
-      .flatMap(dateKey => groups[dateKey]);
+    return sortedEvents;
   };
 
   const handleViewChange = (isMonth) => {
@@ -777,24 +916,23 @@ const VenuesProfile = () => {
               <div className="max-h-[300px] overflow-y-auto pr-2">
                 <div className="space-y-2">
                   {getEventsForDisplay().map((event, i) => {
-                    // Use the same timezone handling as the dots
-                    const eventDate = new Date(event.startDate);
-                    let adjustedDate = eventDate;
-                    
-                    // Apply the same timezone fix that works for dots
-                    if (
-                      eventDate.getUTCHours() === 0 &&
-                      eventDate.getUTCMinutes() === 0 &&
-                      eventDate.getUTCSeconds() === 0
-                    ) {
-                      const localDate = new Date(eventDate);
-                      const localDay = localDate.getDate();
-                      const utcDay = eventDate.getUTCDate();
-                      if (localDay < utcDay) {
-                        localDate.setDate(localDate.getDate() + 1);
-                        adjustedDate = localDate;
-                      }
+                    // Use the API date key to display the correct date (avoiding timezone issues)
+                    let displayDate;
+                    if (event._apiDateKey) {
+                      // Parse the API date key (YYYY-MM-DD) and create a date object
+                      const [year, month, day] = event._apiDateKey.split('-');
+                      displayDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                    } else {
+                      // Fallback to startDate if API date key is not available
+                      displayDate = new Date(event.startDate);
                     }
+                    
+                    console.log('[VenueCalendar] Rendering event:', {
+                      title: event.title,
+                      apiDateKey: event._apiDateKey,
+                      displayDate: displayDate.toLocaleDateString(),
+                      startDate: event.startDate
+                    });
                     
                     return (
                       <div
@@ -813,7 +951,7 @@ const VenuesProfile = () => {
                             {event.title && event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
                           </h4>
                           <p className="text-white/80 text-sm">
-                            {adjustedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                            {displayDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                           </p>
                         </div>
                         <div className="text-right">
@@ -821,7 +959,7 @@ const VenuesProfile = () => {
                             {formatEventTime(event.startTime)}
                           </span>
                           <span className="text-white/70 text-xs block">
-                            {event.host && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user.name}
+                            {event.host && event.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name}
                           </span>
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Gallery from "./Gallery";
 import Reviews from "./Reviews";
 import { useNavigate, useParams } from "react-router-dom";
@@ -89,64 +89,145 @@ const PerformerProfile = () => {
 
   // Transform calendar events to match the expected structure
   // The new API returns events grouped by date (YYYY-MM-DD), we need to transform to the old structure
-  const transformCalendarEvents = (calendarEventsData) => {
-    if (!calendarEventsData?.events) return { eventDates: {} };
-    
-    // Transform to expected structure
-    const eventDates = {};
-    
-    Object.entries(calendarEventsData.events).forEach(([dateKey, events]) => {
-      if (events.length > 0) {
-        // Parse the date key (YYYY-MM-DD)
-        const [year, month, day] = dateKey.split('-');
-        const monthKey = `${year}-${month}`;
-        
-        if (!eventDates[monthKey]) {
-          eventDates[monthKey] = {};
-        }
-        
-        if (!eventDates[monthKey][day]) {
-          eventDates[monthKey][day] = { eventDetails: [] };
-        }
-        
-        // Events are already sorted by the backend, but we ensure they're sorted by sortDateTime
-        const sortedEvents = [...events].sort((a, b) => {
-          if (a.sortDateTime && b.sortDateTime) {
-            return new Date(a.sortDateTime) - new Date(b.sortDateTime);
+  const transformCalendarEvents = useMemo(() => {
+    return (calendarEventsData) => {
+      if (!calendarEventsData?.events) return { eventDates: {} };
+      
+      const currentMonthStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+      console.log('[PerformerCalendar] API Response:', {
+        eventsCount: Object.keys(calendarEventsData.events).length,
+        dateKeys: Object.keys(calendarEventsData.events),
+        currentMonth: currentMonthStr
+      });
+      
+      // Transform to expected structure
+      const eventDates = {};
+      
+      Object.entries(calendarEventsData.events).forEach(([dateKey, events]) => {
+        if (events.length > 0) {
+          // Parse the date key (YYYY-MM-DD) - this is the canonical date from API
+          const [year, month, day] = dateKey.split('-');
+          const monthKey = `${year}-${month}`;
+          
+          console.log('[PerformerCalendar] Processing date key:', {
+            dateKey,
+            year,
+            month,
+            day,
+            monthKey,
+            eventsCount: events.length,
+            eventTitles: events.map(e => e.title)
+          });
+          
+          if (!eventDates[monthKey]) {
+            eventDates[monthKey] = {};
           }
-          const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
-          const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
-          return timeA - timeB;
-        });
-        
-        eventDates[monthKey][day].eventDetails.push(...sortedEvents);
-      }
-    });
-    
-    return { eventDates };
-  };
+          
+          if (!eventDates[monthKey][day]) {
+            eventDates[monthKey][day] = { eventDetails: [] };
+          }
+          
+          // Events are already sorted by the backend, but we ensure they're sorted by sortDateTime
+          const sortedEvents = [...events].sort((a, b) => {
+            if (a.sortDateTime && b.sortDateTime) {
+              return new Date(a.sortDateTime) - new Date(b.sortDateTime);
+            }
+            const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
+            const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
+            return timeA - timeB;
+          });
+          
+          // Store the original API date key with each event for proper filtering
+          const eventsWithDateKey = sortedEvents.map(event => ({
+            ...event,
+            _apiDateKey: dateKey, // Store the original date key from API
+            _apiYear: year,
+            _apiMonth: month,
+            _apiDay: day
+          }));
+          
+          eventDates[monthKey][day].eventDetails.push(...eventsWithDateKey);
+        }
+      });
+      
+      console.log('[PerformerCalendar] Transformed events structure:', {
+        monthKeys: Object.keys(eventDates),
+        eventDates
+      });
+      
+      return { eventDates };
+    };
+  }, [currentDate]);
 
   // Transform events for this performer
-  const calendarEvents = transformCalendarEvents(calendarEventsData);
+  const calendarEvents = useMemo(() => {
+    return transformCalendarEvents(calendarEventsData);
+  }, [calendarEventsData, transformCalendarEvents]);
 
-  // Group all events by local date in the user's timezone
-  const groupEventsByLocalDate = (calendarEvents) => {
+  // Get date key from API date key (YYYY-MM-DD format) - use this instead of parsing startDate
+  // This ensures we use the canonical date from the API, avoiding timezone issues
+  function getDateKeyFromApiDate(apiDateKey) {
+    if (!apiDateKey) return null;
+    // apiDateKey is in format YYYY-MM-DD
+    const [year, month, day] = apiDateKey.split('-');
+    // Create a date object in local timezone using the API date components
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    return date.toLocaleDateString();
+  }
+
+  // Get current month/year key for filtering
+  const currentMonthYear = useMemo(() => {
+    return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}`;
+  }, [currentDate]);
+  
+  // Group all events by date using the API date key (not startDate parsing)
+  // This ensures events appear on the correct day as determined by the API
+  // Only process events for the current month to avoid showing events from other months
+  const groupedEventsByApiDate = useMemo(() => {
     const grouped = {};
-    if (!calendarEvents?.eventDates) return grouped;
-    Object.values(calendarEvents.eventDates).forEach((monthObj) => {
+    if (!calendarEvents?.eventDates) {
+      console.log('[PerformerCalendar] No calendar events to group');
+      return grouped;
+    }
+    
+    console.log('[PerformerCalendar] Grouping events by API date for month:', currentMonthYear);
+    
+    Object.entries(calendarEvents.eventDates).forEach(([monthKey, monthObj]) => {
+      // Only process events for the current month
+      if (monthKey !== currentMonthYear) {
+        console.log('[PerformerCalendar] Skipping month:', monthKey, '(not current month:', currentMonthYear, ')');
+        return;
+      }
+      
       Object.entries(monthObj).forEach(([day, dayObj]) => {
         dayObj.eventDetails.forEach((event) => {
-          const localDateKey = getLocalDateKey(event);
-          if (!grouped[localDateKey]) grouped[localDateKey] = [];
-          grouped[localDateKey].push(event);
+          // Use the API date key stored with the event, or fallback to constructing from monthKey and day
+          const apiDateKey = event._apiDateKey || `${monthKey}-${day.padStart(2, '0')}`;
+          const dateKey = getDateKeyFromApiDate(apiDateKey);
+          
+          if (dateKey) {
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(event);
+            
+            console.log('[PerformerCalendar] Grouped event:', {
+              eventTitle: event.title,
+              apiDateKey,
+              dateKey,
+              monthKey,
+              day
+            });
+          }
         });
       });
     });
+    
+    console.log('[PerformerCalendar] Final grouped events:', {
+      dateKeys: Object.keys(grouped),
+      totalEvents: Object.values(grouped).flat().length
+    });
+    
     return grouped;
-  };
-
-  // Use this for calendar dots and event display
-  const groupedEventsByLocalDate = groupEventsByLocalDate(calendarEvents);
+  }, [calendarEvents, currentMonthYear]);
 
   // Helper functions
   const getDaysInMonth = (date) => {
@@ -249,8 +330,16 @@ const PerformerProfile = () => {
   };
 
   const getEventsForDay = (dateObj) => {
-    const localDateKey = dateObj.toLocaleDateString();
-    return groupedEventsByLocalDate[localDateKey] || [];
+    const dateKey = dateObj.toLocaleDateString();
+    const events = groupedEventsByApiDate[dateKey] || [];
+    
+    console.log('[PerformerCalendar] getEventsForDay:', {
+      dateKey,
+      eventsCount: events.length,
+      eventTitles: events.map(e => e.title)
+    });
+    
+    return events;
   };
 
   const renderEventDots = (dateObj, isCurrentWeek = false) => {
@@ -274,35 +363,64 @@ const PerformerProfile = () => {
   };
 
   const getEventsForDisplay = () => {
-    if (!calendarEvents?.eventDates) return [];
+    if (!calendarEvents?.eventDates) {
+      console.log('[PerformerCalendar] getEventsForDisplay: No calendar events');
+      return [];
+    }
+    
     let events = [];
     
     if (selectedDay) {
-      const localDateKey = new Date(selectedDay).toLocaleDateString();
-      events = groupedEventsByLocalDate[localDateKey] || [];
+      // For selected day, use the date key from the selected day
+      const dateKey = new Date(selectedDay).toLocaleDateString();
+      events = groupedEventsByApiDate[dateKey] || [];
+      
+      console.log('[PerformerCalendar] getEventsForDisplay (selectedDay):', {
+        selectedDay: selectedDay.toLocaleDateString(),
+        dateKey,
+        eventsCount: events.length
+      });
     } else if (isMonthView) {
-      events = Object.values(groupedEventsByLocalDate).flat();
+      // For month view, only show events from the current month (already filtered in groupEventsByApiDate)
+      events = Object.values(groupedEventsByApiDate).flat();
+      
+      console.log('[PerformerCalendar] getEventsForDisplay (monthView):', {
+        currentMonthYear,
+        dateKeys: Object.keys(groupedEventsByApiDate),
+        eventsCount: events.length,
+        eventDetails: events.map(e => ({
+          title: e.title,
+          apiDateKey: e._apiDateKey,
+          startDate: e.startDate
+        }))
+      });
     } else {
+      // For week view, filter events for the selected week
       const weekStart = new Date(selectedWeekStart);
       weekStart.setHours(0,0,0,0);
       const weekDays = [];
       for (let d = 0; d < 7; d++) {
         const weekDay = new Date(weekStart);
         weekDay.setDate(weekStart.getDate() + d);
-        const localDateKey = weekDay.toLocaleDateString();
-        weekDays.push(localDateKey);
+        const dateKey = weekDay.toLocaleDateString();
+        weekDays.push(dateKey);
       }
-      events = weekDays.flatMap((key) => groupedEventsByLocalDate[key] || []);
+      events = weekDays.flatMap((key) => groupedEventsByApiDate[key] || []);
+      
+      console.log('[PerformerCalendar] getEventsForDisplay (weekView):', {
+        weekDays,
+        eventsCount: events.length
+      });
     }
     
     // Sort events by date first, then by local time-of-day (same as EventListing)
     const sortedEvents = [...events].sort((a, b) => {
-      // First, sort by date (using startDate)
-      const dateA = a.startDate ? a.startDate.split('T')[0] : '';
-      const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+      // First, sort by API date key (most reliable)
+      const apiDateA = a._apiDateKey || (a.startDate ? a.startDate.split('T')[0] : '');
+      const apiDateB = b._apiDateKey || (b.startDate ? b.startDate.split('T')[0] : '');
       
-      if (dateA !== dateB) {
-        return dateA.localeCompare(dateB);
+      if (apiDateA !== apiDateB) {
+        return apiDateA.localeCompare(apiDateB);
       }
       
       // If dates are the same, sort by local time-of-day
@@ -319,6 +437,8 @@ const PerformerProfile = () => {
       }
       
       // Fallback: combine startDate and startTime
+      const dateA = a.startDate ? a.startDate.split('T')[0] : '';
+      const dateB = b.startDate ? b.startDate.split('T')[0] : '';
       const timeA = a.startTime ? a.startTime.split('T')[1] : '';
       const timeB = b.startTime ? b.startTime.split('T')[1] : '';
       const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
@@ -330,6 +450,15 @@ const PerformerProfile = () => {
       const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
       
       return fallbackMinutesA - fallbackMinutesB;
+    });
+
+    console.log('[PerformerCalendar] getEventsForDisplay final sorted events:', {
+      count: sortedEvents.length,
+      events: sortedEvents.map(e => ({
+        title: e.title,
+        apiDateKey: e._apiDateKey,
+        startDate: e.startDate
+      }))
     });
 
     return sortedEvents;
@@ -967,24 +1096,23 @@ const PerformerProfile = () => {
               <div className="max-h-[300px] overflow-y-auto pr-2">
                 <div className="space-y-2">
                   {getEventsForDisplay().map((event, i) => {
-                    // Use the same timezone handling as the dots
-                    const eventDate = new Date(event.startDate);
-                    let adjustedDate = eventDate;
-                    
-                    // Apply the same timezone fix that works for dots
-                    if (
-                      eventDate.getUTCHours() === 0 &&
-                      eventDate.getUTCMinutes() === 0 &&
-                      eventDate.getUTCSeconds() === 0
-                    ) {
-                      const localDate = new Date(eventDate);
-                      const localDay = localDate.getDate();
-                      const utcDay = eventDate.getUTCDate();
-                      if (localDay < utcDay) {
-                        localDate.setDate(localDate.getDate() + 1);
-                        adjustedDate = localDate;
-                      }
+                    // Use the API date key to display the correct date (avoiding timezone issues)
+                    let displayDate;
+                    if (event._apiDateKey) {
+                      // Parse the API date key (YYYY-MM-DD) and create a date object
+                      const [year, month, day] = event._apiDateKey.split('-');
+                      displayDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                    } else {
+                      // Fallback to startDate if API date key is not available
+                      displayDate = new Date(event.startDate);
                     }
+                    
+                    console.log('[PerformerCalendar] Rendering event:', {
+                      title: event.title,
+                      apiDateKey: event._apiDateKey,
+                      displayDate: displayDate.toLocaleDateString(),
+                      startDate: event.startDate
+                    });
                     
                     return (
                       <div
@@ -1003,7 +1131,7 @@ const PerformerProfile = () => {
                             {event.title.length > 15 ? event.title.slice(0, 15) + '...' : event.title}
                           </h4>
                           <p className="text-white/80 text-sm">
-                            {adjustedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                            {displayDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                           </p>
                         </div>
                         <div className="text-right">
@@ -1011,10 +1139,54 @@ const PerformerProfile = () => {
                             {formatEventTime(event.startTime)}
                           </span>
                           <span className="text-white/70 text-xs block">
-                            {event?.userType === "performer"
-                              ? (event?.address && event.address.length > 15 ? event.address.slice(0, 15) + '...' : event.address)
-                              : (event?.user?.name && event.user.name.length > 15 ? event.user.name.slice(0, 15) + '...' : event.user?.name)
-                            }
+                            {(() => {
+                              let location = "N/A";
+                              
+                              // For venue events, show venue name
+                              if (event?.userType === "venue") {
+                                // 1. Check if user is populated object with name
+                                if (typeof event?.user === "object" && event?.user?.name) {
+                                  location = event.user.name;
+                                }
+                                // 2. Check if address field exists
+                                else if (event?.address) {
+                                  location = event.address;
+                                }
+                                // 3. Check venuesList array for venue name (if populated)
+                                else if (Array.isArray(event?.venuesList) && event.venuesList.length > 0) {
+                                  const firstVenue = event.venuesList[0];
+                                  if (typeof firstVenue === "object" && firstVenue?.name) {
+                                    location = firstVenue.name;
+                                  }
+                                }
+                              } 
+                              // For admin-created events, prioritize venue name from venuesList or address
+                              else if (event?.userType === "admin" || !event?.userType) {
+                                // 1. Check venuesList array for venue name (if populated)
+                                if (Array.isArray(event?.venuesList) && event.venuesList.length > 0) {
+                                  const firstVenue = event.venuesList[0];
+                                  if (typeof firstVenue === "object" && firstVenue?.name) {
+                                    location = firstVenue.name;
+                                  } else if (typeof firstVenue === "string") {
+                                    location = firstVenue;
+                                  }
+                                }
+                                // 2. Check address field
+                                else if (event?.address) {
+                                  location = event.address;
+                                }
+                                // 3. Fallback to user name only if no venue info available
+                                else if (event?.user?.name) {
+                                  location = event.user.name;
+                                }
+                              }
+                              // For performer events, show address
+                              else {
+                                location = event?.address || "N/A";
+                              }
+                              
+                              return location.length > 15 ? location.slice(0, 15) + '...' : location;
+                            })()}
                           </span>
                         </div>
                       </div>
