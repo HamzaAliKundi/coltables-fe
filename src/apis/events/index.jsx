@@ -106,7 +106,7 @@ export const eventsApi = createApi({
     }),
 
     getCalendarEventsForListing: builder.query({
-      query: ({ view = 'month', fromDate, isUpcoming, userId, userType }) => {
+      query: ({ view = 'month', fromDate, isUpcoming, userId, userType, showAllFuture }) => {
         const params = new URLSearchParams();
         params.append('view', view);
         params.append('fromDate', fromDate);
@@ -118,6 +118,9 @@ export const eventsApi = createApi({
         }
         if (userType) {
           params.append('userType', userType);
+        }
+        if (showAllFuture) {
+          params.append('showAllFuture', '1');
         }
         return `/api/user/event/get-calendar-events?${params.toString()}`;
       },

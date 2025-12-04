@@ -89,6 +89,8 @@ const EventListing = ({ isEvent, searchQuery }) => {
 
   // Determine if we should show only upcoming events (home page or events page)
   const shouldShowUpcoming = location.pathname === '/' || location.pathname === '/events';
+  // On events page, show all future events (not just current month)
+  const showAllFuture = location.pathname === '/events';
 
   const {
     data: calendarEventsData,
@@ -99,6 +101,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
       view: 'month',
       fromDate: currentDate,
       isUpcoming: shouldShowUpcoming,
+      showAllFuture: showAllFuture,
     },
     {
       refetchOnMountOrArgChange: true,
