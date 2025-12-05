@@ -31,19 +31,43 @@ const Calendar = () => {
     }
   });
 
+  // Helper to add +1 day to a date string (ISO format)
+  function addOneDay(dateString) {
+    const date = new Date(dateString);
+    date.setUTCDate(date.getUTCDate() + 1);
+    return date;
+  }
+
   // Ensure all events have string dates, never Date objects
   const safeMonthEvents = useMemo(() => {
     if (!monthEvents) return [];
     
     return monthEvents.map(event => {
-      // The API already combines startDate and startTime correctly
-      // Just use the start/end directly without any date adjustments
-      // Store start for time display (it contains both date and time)
+      // Use startDate for the date part and startTime for the time part
+      const startDate = event.startDate || event.start;
+      const startTime = event.startTime || event.start;
+      
+      // Create a combined date-time by taking date from startDate and time from startTime
+      const dateFromStartDate = new Date(startDate);
+      const timeFromStartTime = new Date(startTime);
+      
+      // Set the time from startTime onto the date from startDate
+      const combinedDateTime = new Date(dateFromStartDate);
+      combinedDateTime.setUTCHours(
+        timeFromStartTime.getUTCHours(),
+        timeFromStartTime.getUTCMinutes(),
+        timeFromStartTime.getUTCSeconds()
+      );
+      
+      // Add +1 day to fix the timezone issue
+      combinedDateTime.setUTCDate(combinedDateTime.getUTCDate() + 1);
+
       return {
         ...event,
-        start: event.start, // Already in ISO string format from transformResponse
-        end: event.end || event.start, // Use same time for end if not provided
-        originalStartTime: event.start // Use start for time display since it contains the full datetime
+        start: combinedDateTime.toISOString(),
+        end: combinedDateTime.toISOString(), // Use same time for end since we don't care about end time
+        originalStartDate: startDate,
+        originalStartTime: startTime
       };
     });
   }, [monthEvents]);
@@ -66,10 +90,20 @@ const Calendar = () => {
           : `${eventTime} ${title}`;
       }
 
-      // Convert ISO string dates to Date objects for Big Calendar
-      // No date adjustments needed - use dates directly from API
-      const finalStart = new Date(event.start);
-      const finalEnd = new Date(event.end || event.start);
+      // For agenda view, apply additional timezone fix if needed
+      let eventStart = event.start;
+      let eventEnd = event.end;
+      
+      if (currentView === Views.AGENDA) {
+        // Use the same logic as month view - no additional adjustments needed
+        // The events are already properly adjusted in safeMonthEvents
+        eventStart = event.start;
+        eventEnd = event.end;
+      }
+
+      // Use displayDate for the start date to apply the +1 day increment
+      const finalStart = event.displayDate ? new Date(event.displayDate) : new Date(eventStart);
+      const finalEnd = new Date(eventEnd);
 
       return {
         ...event,
