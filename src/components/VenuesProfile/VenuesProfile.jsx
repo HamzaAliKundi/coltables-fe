@@ -17,7 +17,15 @@ const VenuesProfile = () => {
   const navigate = useNavigate();
 
   const { data: ad } = useGetAllAdsQuery("venue");
-  const { data: getPerformers } = useGetPerformersQuery();
+  // API returns { success: true, performers: [...], pagination: {...} }
+  const { data: getPerformersResponse } = useGetPerformersQuery({
+    page: 1,
+    limit: 1000,
+    search: "",
+  });
+  const performersList = Array.isArray(getPerformersResponse?.performers)
+    ? getPerformersResponse.performers
+    : [];
 
 
   const { id } = useParams();
@@ -591,16 +599,19 @@ const VenuesProfile = () => {
               {/* Sections Grid */}
               <div className="space-y-6 lg:space-y-8">
                 {/* Performers Section */}
-                {venueDetail?.venue?.topDragPerformers?.[0] && (
+                {Array.isArray(venueDetail?.venue?.topDragPerformers) &&
+                  venueDetail.venue.topDragPerformers.length > 0 && (
                   <div>
                     <h3 className="text-white mb-2 text-[20px] font-space-grotesk font-bold leading-none capitalize border-b-[3px] border-[#FF00A2] pb-1">
                       Which Performers May You Find Here?
                     </h3>
                     <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
-                      {venueDetail?.venue?.topDragPerformers?.map(
+                      {venueDetail.venue.topDragPerformers.map(
                         (performerId, index) => {
                           // Find the performer in the getPerformers data
-                          const performer = getPerformers?.find(p => p._id === performerId);
+                          const performer = performersList.find(
+                            (p) => p._id === performerId
+                          );
                           return (
                             <li key={index}>
                               <button

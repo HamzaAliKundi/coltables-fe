@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useGetSingleEventByIdQuery } from "../../apis/events";
 import { Link, useParams } from "react-router-dom";
-import { useGetPerformersQuery } from "../../apis/performers";
 import {
   CalendarCheck,
   Crown,
@@ -19,8 +18,6 @@ const EventDetail = () => {
     useGetSingleEventByIdQuery(id);
   const [showMore, setShowMore] = useState(false);
   const [showMoreHosts, setShowMoreHosts] = useState(false);
-
-  const { data: getPerformers } = useGetPerformersQuery();
 
   const performers = getEventsByVenuesById?.event?.performersList || [];
   const performer = getEventsByVenuesById?.event?.user || null;
