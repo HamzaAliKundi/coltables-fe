@@ -498,7 +498,7 @@ const VenuesProfile = () => {
             </div>
           ) : (
             <>
-              <h1 className="font-['Bebas_Neue'] text-[64px] font-bold mb-4 lg:mb-8 text-center">
+              <h1 className="font-space-grotesk text-[64px] font-bold mb-4 lg:mb-8 text-center">
                 {venueDetail?.venue?.name}
               </h1>
 
