@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { isVideo } from "../../utils/videoDetection";
 
 const Gallery = ({ images = [], videos = [] }) => {
   const filteredImages = images ? images.filter(img => img !== null) : [];
 
   const media = filteredImages.map((item) => {
-    if (typeof item === "string" && item.toLowerCase().endsWith(".mp4")) {
+    if (typeof item === "string" && isVideo(item)) {
       return { url: item, type: "video" };
     }
     return { url: item, type: "image" };

@@ -112,6 +112,11 @@ const UpComingEvents = () => {
     // Transform calendar events object to sorted array
     let allEvents = groupAndSortEvents(calendarEventsData.events);
     
+    // Ensure allEvents is always an array
+    if (!Array.isArray(allEvents)) {
+      allEvents = [];
+    }
+    
     // Limit to 10 events
     allEvents = allEvents.slice(0, 10);
 
@@ -248,7 +253,8 @@ const UpComingEvents = () => {
             className="flex space-x-6 overflow-x-auto hide-scrollbar py-4 md:px-12"
             style={{ scrollbarWidth: "none" }}
           >
-            {events.map((event, index) => (
+            {Array.isArray(events) && events.length > 0 ? (
+              events.map((event, index) => (
               <div
                 key={event.id}
                 className={`flex-shrink-0 w-[320px] md:w-[567px] h-[381px] relative ${
@@ -350,13 +356,14 @@ const UpComingEvents = () => {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            ) : null}
           </div>
         </div>
 
         {/* Navigation Dots */}
         <div className="flex justify-center mt-6 space-x-3">
-          {events.map((_, index) => (
+          {Array.isArray(events) ? events.map((_, index) => (
             <button
               key={index}
               onClick={() => scrollTo(index)}
@@ -365,7 +372,7 @@ const UpComingEvents = () => {
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
-          ))}
+          )) : null}
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchCheck } from "lucide-react";
+import BookingForm from "../components/BookingForm/BookingForm";
 
 export default function Navbar({ onSearch }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function Navbar({ onSearch }) {
   const location = useLocation();
   const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
   const [showLoginDropdown, setShowLoginDropdown] = useState(false);
+  const [showBookingForm, setShowBookingForm] = useState(false);
   const registerTimeoutRef = useRef(null);
   const loginTimeoutRef = useRef(null);
   const loginRef = useRef(null);
@@ -180,45 +182,13 @@ export default function Navbar({ onSearch }) {
 
       {/* Right Links with Dropdowns */}
       <div className="hidden md:flex items-center space-x-6">
-        {/* Registration Dropdown */}
-        {/* <div 
-          className="relative"
-          ref={registerRef}
-          onMouseEnter={handleRegisterMouseEnter}
-          onMouseLeave={handleRegisterMouseLeave}
+        {/* Book a Performer Button */}
+        <button
+          onClick={() => setShowBookingForm(true)}
+          className="text-lg text-white hover:text-[#FF00A2] transition-colors flex items-center gap-2"
         >
-          <button
-            className="text-sm text-white hover:text-[#FF00A2] transition-colors"
-          >
-            Registration
-          </button>
-          {showRegisterDropdown && (
-            <div 
-              className="absolute top-full left-0 mt-2 w-48 bg-[#2A2A2A] rounded-lg shadow-lg py-2 z-50"
-              onMouseEnter={handleRegisterMouseEnter}
-              onMouseLeave={handleRegisterMouseLeave}
-            >
-              <a
-                href="https://coltable-deshabord-performer.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
-                onClick={handleLinkClick}
-              >
-                Register as Performer
-              </a>
-              <a
-                href="https://coltable-deshboard-venues-blue.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 text-sm text-white hover:bg-[#FF00A2] hover:text-white transition-colors"
-                onClick={handleLinkClick}
-              >
-                Register as Venue
-              </a>
-            </div>
-          )}
-        </div> */}
+          <span>Book a performer</span>
+        </button>
 
         {/* Login Dropdown */}
         <div 
@@ -316,7 +286,16 @@ export default function Navbar({ onSearch }) {
               <FaCalendarAlt /> Events
             </Link>
 
-
+            {/* Mobile Book a Performer Button */}
+            <button
+              onClick={() => {
+                setShowBookingForm(true);
+                handleLinkClick();
+              }}
+              className="flex items-center gap-2 py-2 text-left"
+            >
+              <span>Book a performer</span>
+            </button>
 
             {/* Mobile Login Dropdown */}
             <div className="relative">
@@ -359,6 +338,12 @@ export default function Navbar({ onSearch }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Booking Form Modal */}
+      <BookingForm 
+        isOpen={showBookingForm} 
+        onClose={() => setShowBookingForm(false)} 
+      />
     </nav>
   );
 }

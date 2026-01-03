@@ -1,6 +1,19 @@
 import { Link } from "react-router-dom";
+import { useGetInstagramPostsQuery } from "../apis/instagram";
 
 const Footer = ({ isHome }) => {
+  const { data: instagramData, isLoading: isLoadingInstagram } = useGetInstagramPostsQuery();
+  const instagramPosts = instagramData?.posts || [];
+
+  // Helper function to get proxied image URL (use proxy by default)
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/v1';
+    // Use proxy by default to avoid CORS issues
+    const proxyUrl = `${apiBaseUrl}/api/user/instagram/image?url=${encodeURIComponent(imageUrl)}`;
+    console.log('Image proxy URL:', proxyUrl); // Debug log
+    return proxyUrl;
+  };
   return (
     <footer className="bg-[#1D1D1D] max-w-[1400px] mx-auto text-white py-10 px-8 md:px-20">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -65,41 +78,63 @@ const Footer = ({ isHome }) => {
           </ul>
         </div>
 
-        {/* Social Media Links */}
+        {/* Instagram Grid Section */}
         <div>
-          <h3 className="text-xl font-bold">Check out our Socials!</h3>
-          <div className="mt-4 space-y-4">
-            <a href="https://www.instagram.com/officialdragspace" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-300 hover:text-[#FF00A2] transition-colors">
-              <div className="w-[24px] flex justify-center mr-3">
-                <img
-                  src="/footer/instagram.png"
-                  alt="Instagram"
-                  className="w-[16.36px] h-[27px]"
+          <h3 className="text-xl font-bold mb-4">Instagram</h3>
+          {isLoadingInstagram ? (
+            <div className="grid grid-cols-3 gap-1.5">
+              {[...Array(6)].map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-square bg-gray-700 rounded animate-pulse"
                 />
-              </div>
-              <span className="text-sm">Follow us on Instagram</span>
-            </a>
-            <a href="https://www.facebook.com/profile.php?id=61574105501530" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-300 hover:text-[#FF00A2] transition-colors">
-              <div className="w-[24px] flex justify-center mr-3">
-                <img
-                  src="/footer/facebook.png"
-                  alt="Facebook"
-                  className="w-[9.98px] h-[27px]"
-                />
-              </div>
-              <span className="text-sm">Like us on Facebook</span>
-            </a>
-            <a href="https://x.com/Yourdragspace" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-300 hover:text-[#FF00A2] transition-colors">
-              <div className="w-[24px] flex justify-center mr-3">
-                <img
-                  src="/footer/twitter.png"
-                  alt="Twitter"
-                  className="w-[18.61px] h-[27px]"
-                />
-              </div>
-              <span className="text-sm">Follow us on Twitter</span>
-            </a>
-          </div>
+              ))}
+            </div>
+          ) : instagramPosts.length > 0 ? (
+            <div className="grid grid-cols-3 gap-1.5">
+              {instagramPosts.slice(0, 6).map((post) => (
+                <a
+                  key={post.id}
+                  href={post.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="aspect-square overflow-hidden rounded hover:opacity-80 transition-opacity cursor-pointer bg-gray-800"
+                >
+                  <img
+                    src={getImageUrl(post.imageUrl || post.thumbnailUrl)}
+                    alt={post.caption || "Instagram post"}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      console.error('Image failed to load:', e.target.src); // Debug log
+                      // If proxy failed, try placeholder
+                      e.target.src = "/footer/insta1.png";
+                      e.target.onerror = null; // Prevent infinite loop
+                    }}
+                  />
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1.5">
+              {[...Array(6)].map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-square bg-gray-700 rounded flex items-center justify-center"
+                >
+                  <span className="text-gray-500 text-xs">No image</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <a
+            href="https://www.instagram.com/officialdragspace"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-4 text-[#878787] hover:text-[#FF00A2] transition-colors text-sm"
+          >
+            Follow Our Instagram
+          </a>
         </div>
       </div>
      

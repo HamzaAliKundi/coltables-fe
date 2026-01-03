@@ -90,7 +90,8 @@ const EventListing = ({ isEvent, searchQuery }) => {
   // Determine if we should show only upcoming events (home page or events page)
   const shouldShowUpcoming = location.pathname === '/' || location.pathname === '/events';
   // On events page, show all future events (not just current month)
-  const showAllFuture = location.pathname === '/events';
+  // Also show all future events when a filter is active (not "all") to ensure filtered results are shown
+  const showAllFuture = location.pathname === '/events' || activeTab !== 'all';
 
   const {
     data: calendarEventsData,
@@ -116,6 +117,11 @@ const EventListing = ({ isEvent, searchQuery }) => {
 
     // Transform calendar events object to sorted array
     let allEvents = groupAndSortEvents(calendarEventsData.events);
+    
+    // Ensure allEvents is always an array
+    if (!Array.isArray(allEvents)) {
+      allEvents = [];
+    }
 
     // Filter by type (activeTab)
     if (activeTab !== "all") {
@@ -553,7 +559,7 @@ const EventListing = ({ isEvent, searchQuery }) => {
           <div className="col-span-full flex mt-16 justify-center min-h-[300px]">
             <div className="w-8 h-8 border-4 border-[#FF00A2] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ) : processedEvents.paginatedEvents?.length > 0 ? (
+        ) : Array.isArray(processedEvents.paginatedEvents) && processedEvents.paginatedEvents.length > 0 ? (
           processedEvents.paginatedEvents.map((event) => (
             <div
               key={event._id}

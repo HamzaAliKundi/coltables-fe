@@ -24,7 +24,11 @@ export const performersApi = createApi({
     }),
 
     getPerformers: builder.query({
-      query: () => `/api/user/performer/get-performers`,
+      query: ({ page = 1, limit = 20, search = '' }) => {
+        let url = `/api/user/performer/get-performers?limit=${limit}&page=${page}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        return url;
+      },
     }),
 
     getSinglePerformerById: builder.query({

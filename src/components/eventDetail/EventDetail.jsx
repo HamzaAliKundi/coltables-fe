@@ -10,6 +10,7 @@ import {
   ChevronsRight,
   ChevronUp,
 } from "lucide-react";
+import { linkifyText } from "../../utils/linkify.jsx";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -317,18 +318,7 @@ const EventDetail = () => {
               <div className="border-b-[3px] border-[#FF00A2] mb-3 pb-3 flex text-white">
                 <p className="text-white">
                   {getEventsByVenuesById?.event?.description
-                    ? getEventsByVenuesById.event.description
-                        .split("\n")
-                        .map((line, index) => (
-                          <span key={index}>
-                            {line}
-                            {index <
-                              getEventsByVenuesById.event.description.split(
-                                "\n"
-                              ).length -
-                                1 && <br />}
-                          </span>
-                        ))
+                    ? linkifyText(getEventsByVenuesById.event.description)
                     : ""}
                 </p>
               </div>
