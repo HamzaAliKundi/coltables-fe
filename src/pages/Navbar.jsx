@@ -79,11 +79,11 @@ export default function Navbar({ onSearch }) {
   };
 
   return (
-    <nav className="bg-black text-white h-[100px] max-w-[1400px] mx-auto w-full flex items-center z-30 px-8 md:px-20 justify-between relative">
+    <nav className="bg-black text-white h-[100px] max-w-[1400px] mx-auto w-full flex items-center z-30 px-4 sm:px-8 md:px-20 justify-between relative">
       {/* Left Logo */}
       <div className="flex items-center space-x-2">
         <Link to="/">
-          <img src="/logo.svg" alt="DragSpace Logo" className="h-12" />
+          <img src="/logo.svg" alt="DragSpace Logo" className="h-8 sm:h-10 md:h-12" />
         </Link>
       </div>
 
@@ -182,10 +182,13 @@ export default function Navbar({ onSearch }) {
 
       {/* Right Links with Dropdowns */}
       <div className="hidden md:flex items-center space-x-6">
-        {/* Book a Performer Button */}
+        {/* Book a Performer Button - Desktop */}
         <button
           onClick={() => setShowBookingForm(true)}
-          className="text-lg text-white hover:text-[#FF00A2] transition-colors flex items-center gap-2"
+          className="bg-[#FF00A2] text-white px-4 md:px-6 py-2.5 md:py-3 rounded-full font-medium text-sm md:text-base hover:bg-[#e6008f] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 whitespace-nowrap"
+          style={{
+            boxShadow: '0 4px 15px rgba(255, 0, 162, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+          }}
         >
           <span>Book a performer</span>
         </button>
@@ -242,10 +245,24 @@ export default function Navbar({ onSearch }) {
         </div>
       </div>
 
-      {/* Mobile Menu Button */}
-      <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
-        {isOpen ? <FiX className="w-8 h-8" /> : <FiMenu className="w-8 h-8" />}
-      </button>
+      {/* Mobile Right Section - Book Button + Menu */}
+      <div className="md:hidden flex items-center gap-2 sm:gap-3">
+        {/* Mobile Book a Performer Button - Always Visible */}
+        <button
+          onClick={() => setShowBookingForm(true)}
+          className="bg-[#FF00A2] text-white px-3 sm:px-4 py-2 rounded-full font-medium text-xs sm:text-sm hover:bg-[#e6008f] transition-all duration-200 shadow-lg active:scale-95 whitespace-nowrap"
+          style={{
+            boxShadow: '0 4px 15px rgba(255, 0, 162, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+          }}
+        >
+          <span className="hidden sm:inline">Book a performer</span>
+          <span className="sm:hidden">Book</span>
+        </button>
+        {/* Mobile Menu Button */}
+        <button onClick={() => setIsOpen(!isOpen)} className="flex-shrink-0">
+          {isOpen ? <FiX className="w-6 h-6 sm:w-8 sm:h-8" /> : <FiMenu className="w-6 h-6 sm:w-8 sm:h-8" />}
+        </button>
+      </div>
 
       {/* Mobile Dropdown Menu */}
       <AnimatePresence>
@@ -286,13 +303,16 @@ export default function Navbar({ onSearch }) {
               <FaCalendarAlt /> Events
             </Link>
 
-            {/* Mobile Book a Performer Button */}
+            {/* Mobile Book a Performer Button - In Menu */}
             <button
               onClick={() => {
                 setShowBookingForm(true);
                 handleLinkClick();
               }}
-              className="flex items-center gap-2 py-2 text-left"
+              className="bg-[#FF00A2] text-white px-6 py-3 rounded-full font-medium text-sm md:text-base hover:bg-[#e6008f] transition-all duration-200 shadow-lg active:scale-95 w-full text-center flex items-center justify-center"
+              style={{
+                boxShadow: '0 4px 15px rgba(255, 0, 162, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+              }}
             >
               <span>Book a performer</span>
             </button>
