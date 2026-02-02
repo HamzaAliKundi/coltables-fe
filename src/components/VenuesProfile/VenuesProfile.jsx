@@ -6,7 +6,47 @@ import { Youtube } from "lucide-react";
 import Gallery from "../PerformerProfile/Gallery";
 import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 import { useGetAllAdsQuery } from "../../apis/adsBanner";
-import { useGetPerformersQuery } from "../../apis/performers";
+import { useGetPerformersQuery, useGetSinglePerformerByIdQuery } from "../../apis/performers";
+
+// Component to display performer name with fallback fetching
+const PerformerName = ({ performerId, performersList, navigate }) => {
+  const performerIdStr = String(performerId);
+  
+  // Find the performer in the list first
+  const performer = performersList.find(
+    (p) => String(p._id) === performerIdStr
+  );
+  
+  // If not found in list and it's a valid MongoDB ObjectId, fetch individually
+  const shouldFetchIndividual = !performer && performerIdStr.length === 24;
+  const { data: individualPerformerData } = useGetSinglePerformerByIdQuery(
+    performerIdStr,
+    { skip: !shouldFetchIndividual }
+  );
+  
+  // Use individual performer data if available, otherwise use list data
+  const finalPerformer = individualPerformerData?.performer || performer;
+  
+  // Get performer name with fallbacks
+  const performerName = finalPerformer?.fullDragName || 
+                       finalPerformer?.name || 
+                       (finalPerformer?.firstName && finalPerformer?.lastName 
+                         ? `${finalPerformer.firstName} ${finalPerformer.lastName}` 
+                         : finalPerformer?.firstName) ||
+                       (performerIdStr.length === 24 ? 'Performer' : performerIdStr);
+  
+  return (
+    <button
+      onClick={() => {
+        navigate(`/performer-profile/${performerIdStr}`);
+        window.scrollTo(0, 0);
+      }}
+      className="text-left hover:text-[#FF00A2] transition-colors duration-200"
+    >
+      {performerName}
+    </button>
+  );
+};
 
 const VenuesProfile = () => {
   const [isMonthView, setIsMonthView] = useState(true);
@@ -607,25 +647,15 @@ const VenuesProfile = () => {
                     </h3>
                     <ul className="list-disc list-inside grid grid-cols-2 gap-y-2 text-white/90">
                       {venueDetail.venue.topDragPerformers.map(
-                        (performerId, index) => {
-                          // Find the performer in the getPerformers data
-                          const performer = performersList.find(
-                            (p) => p._id === performerId
-                          );
-                          return (
-                            <li key={index}>
-                              <button
-                                onClick={() => {
-                                  navigate(`/performer-profile/${performerId}`);
-                                  window.scrollTo(0, 0);
-                                }}
-                                className="text-left hover:text-[#FF00A2] transition-colors duration-200"
-                              >
-                                {performer?.fullDragName || performerId}
-                              </button>
-                            </li>
-                          );
-                        }
+                        (performerId, index) => (
+                          <li key={index}>
+                            <PerformerName 
+                              performerId={performerId}
+                              performersList={performersList}
+                              navigate={navigate}
+                            />
+                          </li>
+                        )
                       )}
                     </ul>
                   </div>
