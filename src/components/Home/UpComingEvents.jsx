@@ -2,19 +2,54 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useGetCalendarEventsForListingQuery } from "../../apis/events";
 
-// Helper to get local date parts safely (show true UTC date for badge)
+// Helper to get local date parts safely (use startDateTime converted to admin timezone)
 function getLocalDateParts(event) {
-  const date = new Date(event.startDate); // UTC from MongoDB
-  return {
-    day: date.getUTCDate(),
-    month: date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
-  };
+  // If we have startDateTime and adminTimezone, convert UTC to admin's timezone to get the correct date
+  // This ensures events that start late at night (crossing midnight in UTC) show the correct date
+  // Example: Event starts Jan 30 7 PM CST = Jan 31 1 AM UTC, but should show as "30 JAN"
+  if (event.startDateTime && event.adminTimezone) {
+    const utcDate = new Date(event.startDateTime);
+    // Use Intl.DateTimeFormat to get date parts in admin's timezone
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: event.adminTimezone,
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    
+    const parts = formatter.formatToParts(utcDate);
+    const day = parseInt(parts.find(p => p.type === 'day').value);
+    const month = parts.find(p => p.type === 'month').value.toUpperCase();
+    
+    return { day, month };
+  }
+  
+  // Fallback: use startDate (legacy field) which is always midnight UTC on the selected date
+  if (event.startDate) {
+    const date = new Date(event.startDate);
+    return {
+      day: date.getUTCDate(),
+      month: date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
+    };
+  }
+  
+  // Last fallback: use startDateTime as UTC (for events without adminTimezone)
+  if (event.startDateTime) {
+    const date = new Date(event.startDateTime);
+    return {
+      day: date.getUTCDate(),
+      month: date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
+    };
+  }
+  
+  return { day: 0, month: 'N/A' };
 }
 
-// Helper to format time properly - use ONLY startTime for time
+// Helper to format time properly - use startDateTime/endDateTime
 function formatEventTime(dateString) {
+  if (!dateString) return 'N/A';
   const date = new Date(dateString);
-  // Show time in local timezone (as it was entered)
+  // Show time in local timezone
   return date.toLocaleTimeString('en-US', { 
     hour: '2-digit', 
     minute: '2-digit'
@@ -28,10 +63,19 @@ function groupAndSortEvents(eventsObject) {
   }
 
   // Flatten events from all dates into a single array
+  // Deduplicate by event ID (cross-midnight events appear in multiple date groups)
   const allEvents = [];
+  const seenEventIds = new Set();
+  
   Object.values(eventsObject).forEach(dateEvents => {
     if (Array.isArray(dateEvents)) {
-      allEvents.push(...dateEvents);
+      dateEvents.forEach(event => {
+        const eventId = event._id?.toString() || event.id?.toString();
+        if (eventId && !seenEventIds.has(eventId)) {
+          seenEventIds.add(eventId);
+          allEvents.push(event);
+        }
+      });
     }
   });
 
@@ -39,41 +83,59 @@ function groupAndSortEvents(eventsObject) {
     return [];
   }
 
-  // Sort events by date first, then by local time-of-day (same as EventListing)
+  // Sort events by date first, then by time
+  // Date should be in admin's timezone (if available) to match the date badge display
   const sortedEvents = [...allEvents].sort((a, b) => {
-    // First, sort by date (using startDate)
-    const dateA = a.startDate ? a.startDate.split('T')[0] : '';
-    const dateB = b.startDate ? b.startDate.split('T')[0] : '';
+    // Helper to get date string for sorting (in admin's timezone if available)
+    const getDateString = (event) => {
+      // If we have startDateTime and adminTimezone, convert to admin's timezone to get the correct date
+      if (event.startDateTime && event.adminTimezone) {
+        const utcDate = new Date(event.startDateTime);
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: event.adminTimezone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        const parts = formatter.formatToParts(utcDate);
+        const year = parts.find(p => p.type === 'year').value;
+        const month = parts.find(p => p.type === 'month').value;
+        const day = parts.find(p => p.type === 'day').value;
+        return `${year}-${month}-${day}`;
+      }
+      // Fallback: use startDate (legacy field) which is the date the admin selected
+      if (event.startDate) {
+        const date = new Date(event.startDate);
+        return date.toISOString().split('T')[0];
+      }
+      // Last fallback: use startDateTime as UTC date
+      if (event.startDateTime) {
+        const date = new Date(event.startDateTime);
+        return date.toISOString().split('T')[0];
+      }
+      return '';
+    };
+    
+    // Get UTC timestamp for time sorting
+    const getTimestamp = (event) => {
+      if (event.startDateTime) return new Date(event.startDateTime).getTime();
+      if (event.startTime) return new Date(event.startTime).getTime();
+      if (event.startDate) return new Date(event.startDate).getTime();
+      return 0;
+    };
+    
+    // First, sort by date (in admin's timezone)
+    const dateA = getDateString(a);
+    const dateB = getDateString(b);
     
     if (dateA !== dateB) {
       return dateA.localeCompare(dateB);
     }
     
-    // If dates are the same, sort by local time-of-day
-    // Convert sortDateTime to local time and extract time-of-day
-    if (a.sortDateTime && b.sortDateTime) {
-      const dateA_obj = new Date(a.sortDateTime);
-      const dateB_obj = new Date(b.sortDateTime);
-      
-      // Get local time-of-day in minutes since midnight
-      const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
-      const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
-      
-      return localMinutesA - localMinutesB;
-    }
-    
-    // Fallback: combine startDate and startTime
-    const timeA = a.startTime ? a.startTime.split('T')[1] : '';
-    const timeB = b.startTime ? b.startTime.split('T')[1] : '';
-    const fullA = dateA + 'T' + (timeA || '00:00:00.000Z');
-    const fullB = dateB + 'T' + (timeB || '00:00:00.000Z');
-    
-    const fallbackDateA = new Date(fullA);
-    const fallbackDateB = new Date(fullB);
-    const fallbackMinutesA = fallbackDateA.getHours() * 60 + fallbackDateA.getMinutes();
-    const fallbackMinutesB = fallbackDateB.getHours() * 60 + fallbackDateB.getMinutes();
-    
-    return fallbackMinutesA - fallbackMinutesB;
+    // If dates are the same, sort by time (using UTC timestamp)
+    const timeA = getTimestamp(a);
+    const timeB = getTimestamp(b);
+    return timeA - timeB;
   });
 
   return sortedEvents;
@@ -97,6 +159,7 @@ const UpComingEvents = () => {
       view: 'month',
       fromDate: currentDate,
       isUpcoming: true, // Only show upcoming events from today onwards
+      showAllFuture: true, // Show events from current and next month
     },
     {
       refetchOnMountOrArgChange: true,
@@ -117,8 +180,7 @@ const UpComingEvents = () => {
       allEvents = [];
     }
     
-    // Limit to 10 events
-    allEvents = allEvents.slice(0, 10);
+    // Show all events (no limit)
 
     return allEvents.map((event) => {
       const localDate = getLocalDateParts(event);
@@ -143,6 +205,10 @@ const UpComingEvents = () => {
         locationDisplay = 'Location TBA';
       }
       
+      // Use startDateTime/endDateTime (primary fields) if available, fallback to legacy fields
+      const startTime = event.startDateTime || event.startTime;
+      const endTime = event.endDateTime || event.endTime;
+      
       return {
         id: event._id,
         image: event.image || "/home/upcomping/upcoming.png",
@@ -151,7 +217,7 @@ const UpComingEvents = () => {
         title: event.title,
         host: truncatedHost,
         fullHost: fullHostDisplay,
-        time: `Start ${formatEventTime(event.startTime)} - ${formatEventTime(event.endTime)}`,
+        time: `Start ${formatEventTime(startTime)} - ${formatEventTime(endTime)}`,
         location: locationDisplay,
         featured: event.type === 'drag-show'
       };

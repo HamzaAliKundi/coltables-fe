@@ -8,8 +8,9 @@ export const instagramApi = createApi({
   endpoints: (builder) => ({
     getInstagramPosts: builder.query({
       query: () => `/api/user/instagram/posts`,
-      // Refetch every 5 minutes to check for new posts
-      pollingInterval: 5 * 60 * 1000, // 5 minutes
+      // No polling - rely on backend cache freshness
+      // Backend uses Redis cache with 6-12 hour TTL
+      // Cron job updates cache automatically
     }),
   }),
 });

@@ -64,6 +64,11 @@ export const eventsApi = createApi({
         const params = new URLSearchParams();
         params.append('view', view);
         params.append('fromDate', fromDate);
+        
+        // Get viewer timezone from browser (critical for correct date grouping)
+        const viewerTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        params.append('viewerTimezone', viewerTimezone);
+        
         return `/api/user/event/get-calendar-events?${params.toString()}`;
       },
       transformResponse: (response) => {
@@ -110,6 +115,12 @@ export const eventsApi = createApi({
         const params = new URLSearchParams();
         params.append('view', view);
         params.append('fromDate', fromDate);
+        
+        // Get viewer timezone from browser (critical for correct date grouping)
+        // This ensures events appear on the correct calendar date for the viewer
+        const viewerTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        params.append('viewerTimezone', viewerTimezone);
+        
         if (isUpcoming) {
           params.append('isUpcoming', '1');
         }
