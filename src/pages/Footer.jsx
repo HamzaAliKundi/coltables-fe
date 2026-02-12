@@ -1,22 +1,14 @@
 import { Link } from "react-router-dom";
-// TEMPORARILY DISABLED FOR TESTING - Instagram API calls disabled
-// import { useGetInstagramPostsQuery } from "../apis/instagram";
+import { useGetInstagramPostsQuery } from "../apis/instagram";
 
 const Footer = ({ isHome }) => {
-  // TEMPORARILY DISABLED FOR TESTING - Instagram API calls disabled
-  // Configure React Query to:
-  // - Refetch on mount (when component mounts)
-  // - Don't refetch on window focus (to avoid unnecessary API calls)
-  // - Treat data as never stale (rely on backend cache freshness)
-  // const { data: instagramData, isLoading: isLoadingInstagram } = useGetInstagramPostsQuery(undefined, {
-  //   refetchOnMount: true,
-  //   refetchOnWindowFocus: false,
-  //   refetchOnReconnect: false,
-  //   staleTime: Infinity, // Data never becomes stale - rely on backend cache
-  // });
-  // const instagramPosts = instagramData?.posts || [];
-  const instagramPosts = []; // Empty array - Instagram disabled for testing
-  const isLoadingInstagram = false;
+  const { data: instagramData, isLoading: isLoadingInstagram } = useGetInstagramPostsQuery(undefined, {
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity, // Data never becomes stale - rely on backend cache
+  });
+  const instagramPosts = instagramData?.posts || [];
 
   // Helper function to get proxied image URL (use proxy by default)
   const getImageUrl = (imageUrl) => {
