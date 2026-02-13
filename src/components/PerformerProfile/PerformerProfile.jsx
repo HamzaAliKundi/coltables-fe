@@ -127,15 +127,15 @@ const PerformerProfile = () => {
             eventDates[monthKey][day] = { eventDetails: [] };
           }
           
-          // Events are already sorted by the backend, but we ensure they're sorted by sortDateTime
-          const sortedEvents = [...events].sort((a, b) => {
-            if (a.sortDateTime && b.sortDateTime) {
-              return new Date(a.sortDateTime) - new Date(b.sortDateTime);
-            }
-            const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
-            const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
-            return timeA - timeB;
-          });
+        // Sort by startDateTime (primary), then endDateTime (secondary)
+        const sortedEvents = [...events].sort((a, b) => {
+          const startA = new Date(a.startDateTime || a.sortDateTime || a.startTime).getTime();
+          const startB = new Date(b.startDateTime || b.sortDateTime || b.startTime).getTime();
+          if (startA !== startB) return startA - startB;
+          const endA = new Date(a.endDateTime || a.endTime || a.startDateTime || a.startTime).getTime();
+          const endB = new Date(b.endDateTime || b.endTime || b.startDateTime || b.startTime).getTime();
+          return endA - endB;
+        });
           
           // Store the original API date key with each event for proper filtering
           const eventsWithDateKey = sortedEvents.map(event => ({
@@ -319,13 +319,21 @@ const PerformerProfile = () => {
   };
 
   const formatEventTime = (dateString) => {
+    if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
+  const formatEventTimeRange = (startDateTime, endDateTime) => {
+    if (!startDateTime) return 'N/A';
+    const start = formatEventTime(startDateTime);
+    if (!endDateTime || new Date(endDateTime).getTime() === new Date(startDateTime).getTime()) return start;
+    return `${start} - ${formatEventTime(endDateTime)}`;
+  };
+
   const formatEventDate = (dateString, event) => {
-    // Always use the original date string for formatting
-    const date = new Date(dateString);
+    // Prefer startDateTime, fallback to dateString
+    const date = new Date(dateString || event?.startDateTime || event?.startDate);
     return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
   };
 
@@ -381,8 +389,15 @@ const PerformerProfile = () => {
         eventsCount: events.length
       });
     } else if (isMonthView) {
-      // For month view, only show events from the current month (already filtered in groupEventsByApiDate)
-      events = Object.values(groupedEventsByApiDate).flat();
+      // For month view, flatten and deduplicate by _id (multi-day events appear in multiple date buckets)
+      const flatEvents = Object.values(groupedEventsByApiDate).flat();
+      const seenIds = new Set();
+      events = flatEvents.filter((e) => {
+        const id = e._id?.toString?.() || e._id;
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      });
       
       console.log('[PerformerCalendar] getEventsForDisplay (monthView):', {
         currentMonthYear,
@@ -395,7 +410,7 @@ const PerformerProfile = () => {
         }))
       });
     } else {
-      // For week view, filter events for the selected week
+      // For week view, filter events for the selected week and deduplicate (multi-day events can span week)
       const weekStart = new Date(selectedWeekStart);
       weekStart.setHours(0,0,0,0);
       const weekDays = [];
@@ -405,7 +420,14 @@ const PerformerProfile = () => {
         const dateKey = weekDay.toLocaleDateString();
         weekDays.push(dateKey);
       }
-      events = weekDays.flatMap((key) => groupedEventsByApiDate[key] || []);
+      const flatEvents = weekDays.flatMap((key) => groupedEventsByApiDate[key] || []);
+      const seenIds = new Set();
+      events = flatEvents.filter((e) => {
+        const id = e._id?.toString?.() || e._id;
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
+      });
       
       console.log('[PerformerCalendar] getEventsForDisplay (weekView):', {
         weekDays,
@@ -413,30 +435,25 @@ const PerformerProfile = () => {
       });
     }
     
-    // Sort events by date first, then by local time-of-day (same as EventListing)
+    // Sort events by date first, then by startDateTime, then endDateTime
     const sortedEvents = [...events].sort((a, b) => {
       // First, sort by API date key (most reliable)
-      const apiDateA = a._apiDateKey || (a.startDate ? a.startDate.split('T')[0] : '');
-      const apiDateB = b._apiDateKey || (b.startDate ? b.startDate.split('T')[0] : '');
+      const apiDateA = a._apiDateKey || (a.startDate ? a.startDate.split('T')[0] : '') || (a.startDateTime ? new Date(a.startDateTime).toISOString().split('T')[0] : '');
+      const apiDateB = b._apiDateKey || (b.startDate ? b.startDate.split('T')[0] : '') || (b.startDateTime ? new Date(b.startDateTime).toISOString().split('T')[0] : '');
       
       if (apiDateA !== apiDateB) {
         return apiDateA.localeCompare(apiDateB);
       }
       
-      // If dates are the same, sort by local time-of-day
-      // Convert sortDateTime to local time and extract time-of-day
-      if (a.sortDateTime && b.sortDateTime) {
-        const dateA_obj = new Date(a.sortDateTime);
-        const dateB_obj = new Date(b.sortDateTime);
-        
-        // Get local time-of-day in minutes since midnight
-        const localMinutesA = dateA_obj.getHours() * 60 + dateA_obj.getMinutes();
-        const localMinutesB = dateB_obj.getHours() * 60 + dateB_obj.getMinutes();
-        
-        return localMinutesA - localMinutesB;
-      }
+      // Use startDateTime (primary), then endDateTime (secondary)
+      const startA = new Date(a.startDateTime || a.sortDateTime || a.startTime).getTime();
+      const startB = new Date(b.startDateTime || b.sortDateTime || b.startTime).getTime();
+      if (startA !== startB) return startA - startB;
+      const endA = new Date(a.endDateTime || a.endTime || a.startDateTime || a.startTime).getTime();
+      const endB = new Date(b.endDateTime || b.endTime || b.startDateTime || b.startTime).getTime();
+      if (endA !== endB) return endA - endB;
       
-      // Fallback: combine startDate and startTime
+      // Fallback: combine startDate and startTime for legacy events
       const dateA = a.startDate ? a.startDate.split('T')[0] : '';
       const dateB = b.startDate ? b.startDate.split('T')[0] : '';
       const timeA = a.startTime ? a.startTime.split('T')[1] : '';
@@ -1103,8 +1120,8 @@ const PerformerProfile = () => {
                       const [year, month, day] = event._apiDateKey.split('-');
                       displayDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
                     } else {
-                      // Fallback to startDate if API date key is not available
-                      displayDate = new Date(event.startDate);
+                      // Fallback: use startDateTime (primary), then startDate
+                      displayDate = new Date(event.startDateTime || event.startDate);
                     }
                     
                     console.log('[PerformerCalendar] Rendering event:', {
@@ -1136,7 +1153,7 @@ const PerformerProfile = () => {
                         </div>
                         <div className="text-right">
                           <span className="text-white text-sm font-medium block">
-                            {formatEventTime(event.startTime)}
+                            {formatEventTimeRange(event.startDateTime || event.startTime, event.endDateTime || event.endTime)}
                           </span>
                           <span className="text-white/70 text-xs block">
                             {(() => {

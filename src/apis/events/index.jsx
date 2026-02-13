@@ -75,21 +75,41 @@ export const eventsApi = createApi({
         if (!response?.events) return [];
         
         const transformedEvents = [];
+        const seenIds = new Set(); // Deduplicate: multi-day events appear in multiple date buckets
         Object.values(response.events).forEach((events) => {
           events.forEach(event => {
-            // Combine startDate with startTime
-            const startDate = new Date(event.startDate);
-            const startTime = new Date(event.startTime);
-            // Set the time from startTime to startDate
-            startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
-            // Use the same for end (single point event)
-            const endDate = new Date(startDate);
+            const eventId = event._id?.toString?.() || event._id;
+            if (seenIds.has(eventId)) return;
+            seenIds.add(eventId);
+
+            // Use startDateTime and endDateTime (primary fields) - fallback to legacy for backward compatibility
+            const startDateTime = event.startDateTime ? new Date(event.startDateTime) : null;
+            const endDateTime = event.endDateTime ? new Date(event.endDateTime) : null;
+            
+            let start = startDateTime;
+            let end = endDateTime;
+            
+            // Fallback: combine startDate with startTime for legacy events
+            if (!start && event.startDate && event.startTime) {
+              const startDate = new Date(event.startDate);
+              const startTime = new Date(event.startTime);
+              startDate.setHours(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+              start = startDate;
+              end = end || new Date(startDate);
+            } else if (!start && event.startDate) {
+              start = new Date(event.startDate);
+              end = end || new Date(event.startDate);
+            }
+            
+            if (!start) return;
             
             transformedEvents.push({
               id: event._id,
               title: event.title,
-              start: startDate,
-              end: endDate,
+              start: start,
+              end: end || start,
+              startDateTime: startDateTime || start,
+              endDateTime: endDateTime || end || start,
               desc: event.description,
               host: event.host,
               type: event.type,

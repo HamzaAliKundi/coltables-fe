@@ -38,56 +38,77 @@ const Calendar = () => {
     return date;
   }
 
-  // Ensure all events have string dates, never Date objects
+  // Ensure all events have startDateTime and endDateTime for display and logic
   const safeMonthEvents = useMemo(() => {
     if (!monthEvents) return [];
     
     return monthEvents.map(event => {
-      // Use startDate for the date part and startTime for the time part
-      const startDate = event.startDate || event.start;
-      const startTime = event.startTime || event.start;
+      // Prefer startDateTime and endDateTime (primary fields)
+      const startDT = event.startDateTime || event.start;
+      const endDT = event.endDateTime || event.end || event.start;
       
-      // Create a combined date-time by taking date from startDate and time from startTime
-      const dateFromStartDate = new Date(startDate);
-      const timeFromStartTime = new Date(startTime);
+      const startDate = new Date(startDT);
+      const endDate = new Date(endDT);
       
-      // Set the time from startTime onto the date from startDate
-      const combinedDateTime = new Date(dateFromStartDate);
-      combinedDateTime.setUTCHours(
-        timeFromStartTime.getUTCHours(),
-        timeFromStartTime.getUTCMinutes(),
-        timeFromStartTime.getUTCSeconds()
-      );
-      
-      // Add +1 day to fix the timezone issue
-      combinedDateTime.setUTCDate(combinedDateTime.getUTCDate() + 1);
+      // Fallback: combine startDate + startTime for legacy events
+      if (!event.startDateTime && (event.startDate || event.startTime)) {
+        const dateFromStart = event.startDate ? new Date(event.startDate) : startDate;
+        const timeFromStart = event.startTime ? new Date(event.startTime) : startDate;
+        dateFromStart.setUTCHours(
+          timeFromStart.getUTCHours(),
+          timeFromStart.getUTCMinutes(),
+          timeFromStart.getUTCSeconds()
+        );
+        return {
+          ...event,
+          start: dateFromStart.toISOString(),
+          end: dateFromStart.toISOString(),
+          startDateTime: dateFromStart,
+          endDateTime: dateFromStart,
+          originalStartTime: event.startTime || event.start
+        };
+      }
 
       return {
         ...event,
-        start: combinedDateTime.toISOString(),
-        end: combinedDateTime.toISOString(), // Use same time for end since we don't care about end time
-        originalStartDate: startDate,
-        originalStartTime: startTime
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+        startDateTime: startDate,
+        endDateTime: endDate,
+        originalStartTime: startDT
       };
     });
   }, [monthEvents]);
 
-  // Filter events based on current view
+  // Filter events based on current view - sort by startDateTime, then endDateTime
   const events = useMemo(() => {
     if (!safeMonthEvents.length) return [];
 
+    // Sort by startDateTime first, then endDateTime (for events starting at same time)
+    const sortedEvents = [...safeMonthEvents].sort((a, b) => {
+      const startA = new Date(a.startDateTime || a.start).getTime();
+      const startB = new Date(b.startDateTime || b.start).getTime();
+      if (startA !== startB) return startA - startB;
+      const endA = new Date(a.endDateTime || a.end || a.start).getTime();
+      const endB = new Date(b.endDateTime || b.end || b.start).getTime();
+      return endA - endB;
+    });
+
     // Convert date strings to Date objects for Big Calendar
-    const eventsWithDates = safeMonthEvents.map(event => {
-      // Use startTime for the time display
-      const eventTime = moment(event.originalStartTime || event.start).format('h:mm A');
+    const eventsWithDates = sortedEvents.map(event => {
+      // Use startDateTime for the time display
+      const eventTime = moment(event.startDateTime || event.originalStartTime || event.start).format('h:mm A');
       const title = event.title
       
       // For month view, add time in a unique way
       let displayTitle = title
+      const endTime = moment(event.endDateTime || event.end || event.start).format('h:mm A');
+      const timeRange = eventTime !== endTime ? `${eventTime} - ${endTime}` : eventTime;
+      
       if (currentView === Views.MONTH) {
         displayTitle = title.length > 15
-          ? `${eventTime} ${title.substring(0, 15)}...`
-          : `${eventTime} ${title}`;
+          ? `${timeRange} ${title.substring(0, 15)}...`
+          : `${timeRange} ${title}`;
       }
 
       // For agenda view, apply additional timezone fix if needed
@@ -105,12 +126,15 @@ const Calendar = () => {
       const finalStart = event.displayDate ? new Date(event.displayDate) : new Date(eventStart);
       const finalEnd = new Date(eventEnd);
 
+      const endTimeDisplay = moment(event.endDateTime || event.end || event.start).format('h:mm A');
+      const tooltipTime = eventTime !== endTimeDisplay ? `${eventTime} - ${endTimeDisplay}` : eventTime;
+      
       return {
         ...event,
         start: finalStart,
         end: finalEnd,
         title: displayTitle,
-        tooltipContent: `${title}\n${eventTime}` // Full info in tooltip
+        tooltipContent: `${title}\n${tooltipTime}` // Full info with time range in tooltip
       }
     });
 
@@ -337,8 +361,11 @@ const Calendar = () => {
             agendaTimeRangeFormat: ({ start, end }) =>
               `${moment(start).format('h:mm A')} - ${moment(end).format('h:mm A')}`,
             timeGutterFormat: 'h:mm A',
-            eventTimeRangeFormat: ({ start }) =>
-              `${moment(start).format('h:mm A')}`,
+            eventTimeRangeFormat: ({ start, end }) => {
+              const startStr = moment(start).format('h:mm A');
+              const endStr = moment(end).format('h:mm A');
+              return startStr !== endStr ? `${startStr} - ${endStr}` : startStr;
+            },
           }}
         />
         )}
