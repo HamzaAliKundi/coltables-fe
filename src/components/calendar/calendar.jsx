@@ -39,6 +39,7 @@ const Calendar = () => {
   }
 
   // Ensure all events have startDateTime and endDateTime for display and logic
+  // For cross-midnight events: show only on start date by truncating end to end-of-start-day
   const safeMonthEvents = useMemo(() => {
     if (!monthEvents) return [];
     
@@ -47,8 +48,8 @@ const Calendar = () => {
       const startDT = event.startDateTime || event.start;
       const endDT = event.endDateTime || event.end || event.start;
       
-      const startDate = new Date(startDT);
-      const endDate = new Date(endDT);
+      let startDate = new Date(startDT);
+      let endDate = new Date(endDT);
       
       // Fallback: combine startDate + startTime for legacy events
       if (!event.startDateTime && (event.startDate || event.startTime)) {
@@ -69,12 +70,22 @@ const Calendar = () => {
         };
       }
 
+      // If event spans multiple calendar days (e.g. 19 Jan 10pm - 20 Jan 2am),
+      // truncate end to end-of-start-day so it shows only on start date in the grid
+      const originalEndDate = new Date(endDT);
+      const startDay = moment(startDate).format('YYYY-MM-DD');
+      const endDay = moment(endDate).format('YYYY-MM-DD');
+      if (startDay !== endDay) {
+        endDate = moment(startDate).endOf('day').toDate();
+      }
+
       return {
         ...event,
         start: startDate.toISOString(),
         end: endDate.toISOString(),
         startDateTime: startDate,
         endDateTime: endDate,
+        originalEndDateTime: originalEndDate, // Keep for tooltip/time display
         originalStartTime: startDT
       };
     });
@@ -102,7 +113,8 @@ const Calendar = () => {
       
       // For month view, add time in a unique way
       let displayTitle = title
-      const endTime = moment(event.endDateTime || event.end || event.start).format('h:mm A');
+      const displayEndTime = event.originalEndDateTime || event.endDateTime || event.end || event.start;
+      const endTime = moment(displayEndTime).format('h:mm A');
       const timeRange = eventTime !== endTime ? `${eventTime} - ${endTime}` : eventTime;
       
       if (currentView === Views.MONTH) {
@@ -126,7 +138,7 @@ const Calendar = () => {
       const finalStart = event.displayDate ? new Date(event.displayDate) : new Date(eventStart);
       const finalEnd = new Date(eventEnd);
 
-      const endTimeDisplay = moment(event.endDateTime || event.end || event.start).format('h:mm A');
+      const endTimeDisplay = moment(event.originalEndDateTime || event.endDateTime || event.end || event.start).format('h:mm A');
       const tooltipTime = eventTime !== endTimeDisplay ? `${eventTime} - ${endTimeDisplay}` : eventTime;
       
       return {
