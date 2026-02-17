@@ -64,6 +64,10 @@ export const eventsApi = createApi({
         const params = new URLSearchParams();
         params.append('view', view);
         params.append('fromDate', fromDate);
+        // For public calendar month view we want to see events
+        // that have already ended within that month as well.
+        // This flag tells the backend not to filter them out.
+        params.append('includeEnded', '1');
         
         // Get viewer timezone from browser (critical for correct date grouping)
         const viewerTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -149,6 +153,12 @@ export const eventsApi = createApi({
         }
         if (userType) {
           params.append('userType', userType);
+        }
+        // Performer and venue calendars: show events only on their start date (not on end date for cross-midnight events)
+        if (userId || userType) {
+          params.append('startDateOnly', '1');
+          // Include past/ended events so calendar shows full month (not just current and future)
+          params.append('includeEnded', '1');
         }
         if (showAllFuture) {
           params.append('showAllFuture', '1');
