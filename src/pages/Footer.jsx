@@ -10,14 +10,12 @@ const Footer = ({ isHome }) => {
   });
   const instagramPosts = instagramData?.posts || [];
 
-  // Helper function to get proxied image URL (use proxy by default)
+  // Helper: use proxy for external Instagram CDN URLs; use as-is for relative paths (e.g. placeholder)
   const getImageUrl = (imageUrl) => {
     if (!imageUrl) return null;
+    if (imageUrl.startsWith('/')) return imageUrl;
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/v1';
-    // Use proxy by default to avoid CORS issues
-    const proxyUrl = `${apiBaseUrl}/api/user/instagram/image?url=${encodeURIComponent(imageUrl)}`;
-    console.log('Image proxy URL:', proxyUrl); // Debug log
-    return proxyUrl;
+    return `${apiBaseUrl}/api/user/instagram/image?url=${encodeURIComponent(imageUrl)}`;
   };
   return (
     <footer className="bg-[#1D1D1D] max-w-[1400px] mx-auto text-white py-10 px-8 md:px-20">
