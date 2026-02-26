@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Reviews from "./Reviews";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useGetSingleVenueByIdQuery } from "../../apis/venues";
 import { Youtube } from "lucide-react";
 import Gallery from "../PerformerProfile/Gallery";
@@ -69,8 +69,28 @@ const VenuesProfile = () => {
 
 
   const { id } = useParams();
-  const { data: venueDetail, isLoading: venueDetailLoading } =
+  const { data: venueDetail, isLoading: venueDetailLoading, isError: venueError } =
     useGetSingleVenueByIdQuery(id);
+
+  // When venue not found (deleted or invalid): signal to search engines not to index this URL
+  const venueNotFound = !venueDetailLoading && (venueError || !venueDetail?.venue);
+  useEffect(() => {
+    if (venueNotFound) {
+      document.title = "Venue Not Found | Dragspace";
+      let meta = document.querySelector('meta[name="robots"]');
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.name = "robots";
+        document.head.appendChild(meta);
+      }
+      meta.content = "noindex, nofollow";
+      return () => {
+        document.title = "Dragspace";
+        const m = document.querySelector('meta[name="robots"]');
+        if (m) m.remove();
+      };
+    }
+  }, [venueNotFound]);
 
   // Get current month/year for calendar API
   const fromDate = isDayView
@@ -542,6 +562,28 @@ const VenuesProfile = () => {
         return venueType?.toUpperCase() || "OTHER";
     }
   };
+
+  // Deleted or non-existent venue: show clear "not found" so search engines can deindex
+  if (venueNotFound) {
+    return (
+      <div className="min-h-screen text-white p-4 lg:p-8 flex flex-col items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <h1 className="font-space-grotesk text-3xl lg:text-4xl font-bold mb-4 text-[#FF00A2]">
+            Venue not found
+          </h1>
+          <p className="text-white/80 mb-6">
+            This venue is no longer available or the link is invalid.
+          </p>
+          <Link
+            to="/venues"
+            className="inline-block bg-[#FF00A2] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition"
+          >
+            Browse venues
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-white p-4 lg:p-8">
