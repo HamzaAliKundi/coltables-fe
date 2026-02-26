@@ -40,8 +40,12 @@ const Calendar = () => {
 
   // Ensure all events have startDateTime and endDateTime for display and logic
   // For cross-midnight events: show only on start date by truncating end to end-of-start-day
+  // Additionally, hide events before 11 Feb 2026 on the public calendar.
   const safeMonthEvents = useMemo(() => {
     if (!monthEvents) return [];
+
+    // Cutoff date: only show events on/after 11 Feb 2026
+    const cutoffDate = new Date('2026-02-11T00:00:00');
     
     return monthEvents.map(event => {
       // Prefer startDateTime and endDateTime (primary fields)
@@ -78,7 +82,7 @@ const Calendar = () => {
       if (startDay !== endDay) {
         endDate = moment(startDate).endOf('day').toDate();
       }
-
+      
       return {
         ...event,
         start: startDate.toISOString(),
@@ -88,6 +92,9 @@ const Calendar = () => {
         originalEndDateTime: originalEndDate, // Keep for tooltip/time display
         originalStartTime: startDT
       };
+    }).filter(event => {
+      const start = event.startDateTime || new Date(event.start);
+      return start >= cutoffDate;
     });
   }, [monthEvents]);
 
